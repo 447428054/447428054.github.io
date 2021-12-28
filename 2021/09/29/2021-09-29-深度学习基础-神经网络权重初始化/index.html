@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一、两个问题 假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi&#x3D;f(ai),i&#x3D;4,5,6 f为激活函数。  前向传播：  1. 全零初始化是否可以一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0. LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度学习基础-神经网络权重初始化">
+<meta property="og:url" content="http://example.com/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="一、两个问题 假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi&#x3D;f(ai),i&#x3D;4,5,6 f为激活函数。  前向传播：  1. 全零初始化是否可以一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0. LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-6302a7093b93e1376e54e95033c58086_720w.jpg">
+<meta property="article:published_time" content="2021-09-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-12-27T08:32:53.860Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="权重初始化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://example.com/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>深度学习基础-神经网络权重初始化 | Hexo</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Hexo</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深度学习基础-神经网络权重初始化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-09-29 00:00:00" itemprop="dateCreated datePublished" datetime="2021-09-29T00:00:00+08:00">2021-09-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-27 16:32:53" itemprop="dateModified" datetime="2021-12-27T16:32:53+08:00">2021-12-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一、两个问题"><a href="#一、两个问题" class="headerlink" title="一、两个问题"></a>一、两个问题</h1><blockquote>
+<p>假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi=f(ai),i=4,5,6 f为激活函数。</p>
+</blockquote>
+<p><strong>前向传播：</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<h2 id="1-全零初始化是否可以"><a href="#1-全零初始化是否可以" class="headerlink" title="1. 全零初始化是否可以"></a>1. 全零初始化是否可以</h2><p>一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0.</p>
+<p>LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，但涉及两层及以上，从涉及层到输入层的梯度都为0,参数无法更新。</p>
+<h2 id="2-参数全部相同初始化是否可以"><a href="#2-参数全部相同初始化是否可以" class="headerlink" title="2. 参数全部相同初始化是否可以"></a>2. 参数全部相同初始化是否可以</h2><p>不可以。若初始化为相同的参数，隐藏层所有节点输出相同，梯度也是相同的。相当于输入经过一个节点。</p>
+<h1 id="二、参数初始化方式"><a href="#二、参数初始化方式" class="headerlink" title="二、参数初始化方式"></a>二、参数初始化方式</h1><h2 id="1-预训练初始化"><a href="#1-预训练初始化" class="headerlink" title="1. 预训练初始化"></a>1. 预训练初始化</h2><p><strong>pretraining + finetuning</strong>加载已训练好的模型参数，进行下游任务的模型训练。</p>
+<h2 id="2-随机初始化"><a href="#2-随机初始化" class="headerlink" title="2. 随机初始化"></a>2. 随机初始化</h2><h3 id="2-1-random-initialization"><a href="#2-1-random-initialization" class="headerlink" title="2.1 random initialization"></a>2.1 random initialization</h3><p><code>random initialization: np.random.randn(m,n)</code></p>
+<p>随机产生符合正态分布的m×n维向量</p>
+<p>弊端：随机会产生梯度消失，随着网络层次加深，由于链式求导法则，输出越来越接近0</p>
+<h3 id="2-2-Xavier-initialization"><a href="#2-2-Xavier-initialization" class="headerlink" title="2.2 Xavier initialization"></a>2.2 Xavier initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in)</code></p>
+<p><img src="https://pic3.zhimg.com/80/v2-6302a7093b93e1376e54e95033c58086_720w.jpg" alt="image"></p>
+<p>M 代表着输入输出维度即node_in,node_out</p>
+<p>保证输入输出方差一致</p>
+<h3 id="2-3-He-initialization"><a href="#2-3-He-initialization" class="headerlink" title="2.3 He initialization"></a>2.3 He initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in/2)</code></p>
+<p>适用于RELU激活函数，只有半区有效</p>
+<h2 id="3-固定初始化"><a href="#3-固定初始化" class="headerlink" title="3. 固定初始化"></a>3. 固定初始化</h2><p>比如对于偏置（bias）通常用0初始化，LSTM遗忘门偏置通常为1或2，使时序上的梯度变大，对于ReLU神经元，偏置设为0.01，使得训练初期更容易激活。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://note.youdao.com/">https://www.leiphone.com/category/ai/3qMp45aQtbxTdzmK.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+              <a href="/tags/%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/" rel="tag"># 权重初始化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/28/2021-09-28-Nvidia-Docker%E9%85%8D%E7%BD%AEpython3%E4%B8%8Epytorch%E7%8E%AF%E5%A2%83/" rel="prev" title="Nvidia-Docker配置python3与pytorch环境">
+      <i class="fa fa-chevron-left"></i> Nvidia-Docker配置python3与pytorch环境
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="next" title="Attention可视化">
+      Attention可视化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%A4%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">一、两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%85%A8%E9%9B%B6%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5"><span class="nav-number">1.1.</span> <span class="nav-text">1. 全零初始化是否可以</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%8F%82%E6%95%B0%E5%85%A8%E9%83%A8%E7%9B%B8%E5%90%8C%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5"><span class="nav-number">1.2.</span> <span class="nav-text">2. 参数全部相同初始化是否可以</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%8F%82%E6%95%B0%E5%88%9D%E5%A7%8B%E5%8C%96%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">二、参数初始化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E9%A2%84%E8%AE%AD%E7%BB%83%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">1. 预训练初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%9A%8F%E6%9C%BA%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.2.</span> <span class="nav-text">2. 随机初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-random-initialization"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.1 random initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Xavier-initialization"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2 Xavier initialization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-He-initialization"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.3 He initialization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%9B%BA%E5%AE%9A%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.3.</span> <span class="nav-text">3. 固定初始化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John Doe</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/koharu.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.7},"log":false});</script></body>
+</html>

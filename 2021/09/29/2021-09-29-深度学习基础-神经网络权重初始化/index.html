@@ -17,20 +17,20 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="一、两个问题 假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi&#x3D;f(ai),i&#x3D;4,5,6 f为激活函数。  前向传播：  1. 全零初始化是否可以一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0. LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，">
+  <meta name="description" content="本文将介绍神经网络权重初始化的原理与实现。首先解决了两个问题：1. 全零初始化是否可以、2. 参数全部相同初始化是否可以 然后介绍了初始化的方式：  预训练初始化 随机初始化 固定初始化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习基础-神经网络权重初始化">
 <meta property="og:url" content="https://447428054.github.io/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="一、两个问题 假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi&#x3D;f(ai),i&#x3D;4,5,6 f为激活函数。  前向传播：  1. 全零初始化是否可以一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0. LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，">
+<meta property="og:description" content="本文将介绍神经网络权重初始化的原理与实现。首先解决了两个问题：1. 全零初始化是否可以、2. 参数全部相同初始化是否可以 然后介绍了初始化的方式：  预训练初始化 随机初始化 固定初始化">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16">
 <meta property="og:image" content="https://pic3.zhimg.com/80/v2-6302a7093b93e1376e54e95033c58086_720w.jpg">
 <meta property="article:published_time" content="2021-09-28T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-12-27T08:32:53.860Z">
+<meta property="article:modified_time" content="2021-12-29T06:31:45.398Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="深度学习">
 <meta property="article:tag" content="权重初始化">
@@ -234,8 +234,25 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-27 16:32:53" itemprop="dateModified" datetime="2021-12-27T16:32:53+08:00">2021-12-27</time>
+                <time title="修改时间：2021-12-29 14:31:45" itemprop="dateModified" datetime="2021-12-29T14:31:45+08:00">2021-12-29</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
 
           
 
@@ -248,7 +265,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="一、两个问题"><a href="#一、两个问题" class="headerlink" title="一、两个问题"></a>一、两个问题</h1><blockquote>
+        <p>本文将介绍神经网络权重初始化的原理与实现。首先解决了两个问题：1. 全零初始化是否可以、2. 参数全部相同初始化是否可以</p>
+<p>然后介绍了初始化的方式：</p>
+<ol>
+<li>预训练初始化</li>
+<li>随机初始化</li>
+<li>固定初始化</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="一、两个问题"><a href="#一、两个问题" class="headerlink" title="一、两个问题"></a>一、两个问题</h1><blockquote>
 <p>假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi=f(ai),i=4,5,6 f为激活函数。</p>
 </blockquote>
 <p><strong>前向传播：</strong></p>
@@ -389,7 +415,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -410,6 +436,30 @@
   </div>
 
 
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/" title="2021&#x2F;12&#x2F;24&#x2F;2021-12-24-Attention可视化&#x2F;">Attention可视化</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/" title="2021&#x2F;09&#x2F;29&#x2F;2021-09-29-深度学习基础-神经网络权重初始化&#x2F;">深度学习基础-神经网络权重初始化</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/28/2021-09-28-Nvidia-Docker%E9%85%8D%E7%BD%AEpython3%E4%B8%8Epytorch%E7%8E%AF%E5%A2%83/" title="2021&#x2F;09&#x2F;28&#x2F;2021-09-28-Nvidia-Docker配置python3与pytorch环境&#x2F;">Nvidia-Docker配置python3与pytorch环境</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/12/2021-09-12-Pytorch%E5%A4%9A%E5%8D%A1%E8%AE%AD%E7%BB%83%E5%8E%9F%E7%90%86/" title="2021&#x2F;09&#x2F;12&#x2F;2021-09-12-Pytorch多卡训练原理&#x2F;">Pytorch 多卡训练</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" title="2020&#x2F;01&#x2F;03&#x2F;2020-01-03-Python数据分析-数据可视化&#x2F;">Python数据分析-数据可视化</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

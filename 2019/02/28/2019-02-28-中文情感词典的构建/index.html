@@ -17,22 +17,22 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。我们首先将情感词典分为通用情感词典与专用情感词典。  1.通用情感词典的构建   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和">
+  <meta name="description" content="本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建">
 <meta property="og:type" content="article">
 <meta property="og:title" content="中文情感词典的构建">
 <meta property="og:url" content="https://447428054.github.io/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。我们首先将情感词典分为通用情感词典与专用情感词典。  1.通用情感词典的构建   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和">
+<meta property="og:description" content="本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172006936.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172528100.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172807236.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172830315.png">
 <meta property="article:published_time" content="2019-02-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-12-27T08:32:53.860Z">
+<meta property="article:modified_time" content="2021-12-29T06:31:45.413Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="情感分析">
 <meta property="article:tag" content="情感词典">
@@ -236,8 +236,25 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-27 16:32:53" itemprop="dateModified" datetime="2021-12-27T16:32:53+08:00">2021-12-27</time>
+                <time title="修改时间：2021-12-29 14:31:45" itemprop="dateModified" datetime="2021-12-29T14:31:45+08:00">2021-12-29</time>
               </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">情感分析</span></a>
+                </span>
+            </span>
 
           
 
@@ -250,7 +267,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <blockquote>
+        <p>本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建</p>
+<span id="more"></span>
+<blockquote>
 <p>首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。<br>我们首先将情感词典分为通用情感词典与专用情感词典。</p>
 </blockquote>
 <h1 id="1-通用情感词典的构建"><a href="#1-通用情感词典的构建" class="headerlink" title="1.通用情感词典的构建"></a>1.通用情感词典的构建</h1><p>   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和无用的单词。<br>   目前网上开源的情感词典包含有：知网（HowNet）情感词典、台湾大学（NTSUSD)简体中文情感极性词典、大连理工大学情感词汇本体。<br>   前两个都可以在网上找到，第三个需要到其学校官网申请，说明完用途即可获得。</p>
@@ -393,7 +412,7 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -414,6 +433,30 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
   </div>
 
 
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/" title="2021&#x2F;12&#x2F;24&#x2F;2021-12-24-Attention可视化&#x2F;">Attention可视化</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/" title="2021&#x2F;09&#x2F;29&#x2F;2021-09-29-深度学习基础-神经网络权重初始化&#x2F;">深度学习基础-神经网络权重初始化</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/28/2021-09-28-Nvidia-Docker%E9%85%8D%E7%BD%AEpython3%E4%B8%8Epytorch%E7%8E%AF%E5%A2%83/" title="2021&#x2F;09&#x2F;28&#x2F;2021-09-28-Nvidia-Docker配置python3与pytorch环境&#x2F;">Nvidia-Docker配置python3与pytorch环境</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2021/09/12/2021-09-12-Pytorch%E5%A4%9A%E5%8D%A1%E8%AE%AD%E7%BB%83%E5%8E%9F%E7%90%86/" title="2021&#x2F;09&#x2F;12&#x2F;2021-09-12-Pytorch多卡训练原理&#x2F;">Pytorch 多卡训练</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" title="2020&#x2F;01&#x2F;03&#x2F;2020-01-03-Python数据分析-数据可视化&#x2F;">Python数据分析-数据可视化</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 

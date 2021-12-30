@@ -350,6 +350,83 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
+    <title>深度学习基础-神经网络权重初始化</title>
+    <url>/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
+    <content><![CDATA[<p>本文将介绍神经网络权重初始化的原理与实现。首先解决了两个问题：1. 全零初始化是否可以、2. 参数全部相同初始化是否可以</p>
+<p>然后介绍了初始化的方式：</p>
+<ol>
+<li>预训练初始化</li>
+<li>随机初始化</li>
+<li>固定初始化</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="一、两个问题"><a href="#一、两个问题" class="headerlink" title="一、两个问题"></a>一、两个问题</h1><blockquote>
+<p>假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi=f(ai),i=4,5,6 f为激活函数。</p>
+</blockquote>
+<p><strong>前向传播：</strong></p>
+<p><img src="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
+<h2 id="1-全零初始化是否可以"><a href="#1-全零初始化是否可以" class="headerlink" title="1. 全零初始化是否可以"></a>1. 全零初始化是否可以</h2><p>一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0.</p>
+<p>LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，但涉及两层及以上，从涉及层到输入层的梯度都为0,参数无法更新。</p>
+<h2 id="2-参数全部相同初始化是否可以"><a href="#2-参数全部相同初始化是否可以" class="headerlink" title="2. 参数全部相同初始化是否可以"></a>2. 参数全部相同初始化是否可以</h2><p>不可以。若初始化为相同的参数，隐藏层所有节点输出相同，梯度也是相同的。相当于输入经过一个节点。</p>
+<h1 id="二、参数初始化方式"><a href="#二、参数初始化方式" class="headerlink" title="二、参数初始化方式"></a>二、参数初始化方式</h1><h2 id="1-预训练初始化"><a href="#1-预训练初始化" class="headerlink" title="1. 预训练初始化"></a>1. 预训练初始化</h2><p><strong>pretraining + finetuning</strong>加载已训练好的模型参数，进行下游任务的模型训练。</p>
+<h2 id="2-随机初始化"><a href="#2-随机初始化" class="headerlink" title="2. 随机初始化"></a>2. 随机初始化</h2><h3 id="2-1-random-initialization"><a href="#2-1-random-initialization" class="headerlink" title="2.1 random initialization"></a>2.1 random initialization</h3><p><code>random initialization: np.random.randn(m,n)</code></p>
+<p>随机产生符合正态分布的m×n维向量</p>
+<p>弊端：随机会产生梯度消失，随着网络层次加深，由于链式求导法则，输出越来越接近0</p>
+<h3 id="2-2-Xavier-initialization"><a href="#2-2-Xavier-initialization" class="headerlink" title="2.2 Xavier initialization"></a>2.2 Xavier initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in)</code></p>
+<p><img src="https://pic3.zhimg.com/80/v2-6302a7093b93e1376e54e95033c58086_720w.jpg" alt="image"></p>
+<p>M 代表着输入输出维度即node_in,node_out</p>
+<p>保证输入输出方差一致</p>
+<h3 id="2-3-He-initialization"><a href="#2-3-He-initialization" class="headerlink" title="2.3 He initialization"></a>2.3 He initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in/2)</code></p>
+<p>适用于RELU激活函数，只有半区有效</p>
+<h2 id="3-固定初始化"><a href="#3-固定初始化" class="headerlink" title="3. 固定初始化"></a>3. 固定初始化</h2><p>比如对于偏置（bias）通常用0初始化，LSTM遗忘门偏置通常为1或2，使时序上的梯度变大，对于ReLU神经元，偏置设为0.01，使得训练初期更容易激活。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://note.youdao.com/">https://www.leiphone.com/category/ai/3qMp45aQtbxTdzmK.html</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>深度学习</category>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>深度学习</tag>
+        <tag>权重初始化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Attention可视化</title>
+    <url>/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/</url>
+    <content><![CDATA[<p>本文介绍了Attention可视化的方式，包含两种热力图可视化、文本可视化。</p>
+<ol>
+<li>使用matplotlib与seaborn完成attention矩阵的热力图绘制</li>
+<li>根据注意力矩阵，得到html颜色深浅代表相关性强弱</li>
+</ol>
+<span id="more"></span>
+
+<h1 id="热力图可视化"><a href="#热力图可视化" class="headerlink" title="热力图可视化"></a>热力图可视化</h1><blockquote>
+<p>使用matplotlib与seaborn完成attention矩阵的热力图绘制</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># author:   LZ</span><br><span class="line"># create time:  2021/11/15 14:54</span><br><span class="line"># file: genpic.py</span><br><span class="line"># IDE:  PyCharm</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pandas as pd</span><br><span class="line">import matplotlib.ticker as ticker</span><br><span class="line">import seaborn as sns</span><br><span class="line">import matplotlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newgperes = &#123;&#125;</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">     for w, a in v.items():</span><br><span class="line">          newgperes.setdefault(w, &#123;&#125;)</span><br><span class="line">          newgperes[w][k] = a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.rcParams[&#x27;font.sans-serif&#x27;]=[&#x27;Arial Unicode MS&#x27;]</span><br><span class="line">plt.rcParams[&#x27;axes.unicode_minus&#x27;] = False</span><br><span class="line">gpedata = pd.DataFrame(newgperes)</span><br><span class="line">ax = sns.heatmap(gpedata, cmap=&quot;YlOrRd&quot;)</span><br><span class="line">ax.xaxis.tick_top()</span><br><span class="line">ax.set_yticklabels(ax.get_yticklabels(), rotation=0)</span><br><span class="line">plt.savefig(&#x27;loctest.png&#x27;)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s3.bmp.ovh/imgs/2021/12/4100fe169b8b9921.png" alt="gpe.png"></p>
+<h1 id="NLP文本注意力可视化"><a href="#NLP文本注意力可视化" class="headerlink" title="NLP文本注意力可视化"></a>NLP文本注意力可视化</h1><blockquote>
+<p>根据注意力矩阵，得到html颜色深浅代表相关性强弱</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Credits to Lin Zhouhan(@hantek) for the complete visualization code</span><br><span class="line">import random, os, numpy, scipy</span><br><span class="line">from codecs import open</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createHTML(texts, weights, savepath):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Creates a html file with text heat.</span><br><span class="line">	weights: attention weights for visualizing</span><br><span class="line">	texts: text on which attention weights are to be visualized</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    fOut = open(savepath, &quot;w&quot;, encoding=&quot;utf-8&quot;)</span><br><span class="line">    part1 = &quot;&quot;&quot;</span><br><span class="line">    &lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">    body &#123;</span><br><span class="line">    font-family: Sans-Serif;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/style&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">    &lt;h3&gt;</span><br><span class="line">    Heatmaps</span><br><span class="line">    &lt;/h3&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    part2 = &quot;&quot;&quot;</span><br><span class="line">    var color = &quot;255,0,0&quot;;</span><br><span class="line">    var ngram_length = 3;</span><br><span class="line">    var half_ngram = 1;</span><br><span class="line">    for (var k=0; k &lt; any_text.length; k++) &#123;</span><br><span class="line">    var tokens = any_text[k].split(&quot; &quot;);</span><br><span class="line">    var intensity = new Array(tokens.length);</span><br><span class="line">    var max_intensity = Number.MIN_SAFE_INTEGER;</span><br><span class="line">    var min_intensity = Number.MAX_SAFE_INTEGER;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = 0.0;</span><br><span class="line">    for (var j = -half_ngram; j &lt; ngram_length-half_ngram; j++) &#123;</span><br><span class="line">    if (i+j &lt; intensity.length &amp;&amp; i+j &gt; -1) &#123;</span><br><span class="line">    intensity[i] += trigram_weights[k][i + j];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (i == 0 || i == intensity.length-1) &#123;</span><br><span class="line">    intensity[i] /= 2.0;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    intensity[i] /= 3.0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &gt; max_intensity) &#123;</span><br><span class="line">    max_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &lt; min_intensity) &#123;</span><br><span class="line">    min_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    var denominator = max_intensity - min_intensity;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = (intensity[i] - min_intensity) / denominator;</span><br><span class="line">    &#125;</span><br><span class="line">    if (k%2 == 0) &#123;</span><br><span class="line">    var heat_text = &quot;&lt;p&gt;&lt;br&gt;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    var heat_text = &quot;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    var space = &quot;&quot;;</span><br><span class="line">    for (var i = 0; i &lt; tokens.length; i++) &#123;</span><br><span class="line">    heat_text += &quot;&lt;span style=&#x27;background-color:rgba(&quot; + color + &quot;,&quot; + intensity[i] + &quot;)&#x27;&gt;&quot; + space + tokens[i] + &quot;&lt;/span&gt;&quot;;</span><br><span class="line">    if (space == &quot;&quot;) &#123;</span><br><span class="line">    space = &quot; &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //heat_text += &quot;&lt;p&gt;&quot;;</span><br><span class="line">    document.body.innerHTML += heat_text;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">    &lt;/html&gt;&quot;&quot;&quot;</span><br><span class="line">    putQuote = lambda x: &quot;\&quot;%s\&quot;&quot; % x</span><br><span class="line">    textsString = &quot;var any_text = [%s];\n&quot; % (&quot;,&quot;.join(map(putQuote, texts)))</span><br><span class="line">    weightsString = &quot;var trigram_weights = [%s];\n&quot; % (&quot;,&quot;.join(map(str, weights)))</span><br><span class="line">    fOut.write(part1)</span><br><span class="line">    fOut.write(textsString)</span><br><span class="line">    fOut.write(weightsString)</span><br><span class="line">    fOut.write(part2)</span><br><span class="line">    fOut.close()</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">matrix = []</span><br><span class="line"># 获取矩阵表示</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">    matrix.append(list(v.values()))</span><br><span class="line">str_ = &#x27;武 汉 市 长 江 大 桥&#x27;</span><br><span class="line">createHTML([str_] * 7,</span><br><span class="line">           matrix,</span><br><span class="line">           &#x27;./visualization/test.html&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.bmp.ovh/imgs/2021/12/04573a3a1f1fb2b6.png" alt="wx20211211-193035@2x.png"></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/qq_38607066/article/details/101345282#t17">https://blog.csdn.net/qq_38607066/article/details/101345282#t17</a></p>
+<p><a href="https://blog.csdn.net/u010490755/article/details/89574847">https://blog.csdn.net/u010490755/article/details/89574847</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Attention</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nvidia-Docker配置python3与pytorch环境</title>
     <url>/2021/09/28/2021-09-28-Nvidia-Docker%E9%85%8D%E7%BD%AEpython3%E4%B8%8Epytorch%E7%8E%AF%E5%A2%83/</url>
     <content><![CDATA[<p>本文将介绍Nvidia-Docker配置python3与pytorch环境，完成docker容器内安装GPU深度学习环境。<br>TIPS：为了避免下载源过慢，建议添加中科大源/清华源</p>
@@ -401,83 +478,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>GPU</tag>
         <tag>Nvidia-Docker</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Attention可视化</title>
-    <url>/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/</url>
-    <content><![CDATA[<p>本文介绍了Attention可视化的方式，包含两种热力图可视化、文本可视化。</p>
-<ol>
-<li>使用matplotlib与seaborn完成attention矩阵的热力图绘制</li>
-<li>根据注意力矩阵，得到html颜色深浅代表相关性强弱</li>
-</ol>
-<span id="more"></span>
-
-<h1 id="热力图可视化"><a href="#热力图可视化" class="headerlink" title="热力图可视化"></a>热力图可视化</h1><blockquote>
-<p>使用matplotlib与seaborn完成attention矩阵的热力图绘制</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># author:   LZ</span><br><span class="line"># create time:  2021/11/15 14:54</span><br><span class="line"># file: genpic.py</span><br><span class="line"># IDE:  PyCharm</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pandas as pd</span><br><span class="line">import matplotlib.ticker as ticker</span><br><span class="line">import seaborn as sns</span><br><span class="line">import matplotlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newgperes = &#123;&#125;</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">     for w, a in v.items():</span><br><span class="line">          newgperes.setdefault(w, &#123;&#125;)</span><br><span class="line">          newgperes[w][k] = a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.rcParams[&#x27;font.sans-serif&#x27;]=[&#x27;Arial Unicode MS&#x27;]</span><br><span class="line">plt.rcParams[&#x27;axes.unicode_minus&#x27;] = False</span><br><span class="line">gpedata = pd.DataFrame(newgperes)</span><br><span class="line">ax = sns.heatmap(gpedata, cmap=&quot;YlOrRd&quot;)</span><br><span class="line">ax.xaxis.tick_top()</span><br><span class="line">ax.set_yticklabels(ax.get_yticklabels(), rotation=0)</span><br><span class="line">plt.savefig(&#x27;loctest.png&#x27;)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://s3.bmp.ovh/imgs/2021/12/4100fe169b8b9921.png" alt="gpe.png"></p>
-<h1 id="NLP文本注意力可视化"><a href="#NLP文本注意力可视化" class="headerlink" title="NLP文本注意力可视化"></a>NLP文本注意力可视化</h1><blockquote>
-<p>根据注意力矩阵，得到html颜色深浅代表相关性强弱</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Credits to Lin Zhouhan(@hantek) for the complete visualization code</span><br><span class="line">import random, os, numpy, scipy</span><br><span class="line">from codecs import open</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createHTML(texts, weights, savepath):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Creates a html file with text heat.</span><br><span class="line">	weights: attention weights for visualizing</span><br><span class="line">	texts: text on which attention weights are to be visualized</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    fOut = open(savepath, &quot;w&quot;, encoding=&quot;utf-8&quot;)</span><br><span class="line">    part1 = &quot;&quot;&quot;</span><br><span class="line">    &lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">    body &#123;</span><br><span class="line">    font-family: Sans-Serif;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/style&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">    &lt;h3&gt;</span><br><span class="line">    Heatmaps</span><br><span class="line">    &lt;/h3&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    part2 = &quot;&quot;&quot;</span><br><span class="line">    var color = &quot;255,0,0&quot;;</span><br><span class="line">    var ngram_length = 3;</span><br><span class="line">    var half_ngram = 1;</span><br><span class="line">    for (var k=0; k &lt; any_text.length; k++) &#123;</span><br><span class="line">    var tokens = any_text[k].split(&quot; &quot;);</span><br><span class="line">    var intensity = new Array(tokens.length);</span><br><span class="line">    var max_intensity = Number.MIN_SAFE_INTEGER;</span><br><span class="line">    var min_intensity = Number.MAX_SAFE_INTEGER;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = 0.0;</span><br><span class="line">    for (var j = -half_ngram; j &lt; ngram_length-half_ngram; j++) &#123;</span><br><span class="line">    if (i+j &lt; intensity.length &amp;&amp; i+j &gt; -1) &#123;</span><br><span class="line">    intensity[i] += trigram_weights[k][i + j];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (i == 0 || i == intensity.length-1) &#123;</span><br><span class="line">    intensity[i] /= 2.0;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    intensity[i] /= 3.0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &gt; max_intensity) &#123;</span><br><span class="line">    max_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &lt; min_intensity) &#123;</span><br><span class="line">    min_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    var denominator = max_intensity - min_intensity;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = (intensity[i] - min_intensity) / denominator;</span><br><span class="line">    &#125;</span><br><span class="line">    if (k%2 == 0) &#123;</span><br><span class="line">    var heat_text = &quot;&lt;p&gt;&lt;br&gt;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    var heat_text = &quot;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    var space = &quot;&quot;;</span><br><span class="line">    for (var i = 0; i &lt; tokens.length; i++) &#123;</span><br><span class="line">    heat_text += &quot;&lt;span style=&#x27;background-color:rgba(&quot; + color + &quot;,&quot; + intensity[i] + &quot;)&#x27;&gt;&quot; + space + tokens[i] + &quot;&lt;/span&gt;&quot;;</span><br><span class="line">    if (space == &quot;&quot;) &#123;</span><br><span class="line">    space = &quot; &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //heat_text += &quot;&lt;p&gt;&quot;;</span><br><span class="line">    document.body.innerHTML += heat_text;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">    &lt;/html&gt;&quot;&quot;&quot;</span><br><span class="line">    putQuote = lambda x: &quot;\&quot;%s\&quot;&quot; % x</span><br><span class="line">    textsString = &quot;var any_text = [%s];\n&quot; % (&quot;,&quot;.join(map(putQuote, texts)))</span><br><span class="line">    weightsString = &quot;var trigram_weights = [%s];\n&quot; % (&quot;,&quot;.join(map(str, weights)))</span><br><span class="line">    fOut.write(part1)</span><br><span class="line">    fOut.write(textsString)</span><br><span class="line">    fOut.write(weightsString)</span><br><span class="line">    fOut.write(part2)</span><br><span class="line">    fOut.close()</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">matrix = []</span><br><span class="line"># 获取矩阵表示</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">    matrix.append(list(v.values()))</span><br><span class="line">str_ = &#x27;武 汉 市 长 江 大 桥&#x27;</span><br><span class="line">createHTML([str_] * 7,</span><br><span class="line">           matrix,</span><br><span class="line">           &#x27;./visualization/test.html&#x27;)</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.bmp.ovh/imgs/2021/12/04573a3a1f1fb2b6.png" alt="wx20211211-193035@2x.png"></p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/qq_38607066/article/details/101345282#t17">https://blog.csdn.net/qq_38607066/article/details/101345282#t17</a></p>
-<p><a href="https://blog.csdn.net/u010490755/article/details/89574847">https://blog.csdn.net/u010490755/article/details/89574847</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>Attention</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>深度学习基础-神经网络权重初始化</title>
-    <url>/2021/09/29/2021-09-29-%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9D%83%E9%87%8D%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
-    <content><![CDATA[<p>本文将介绍神经网络权重初始化的原理与实现。首先解决了两个问题：1. 全零初始化是否可以、2. 参数全部相同初始化是否可以</p>
-<p>然后介绍了初始化的方式：</p>
-<ol>
-<li>预训练初始化</li>
-<li>随机初始化</li>
-<li>固定初始化</li>
-</ol>
-<span id="more"></span>
-
-<h1 id="一、两个问题"><a href="#一、两个问题" class="headerlink" title="一、两个问题"></a>一、两个问题</h1><blockquote>
-<p>假设3层神经网络,输入节点v0，第一层节点v1,v2,v3 第二层节点v4,v5 第三层节点v6。其中vi=f(ai),i=4,5,6 f为激活函数。</p>
-</blockquote>
-<p><strong>前向传播：</strong></p>
-<p><img src="https://img-blog.csdnimg.cn/83cc1293388e439ab8a1d33e6c67396f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASk1YR09ETFo=,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"></p>
-<h2 id="1-全零初始化是否可以"><a href="#1-全零初始化是否可以" class="headerlink" title="1. 全零初始化是否可以"></a>1. 全零初始化是否可以</h2><p>一般情况不可以。当全零参数初始化时，除输入节点所有节点值均为0,根据上式除第一层梯度与输入值有关其余均为0.</p>
-<p>LR等一层网络可以全零初始化， 网络梯度与输入值有关。仅全零初始化一层也不影响训练，但涉及两层及以上，从涉及层到输入层的梯度都为0,参数无法更新。</p>
-<h2 id="2-参数全部相同初始化是否可以"><a href="#2-参数全部相同初始化是否可以" class="headerlink" title="2. 参数全部相同初始化是否可以"></a>2. 参数全部相同初始化是否可以</h2><p>不可以。若初始化为相同的参数，隐藏层所有节点输出相同，梯度也是相同的。相当于输入经过一个节点。</p>
-<h1 id="二、参数初始化方式"><a href="#二、参数初始化方式" class="headerlink" title="二、参数初始化方式"></a>二、参数初始化方式</h1><h2 id="1-预训练初始化"><a href="#1-预训练初始化" class="headerlink" title="1. 预训练初始化"></a>1. 预训练初始化</h2><p><strong>pretraining + finetuning</strong>加载已训练好的模型参数，进行下游任务的模型训练。</p>
-<h2 id="2-随机初始化"><a href="#2-随机初始化" class="headerlink" title="2. 随机初始化"></a>2. 随机初始化</h2><h3 id="2-1-random-initialization"><a href="#2-1-random-initialization" class="headerlink" title="2.1 random initialization"></a>2.1 random initialization</h3><p><code>random initialization: np.random.randn(m,n)</code></p>
-<p>随机产生符合正态分布的m×n维向量</p>
-<p>弊端：随机会产生梯度消失，随着网络层次加深，由于链式求导法则，输出越来越接近0</p>
-<h3 id="2-2-Xavier-initialization"><a href="#2-2-Xavier-initialization" class="headerlink" title="2.2 Xavier initialization"></a>2.2 Xavier initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in)</code></p>
-<p><img src="https://pic3.zhimg.com/80/v2-6302a7093b93e1376e54e95033c58086_720w.jpg" alt="image"></p>
-<p>M 代表着输入输出维度即node_in,node_out</p>
-<p>保证输入输出方差一致</p>
-<h3 id="2-3-He-initialization"><a href="#2-3-He-initialization" class="headerlink" title="2.3 He initialization"></a>2.3 He initialization</h3><p><code>tf.Variable(np.random.randn(node_in,node_out))/np.sqrt(node_in/2)</code></p>
-<p>适用于RELU激活函数，只有半区有效</p>
-<h2 id="3-固定初始化"><a href="#3-固定初始化" class="headerlink" title="3. 固定初始化"></a>3. 固定初始化</h2><p>比如对于偏置（bias）通常用0初始化，LSTM遗忘门偏置通常为1或2，使时序上的梯度变大，对于ReLU神经元，偏置设为0.01，使得训练初期更容易激活。</p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://note.youdao.com/">https://www.leiphone.com/category/ai/3qMp45aQtbxTdzmK.html</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>深度学习</category>
-        <category>基础</category>
-      </categories>
-      <tags>
-        <tag>深度学习</tag>
-        <tag>权重初始化</tag>
       </tags>
   </entry>
 </search>

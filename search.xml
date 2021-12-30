@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>中文情感词典的构建</title>
-    <url>/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/</url>
-    <content><![CDATA[<p>本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建</p>
-<span id="more"></span>
-<blockquote>
-<p>首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。<br>我们首先将情感词典分为通用情感词典与专用情感词典。</p>
-</blockquote>
-<h1 id="1-通用情感词典的构建"><a href="#1-通用情感词典的构建" class="headerlink" title="1.通用情感词典的构建"></a>1.通用情感词典的构建</h1><p>   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和无用的单词。<br>   目前网上开源的情感词典包含有：知网（HowNet）情感词典、台湾大学（NTSUSD)简体中文情感极性词典、大连理工大学情感词汇本体。<br>   前两个都可以在网上找到，第三个需要到其学校官网申请，说明完用途即可获得。</p>
-<h1 id="2-通用情感词典的扩展"><a href="#2-通用情感词典的扩展" class="headerlink" title="2.通用情感词典的扩展"></a>2.通用情感词典的扩展</h1><p>上述情感词典年代都已经比较久远，所以我们可以采取一定方法对其扩展。这里我们采用的方法是将词典的同义词添加到词典里。<br>我们通过使用哈工大整理的同义词词林来获取词典的同义词，需要一提的是第一版的同义词林年代较为久远，现在也有哈工大整理的同义词林扩展版。<br>使用的链接在这里：<a href="https://blog.csdn.net/sinat_33741547/article/details/80016713">哈工大同义词林扩展版</a><br>使用代码编写时也可以利用Python的Synonyms库来获取同义词。<br>其已经开源，链接为：<a href="https://github.com/huyingxi/Synonyms">synonyms</a><br>如：</p>
-<pre><code>import synonyms
-print(&quot;人脸: %s&quot; % (synonyms.nearby(&quot;人脸&quot;)))
-print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
-</code></pre>
-<h1 id="3-领域情感词典的构建"><a href="#3-领域情感词典的构建" class="headerlink" title="3.领域情感词典的构建"></a>3.领域情感词典的构建</h1><p>构建特定领域的情感词典大体有两种方法：基于规则的情感词典构建方法、基于统计的情感词典构建方法。</p>
-<p>基于规则的情感词典方法一般是用句型固定、句式不多变的情况。通过对语料进行句法分析，词性标注等操作，得到语料中常用的句型并将其抽象出来，根据抽象出来的句型模板来对新的语料进行模板匹配，以此来选择出新的语料中的情感词，将其加入到对应的情感词典中。</p>
-<p>基于统计的情感词典构建方法需要利用PMI互信息计算与左右熵来发现所需要的新词。具体方法我们可以添加情感种子词，来计算分好词的语料中各个词语与情感种子词的互信息度与左右熵，再将互信息度与左右熵结合起来，选择出与情感词关联度最高的TopN个词语，将其添加到对应的情感词典。<br>这里可以参考链接<a href="https://www.jianshu.com/p/e9313fd692ef">link</a></p>
-<h3 id="互信息度计算"><a href="#互信息度计算" class="headerlink" title="互信息度计算"></a>互信息度计算</h3><p><img src="https://img-blog.csdnimg.cn/20190228172006936.png" alt="互信息度计算"></p>
-<ul>
-<li>p(x,y)为两个词一起出现的概率</li>
-<li>p(x)为词x出现的概率</li>
-<li>p(y)为词y出现的概率</li>
-</ul>
-<hr>
-<p>具体例子：4G， 上网卡，4G上网卡;如果4G的词频是2,上网卡的词频是10,4G上网卡的词频是1，那么记单单词的总数有N个，双单词的总数有M个，则有下面的公式<br><img src="https://img-blog.csdnimg.cn/20190228172528100.png" alt="具体例子"></p>
-<h3 id="左右熵"><a href="#左右熵" class="headerlink" title="左右熵"></a>左右熵</h3><p>我们这里使用左右熵来衡量主要是想表示预选词的自由程度(4G上网卡为一个预选词），左右熵越大，表示这个词的左边右边的词换的越多，那么它就很有可能是一个单独的词。<br>我们这里的左右熵定义为(以左熵为例):<br><img src="https://img-blog.csdnimg.cn/20190228172807236.png" alt="左熵"><br>这里我们还是举一个具体的例子来理解它<br>假设4G上网卡左右有这么几种搭配<br>[买4G上网卡, 有4G上网卡，有4G上网卡， 丢4G上网卡]<br>那么4G上网卡的左熵为<br><img src="https://img-blog.csdnimg.cn/20190228172830315.png" alt="例子"><br>这里A = [买, 有, 丢]</p>
-<blockquote>
-<p>后面就是具体的实现了，这里的难点就在如何获得这些概率值，就博主看到的用法有：利用搜索引擎获取词汇共现率即p(x,y)、利用语料库获取各个词出现概率</p>
-</blockquote>
-<h2 id="最后我们只需要将这三步获得的情感词典进行整合就可以了"><a href="#最后我们只需要将这三步获得的情感词典进行整合就可以了" class="headerlink" title="最后我们只需要将这三步获得的情感词典进行整合就可以了"></a>最后我们只需要将这三步获得的情感词典进行整合就可以了</h2><p>参考文献：<br><a href="https://www.jianshu.com/p/e9313fd692ef">python3实现互信息和左右熵的新词发现</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>情感分析</category>
-      </categories>
-      <tags>
-        <tag>情感分析</tag>
-        <tag>情感词典</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Coursera Machine Learning 学习笔记（一）Introduction</title>
     <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/</url>
     <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（一）Introduction</p>
@@ -170,6 +129,47 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>机器学习</tag>
         <tag>Linear Regression</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>中文情感词典的构建</title>
+    <url>/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/</url>
+    <content><![CDATA[<p>本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建</p>
+<span id="more"></span>
+<blockquote>
+<p>首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。<br>我们首先将情感词典分为通用情感词典与专用情感词典。</p>
+</blockquote>
+<h1 id="1-通用情感词典的构建"><a href="#1-通用情感词典的构建" class="headerlink" title="1.通用情感词典的构建"></a>1.通用情感词典的构建</h1><p>   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和无用的单词。<br>   目前网上开源的情感词典包含有：知网（HowNet）情感词典、台湾大学（NTSUSD)简体中文情感极性词典、大连理工大学情感词汇本体。<br>   前两个都可以在网上找到，第三个需要到其学校官网申请，说明完用途即可获得。</p>
+<h1 id="2-通用情感词典的扩展"><a href="#2-通用情感词典的扩展" class="headerlink" title="2.通用情感词典的扩展"></a>2.通用情感词典的扩展</h1><p>上述情感词典年代都已经比较久远，所以我们可以采取一定方法对其扩展。这里我们采用的方法是将词典的同义词添加到词典里。<br>我们通过使用哈工大整理的同义词词林来获取词典的同义词，需要一提的是第一版的同义词林年代较为久远，现在也有哈工大整理的同义词林扩展版。<br>使用的链接在这里：<a href="https://blog.csdn.net/sinat_33741547/article/details/80016713">哈工大同义词林扩展版</a><br>使用代码编写时也可以利用Python的Synonyms库来获取同义词。<br>其已经开源，链接为：<a href="https://github.com/huyingxi/Synonyms">synonyms</a><br>如：</p>
+<pre><code>import synonyms
+print(&quot;人脸: %s&quot; % (synonyms.nearby(&quot;人脸&quot;)))
+print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
+</code></pre>
+<h1 id="3-领域情感词典的构建"><a href="#3-领域情感词典的构建" class="headerlink" title="3.领域情感词典的构建"></a>3.领域情感词典的构建</h1><p>构建特定领域的情感词典大体有两种方法：基于规则的情感词典构建方法、基于统计的情感词典构建方法。</p>
+<p>基于规则的情感词典方法一般是用句型固定、句式不多变的情况。通过对语料进行句法分析，词性标注等操作，得到语料中常用的句型并将其抽象出来，根据抽象出来的句型模板来对新的语料进行模板匹配，以此来选择出新的语料中的情感词，将其加入到对应的情感词典中。</p>
+<p>基于统计的情感词典构建方法需要利用PMI互信息计算与左右熵来发现所需要的新词。具体方法我们可以添加情感种子词，来计算分好词的语料中各个词语与情感种子词的互信息度与左右熵，再将互信息度与左右熵结合起来，选择出与情感词关联度最高的TopN个词语，将其添加到对应的情感词典。<br>这里可以参考链接<a href="https://www.jianshu.com/p/e9313fd692ef">link</a></p>
+<h3 id="互信息度计算"><a href="#互信息度计算" class="headerlink" title="互信息度计算"></a>互信息度计算</h3><p><img src="https://img-blog.csdnimg.cn/20190228172006936.png" alt="互信息度计算"></p>
+<ul>
+<li>p(x,y)为两个词一起出现的概率</li>
+<li>p(x)为词x出现的概率</li>
+<li>p(y)为词y出现的概率</li>
+</ul>
+<hr>
+<p>具体例子：4G， 上网卡，4G上网卡;如果4G的词频是2,上网卡的词频是10,4G上网卡的词频是1，那么记单单词的总数有N个，双单词的总数有M个，则有下面的公式<br><img src="https://img-blog.csdnimg.cn/20190228172528100.png" alt="具体例子"></p>
+<h3 id="左右熵"><a href="#左右熵" class="headerlink" title="左右熵"></a>左右熵</h3><p>我们这里使用左右熵来衡量主要是想表示预选词的自由程度(4G上网卡为一个预选词），左右熵越大，表示这个词的左边右边的词换的越多，那么它就很有可能是一个单独的词。<br>我们这里的左右熵定义为(以左熵为例):<br><img src="https://img-blog.csdnimg.cn/20190228172807236.png" alt="左熵"><br>这里我们还是举一个具体的例子来理解它<br>假设4G上网卡左右有这么几种搭配<br>[买4G上网卡, 有4G上网卡，有4G上网卡， 丢4G上网卡]<br>那么4G上网卡的左熵为<br><img src="https://img-blog.csdnimg.cn/20190228172830315.png" alt="例子"><br>这里A = [买, 有, 丢]</p>
+<blockquote>
+<p>后面就是具体的实现了，这里的难点就在如何获得这些概率值，就博主看到的用法有：利用搜索引擎获取词汇共现率即p(x,y)、利用语料库获取各个词出现概率</p>
+</blockquote>
+<h2 id="最后我们只需要将这三步获得的情感词典进行整合就可以了"><a href="#最后我们只需要将这三步获得的情感词典进行整合就可以了" class="headerlink" title="最后我们只需要将这三步获得的情感词典进行整合就可以了"></a>最后我们只需要将这三步获得的情感词典进行整合就可以了</h2><p>参考文献：<br><a href="https://www.jianshu.com/p/e9313fd692ef">python3实现互信息和左右熵的新词发现</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>情感分析</category>
+      </categories>
+      <tags>
+        <tag>情感分析</tag>
+        <tag>情感词典</tag>
       </tags>
   </entry>
   <entry>

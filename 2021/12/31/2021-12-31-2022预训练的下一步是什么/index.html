@@ -28,7 +28,7 @@
 <meta property="og:description" content="前言本文内容为自己对2021年自身算法经历的回顾，同时展望了未来研究的方向。如有理解不对的地方，欢迎指正批评。 2021年研究热点  大规模预训练 对比学习 prompt  展望未来 回顾自身算法经历  需求分析 模型选型及设计 数据分析 模型训练及优化 分析负例 检查数据质量是否过差 根据指标进行分析 recall低 precision低">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-30T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-03T10:42:45.595Z">
+<meta property="article:modified_time" content="2022-01-03T13:10:06.115Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="深度学习">
 <meta property="article:tag" content="年度总结">
@@ -235,7 +235,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-03 18:42:45" itemprop="dateModified" datetime="2022-01-03T18:42:45+08:00">2022-01-03</time>
+                <time title="修改时间：2022-01-03 21:10:06" itemprop="dateModified" datetime="2022-01-03T21:10:06+08:00">2022-01-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,7 +278,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>4.5k</span>
+              <span>4.3k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -322,7 +322,6 @@
 </li>
 </ol>
 <span id="more"></span>
-
 <blockquote>
 <p>该内容为自己对2021年自身算法经历的回顾，同时展望了未来研究的方向。如有理解不对的地方，欢迎指针批评。</p>
 </blockquote>
@@ -343,12 +342,9 @@
 <li>0，1标签的赋予太过绝对，对相似性表述不够准确</li>
 </ul>
 <p>因此对比学习的核心思想转变为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">score(X,X^&#123;&#x27;&#125;) &gt;&gt; score(X,Y)</span><br></pre></td></tr></table></figure>
-<p>其中，X代表原样本，$X^{‘}$代表数据增强的正样本，Y代表随机选择的负样本。</p>
+<script type="math/tex; mode=display">score(X,X^{'}) >> score(X,Y)</script><p>其中，X代表原样本，$X^{‘}$代表数据增强的正样本，Y代表随机选择的负样本。</p>
 <p>根据该思想，对比学习采用InfoNCE损失函数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss = -log \frac&#123;exp(score(X,X^&#123;&#x27;&#125;))&#125;&#123;score(X,X^&#123;&#x27;&#125;)+\sum_&#123;i=1&#125;^&#123;N&#125;score(X,Y_i)&#125;</span><br></pre></td></tr></table></figure>
-
-<p>通过该损失函数实现正例拉近，负例推远的效果。</p>
+<script type="math/tex; mode=display">loss = -log \frac{exp(score(X,X^{'}))}{score(X,X^{'})+\sum_{i=1}^{N}score(X,Y_i)}</script><p>通过该损失函数实现正例拉近，负例推远的效果。</p>
 <h2 id="prompt"><a href="#prompt" class="headerlink" title="prompt"></a>prompt</h2><p>prompt被誉为NLP领域的新范式，与预训练+微调的范式相比，其过程分为：”pre-train, prompt, and predict”。</p>
 <p><strong>prompt的出发点在于以更轻量化的方式利用预训练模型，避免微调与预训练之间存在的差异。</strong></p>
 <p>prompt通过构建模版的方式，将下游任务转为与预训练相似的MLM任务，以该方式充分发挥预训练模型的性能。</p>
@@ -357,21 +353,19 @@
 <li>生成prompt句子</li>
 </ol>
 <p>该步骤完成输入句子到模型输入的映射：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x^&#123;&#x27;&#125;=f_&#123;prompt&#125;(x)</span><br></pre></td></tr></table></figure>
-<p>其中，$x^{‘}$为生成的prompt句子，x为输入句子，$f_{prompt}$为prompt函数。</p>
+<script type="math/tex; mode=display">x^{'}=f_{prompt}(x)</script><p>其中，$x^{‘}$为生成的prompt句子，x为输入句子，$f_{prompt}$为prompt函数。</p>
 <p>在本例中，使用的模版为： “ [X] Overall, it was a [Z] movie.”</p>
 <p>因此，得到的，$x^{‘}$为”I love this movie. Overall it was a [Z] movie.”</p>
-<ol start="2">
+<ol>
 <li>模型预测</li>
 </ol>
 <p>该步骤将$x^{‘}$输入模型，模型完成模版空白位置的词语预测。</p>
 <p>在本例中，模型可能预测为：”excellent”, “great”, “wonderful” 等词语</p>
-<ol start="3">
+<ol>
 <li>结果映射</li>
 </ol>
 <p>通常模型预测的词语与任务输出存在一定差距，因此我们需要完成词语到输出结果的映射。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = f(x^&#123;&#x27;&#125;)</span><br></pre></td></tr></table></figure>
-<p>在本例中，”excellent”, “great”, “wonderful” 等词语映射为标签 “++”</p>
+<script type="math/tex; mode=display">y = f(x^{'})</script><p>在本例中，”excellent”, “great”, “wonderful” 等词语映射为标签 “++”</p>
 <h1 id="展望未来"><a href="#展望未来" class="headerlink" title="展望未来"></a>展望未来</h1><p>首先我认为当前基于数据驱动方法存在如下的问题：</p>
 <ol>
 <li>长尾效应：自然界中的数据分布就是长尾的，在学习的过程中，模型容易发生过拟合，泛化性较差。</li>
@@ -380,14 +374,8 @@
 <p>当前我遇到的一些问题分享：模型仍无法很好地处理下述问题：</p>
 <blockquote>
 <p>太阳有几只眼睛？</p>
-</blockquote>
-<blockquote>
 <p>姚明与奥尼尔身高谁比较高？</p>
-</blockquote>
-<blockquote>
 <p>猫咪可以吃生蛋黄吗？猫咪是可以吃蛋黄的。这里特定煮熟的白水蛋，猫咪不能吃生鸡蛋，因为生鸡蛋中有细菌。</p>
-</blockquote>
-<blockquote>
 <p>物质都是由分子构成的吗？物质都是由分子构成的，分子又由原子构成-错的！因为有些物质是不含分子的。</p>
 </blockquote>
 <p>这些问题，我总结为两方面的困难：</p>
@@ -398,8 +386,6 @@
 <p>当前研究热点仍然在于挖掘预训练模型的能力，但在基于常识性知识与逻辑推理的问题上，这种基于数据驱动的方式从底层就存在问题。引用一下大咖们对2022年的展望。</p>
 <blockquote>
 <p>大模型一方面在不少问题上取得了以往难以预期的成功，另一方面其巨大的训练能耗和碳排放是不能忽视的问题。个人以为，大模型未来会在一些事关国计民生的重大任务上发挥作用，而在其他一些场景下或许会通过类似集成学习的手段来利用小模型，尤其是通过很少量训练来 “复用” 和集成已有的小模型来达到不错的性能。</p>
-</blockquote>
-<blockquote>
 <p>我们提出了一个叫做 “学件” 的思路，目前在做一些这方面的探索。大致思想是，假设很多人已经做了模型并且乐意放到某个市场去共享，市场通过建立规约来组织和管理学件，以后的人再做新应用时，就可以不用从头收集数据训练模型，可以先利用规约去市场里找找看是否有比较接近需求的模型，然后拿回家用自己的数据稍微打磨就能用。这其中还有一些技术挑战需要解决，我们正在研究这个方向。</p>
 <p>另一方面，有可能通过利用人类的常识和专业领域知识，使模型得以精简，这就要结合逻辑推理和机器学习。逻辑推理比较善于利用人类知识，机器学习比较善于利用数据事实，如何对两者进行有机结合一直是人工智能中的重大挑战问题。麻烦的是逻辑推理是严密的基于数理逻辑的 “从一般到特殊”的演绎过程，机器学习是不那么严密的概率近似正确的 “从特殊到一般”的归纳过程，在方法论上就非常不一样。已经有的探索大体上是以其中某一方为倚重，引入另一方的某些成分，我们最近在探索双方相对均衡互促利用的方式。</p>
 </blockquote>
@@ -969,7 +955,7 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">42k</span>
+    <span title="站点总字数">41k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
@@ -1138,6 +1124,63 @@ if(canvas.getContext){
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

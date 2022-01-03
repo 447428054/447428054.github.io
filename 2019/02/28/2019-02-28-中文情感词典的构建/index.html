@@ -312,8 +312,7 @@
 <pre><code>import synonyms
 print(&quot;人脸: %s&quot; % (synonyms.nearby(&quot;人脸&quot;)))
 print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
-</code></pre>
-<h1 id="3-领域情感词典的构建"><a href="#3-领域情感词典的构建" class="headerlink" title="3.领域情感词典的构建"></a>3.领域情感词典的构建</h1><p>构建特定领域的情感词典大体有两种方法：基于规则的情感词典构建方法、基于统计的情感词典构建方法。</p>
+</code></pre><h1 id="3-领域情感词典的构建"><a href="#3-领域情感词典的构建" class="headerlink" title="3.领域情感词典的构建"></a>3.领域情感词典的构建</h1><p>构建特定领域的情感词典大体有两种方法：基于规则的情感词典构建方法、基于统计的情感词典构建方法。</p>
 <p>基于规则的情感词典方法一般是用句型固定、句式不多变的情况。通过对语料进行句法分析，词性标注等操作，得到语料中常用的句型并将其抽象出来，根据抽象出来的句型模板来对新的语料进行模板匹配，以此来选择出新的语料中的情感词，将其加入到对应的情感词典中。</p>
 <p>基于统计的情感词典构建方法需要利用PMI互信息计算与左右熵来发现所需要的新词。具体方法我们可以添加情感种子词，来计算分好词的语料中各个词语与情感种子词的互信息度与左右熵，再将互信息度与左右熵结合起来，选择出与情感词关联度最高的TopN个词语，将其添加到对应的情感词典。<br>这里可以参考链接<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e9313fd692ef">link</a></p>
 <h3 id="互信息度计算"><a href="#互信息度计算" class="headerlink" title="互信息度计算"></a>互信息度计算</h3><p><img src="https://img-blog.csdnimg.cn/20190228172006936.png" alt="互信息度计算"></p>
@@ -382,8 +381,8 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
     <div class="post-nav">
       <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/" rel="next" title="Coursera Machine Learning 学习笔记（一）Introduction">
-      Coursera Machine Learning 学习笔记（一）Introduction <i class="fa fa-chevron-right"></i>
+    <a href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/" rel="next" title="Coursera Machine Learning 学习笔记（二）Linear Regression">
+      Coursera Machine Learning 学习笔记（二）Linear Regression <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -808,7 +807,7 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">42k</span>
+    <span title="站点总字数">41k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
@@ -975,6 +974,8 @@ if(canvas.getContext){
 
 
 
+
+  
 
   
 

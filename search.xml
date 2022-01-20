@@ -100,75 +100,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
-    <title>Coursera Machine Learning 学习笔记（二）Linear Regression</title>
-    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/</url>
-    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
-<span id="more"></span>
-<blockquote>
-<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
-</blockquote>
-<h1 id="02：Linear-Regression"><a href="#02：Linear-Regression" class="headerlink" title="02：Linear Regression"></a>02：Linear Regression</h1><p>仍然以房价预测作为示例，具体示例仍需见课程内容。<br>符号含义：</p>
-<ol>
-<li>m 为数据集的大小</li>
-<li>x’s为输入数据</li>
-<li>y’s为对应的目标输出结果</li>
-<li>(x,y)为所有训练数据</li>
-<li>(x<sup>i</sup>, y<sup>i</sup>)为具体第i行数据，第i个训练数据</li>
-</ol>
-<p>假设函数h(x)，以一元线性回归为例：<br><img src="https://img-blog.csdnimg.cn/20190302112701595.png" alt="假设函数"></p>
-<script type="math/tex; mode=display">\theta_0：截距  \theta_1：梯度</script><h5 id="Linear-regression-implementation（损失函数cost-function）"><a href="#Linear-regression-implementation（损失函数cost-function）" class="headerlink" title="Linear regression - implementation（损失函数cost function）"></a>Linear regression - implementation（损失函数cost function）</h5><p>计算由不同θ 取值带来的不同损失函数值，本质上是一个最小化问题：使下式取值最小</p>
-<script type="math/tex; mode=display">Minimize ：(h_\theta(x)-y)^2</script><p>即可以看成下述式子：</p>
-<script type="math/tex; mode=display">J(\theta_0,\theta_1) = \frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2</script><script type="math/tex; mode=display">\frac1 m 是求平均\frac1 {2m}是为了数学计算方便</script><p>这个损失函数是均方误差，适用于多类回归问题，当然也可以有其他的损失函数。</p>
-<h5 id="梯度下降算法（Gradient-descent-algorithm）"><a href="#梯度下降算法（Gradient-descent-algorithm）" class="headerlink" title="梯度下降算法（Gradient descent algorithm）"></a>梯度下降算法（Gradient descent algorithm）</h5><p><strong>目的：</strong> 使损失函数J最小</p>
-<h6 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h6><ul>
-<li>从随机初始化开始</li>
-</ul>
-<ol>
-<li>对θ 随机赋值，可以为任何值</li>
-<li>每次一点点改变θ，使J(θ)减小</li>
-</ol>
-<ul>
-<li>每次沿着梯度下降最大的方向</li>
-<li>重复上述操作直到达到局部最小值</li>
-<li>从哪里开始的可能决定你到达哪个局部最优解<br><img src="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70" alt="梯度下降"><br><strong>一个更正规的定义：</strong><br>做下述操作直到收敛：<br><img src="https://img-blog.csdnimg.cn/20190302171951356.png" alt="参数更新"><br>符号解释：</li>
-</ul>
-<ol>
-<li><strong>:=</strong><br>表示赋值<br>NB a = b 是一个正确的断言</li>
-<li>α (alpha)<br>学习率，控制参数更新的步长<ol>
-<li>如果学习率过大，可能无法得到最优解，误差会增大</li>
-<li>如果学习率过小，那么达到最优解需要非常多步，耗费很长时间</li>
-</ol>
-</li>
-</ol>
-<p>注： 参数的更新必须<strong>同步</strong>即需要一个中间变量保存之前的值，原因是二者的式子中包含了对方，一方的更新会导致第二方式子内值的变化。<br><img src="https://img-blog.csdnimg.cn/20190302173355106.png" alt="在这里插入图片描述"><br><strong>当我们达到局部最优解时：</strong></p>
-<ol>
-<li>后面部分的梯度为0</li>
-<li>各参数值就保持不变了 </li>
-</ol>
-<h5 id="使用梯度下降的线性回归算法"><a href="#使用梯度下降的线性回归算法" class="headerlink" title="使用梯度下降的线性回归算法"></a>使用梯度下降的线性回归算法</h5><ul>
-<li>将梯度下降算法应用到最小化损失函数J(θ)上</li>
-</ul>
-<script type="math/tex; mode=display">\frac{\partial} {\partial\theta_j}=\frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2=\frac{\partial} {\partial\theta_j}\frac 1 {2m}\sum_1^m(\theta_0+\theta_1x^{(i)}-y^{(i)})^2</script><p>按照求导公式可以推出：</p>
-<script type="math/tex; mode=display">j=0:\frac{\partial} {\partial\theta_0}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})</script><script type="math/tex; mode=display">j=1:\frac{\partial} {\partial\theta_1}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})*x^{(i)}</script><p>注：因为线性回归是一个凸函数，是一个碗形的图，所以会趋于局部最优解</p>
-<ul>
-<li>现在的这种梯度下降算法又叫Batch Gradient Descent 原因是每一次都遍历了整个数据集，后面会提到取数据集中的部分进行的Gradient Descent</li>
-<li>线性回归也有正规方程求解，但其中矩阵运算当数据集过大时不宜使用，这时就可以使用梯度下降</li>
-</ul>
-<h5 id="数值求解的正规方程法"><a href="#数值求解的正规方程法" class="headerlink" title="数值求解的正规方程法"></a>数值求解的正规方程法</h5><ul>
-<li>直接通过数值求解来避免繁琐的迭代过程，从数学上求解出min(J(θ))<br><strong>正规方程的优缺点：</strong><br><strong>优点：</strong><br>1.不需要学习率这个参数<br>2.对某些问题可以很快的解决<br><strong>缺点：</strong><br>会很复杂</li>
-</ul>
-<h5 id="面对数据量很大的时候"><a href="#面对数据量很大的时候" class="headerlink" title="面对数据量很大的时候"></a>面对数据量很大的时候</h5><p>这个时候就需要<strong>将数据向量化</strong>利用线性代数中矩阵运算来完成计算</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-        <tag>Linear Regression</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Python数据分析-数据可视化</title>
     <url>/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/</url>
     <content><![CDATA[<p>本文将介绍使用Matplotlib工具，完成Python数据分析-数据可视化</p>
@@ -236,6 +167,75 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>Python</tag>
         <tag>数据分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Coursera Machine Learning 学习笔记（二）Linear Regression</title>
+    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/</url>
+    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
+<span id="more"></span>
+<blockquote>
+<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
+</blockquote>
+<h1 id="02：Linear-Regression"><a href="#02：Linear-Regression" class="headerlink" title="02：Linear Regression"></a>02：Linear Regression</h1><p>仍然以房价预测作为示例，具体示例仍需见课程内容。<br>符号含义：</p>
+<ol>
+<li>m 为数据集的大小</li>
+<li>x’s为输入数据</li>
+<li>y’s为对应的目标输出结果</li>
+<li>(x,y)为所有训练数据</li>
+<li>(x<sup>i</sup>, y<sup>i</sup>)为具体第i行数据，第i个训练数据</li>
+</ol>
+<p>假设函数h(x)，以一元线性回归为例：<br><img src="https://img-blog.csdnimg.cn/20190302112701595.png" alt="假设函数"></p>
+<script type="math/tex; mode=display">\theta_0：截距  \theta_1：梯度</script><h5 id="Linear-regression-implementation（损失函数cost-function）"><a href="#Linear-regression-implementation（损失函数cost-function）" class="headerlink" title="Linear regression - implementation（损失函数cost function）"></a>Linear regression - implementation（损失函数cost function）</h5><p>计算由不同θ 取值带来的不同损失函数值，本质上是一个最小化问题：使下式取值最小</p>
+<script type="math/tex; mode=display">Minimize ：(h_\theta(x)-y)^2</script><p>即可以看成下述式子：</p>
+<script type="math/tex; mode=display">J(\theta_0,\theta_1) = \frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2</script><script type="math/tex; mode=display">\frac1 m 是求平均\frac1 {2m}是为了数学计算方便</script><p>这个损失函数是均方误差，适用于多类回归问题，当然也可以有其他的损失函数。</p>
+<h5 id="梯度下降算法（Gradient-descent-algorithm）"><a href="#梯度下降算法（Gradient-descent-algorithm）" class="headerlink" title="梯度下降算法（Gradient descent algorithm）"></a>梯度下降算法（Gradient descent algorithm）</h5><p><strong>目的：</strong> 使损失函数J最小</p>
+<h6 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h6><ul>
+<li>从随机初始化开始</li>
+</ul>
+<ol>
+<li>对θ 随机赋值，可以为任何值</li>
+<li>每次一点点改变θ，使J(θ)减小</li>
+</ol>
+<ul>
+<li>每次沿着梯度下降最大的方向</li>
+<li>重复上述操作直到达到局部最小值</li>
+<li>从哪里开始的可能决定你到达哪个局部最优解<br><img src="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70" alt="梯度下降"><br><strong>一个更正规的定义：</strong><br>做下述操作直到收敛：<br><img src="https://img-blog.csdnimg.cn/20190302171951356.png" alt="参数更新"><br>符号解释：</li>
+</ul>
+<ol>
+<li><strong>:=</strong><br>表示赋值<br>NB a = b 是一个正确的断言</li>
+<li>α (alpha)<br>学习率，控制参数更新的步长<ol>
+<li>如果学习率过大，可能无法得到最优解，误差会增大</li>
+<li>如果学习率过小，那么达到最优解需要非常多步，耗费很长时间</li>
+</ol>
+</li>
+</ol>
+<p>注： 参数的更新必须<strong>同步</strong>即需要一个中间变量保存之前的值，原因是二者的式子中包含了对方，一方的更新会导致第二方式子内值的变化。<br><img src="https://img-blog.csdnimg.cn/20190302173355106.png" alt="在这里插入图片描述"><br><strong>当我们达到局部最优解时：</strong></p>
+<ol>
+<li>后面部分的梯度为0</li>
+<li>各参数值就保持不变了 </li>
+</ol>
+<h5 id="使用梯度下降的线性回归算法"><a href="#使用梯度下降的线性回归算法" class="headerlink" title="使用梯度下降的线性回归算法"></a>使用梯度下降的线性回归算法</h5><ul>
+<li>将梯度下降算法应用到最小化损失函数J(θ)上</li>
+</ul>
+<script type="math/tex; mode=display">\frac{\partial} {\partial\theta_j}=\frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2=\frac{\partial} {\partial\theta_j}\frac 1 {2m}\sum_1^m(\theta_0+\theta_1x^{(i)}-y^{(i)})^2</script><p>按照求导公式可以推出：</p>
+<script type="math/tex; mode=display">j=0:\frac{\partial} {\partial\theta_0}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})</script><script type="math/tex; mode=display">j=1:\frac{\partial} {\partial\theta_1}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})*x^{(i)}</script><p>注：因为线性回归是一个凸函数，是一个碗形的图，所以会趋于局部最优解</p>
+<ul>
+<li>现在的这种梯度下降算法又叫Batch Gradient Descent 原因是每一次都遍历了整个数据集，后面会提到取数据集中的部分进行的Gradient Descent</li>
+<li>线性回归也有正规方程求解，但其中矩阵运算当数据集过大时不宜使用，这时就可以使用梯度下降</li>
+</ul>
+<h5 id="数值求解的正规方程法"><a href="#数值求解的正规方程法" class="headerlink" title="数值求解的正规方程法"></a>数值求解的正规方程法</h5><ul>
+<li>直接通过数值求解来避免繁琐的迭代过程，从数学上求解出min(J(θ))<br><strong>正规方程的优缺点：</strong><br><strong>优点：</strong><br>1.不需要学习率这个参数<br>2.对某些问题可以很快的解决<br><strong>缺点：</strong><br>会很复杂</li>
+</ul>
+<h5 id="面对数据量很大的时候"><a href="#面对数据量很大的时候" class="headerlink" title="面对数据量很大的时候"></a>面对数据量很大的时候</h5><p>这个时候就需要<strong>将数据向量化</strong>利用线性代数中矩阵运算来完成计算</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>Linear Regression</tag>
       </tags>
   </entry>
   <entry>
@@ -635,6 +635,178 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
+    <title>解析NLP竞赛中的提分点-对抗训练</title>
+    <url>/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gyk1712imxj30gh06pabe.jpg" alt=""></p>
+<span id="more"></span>
+<h1 id="对抗训练应用场景"><a href="#对抗训练应用场景" class="headerlink" title="对抗训练应用场景"></a>对抗训练应用场景</h1><p>Szegedy在14年的ICLR中提出了对抗样本的概念。对抗样本可以用来攻击和防御，而对抗训练其实是“对抗”家族中防御的一种方式，其基本原理为：通过添加扰动构建对抗样本，喂入模型一同训练，提高模型遇到对抗样本时的鲁棒性，同时一定程度也能提高模型的表现和泛化能力。</p>
+<p>对抗样本一般需要具有两个特点：</p>
+<ol>
+<li>相对于原始输入，所添加的扰动是微小的；</li>
+<li>能使模型犯错。</li>
+</ol>
+<p>对抗训练的公式如下：</p>
+<script type="math/tex; mode=display">
+\min _{\theta} \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[\max _{r_{a d v} \in \mathcal{S}} L\left(\theta, x+r_{a d v}, y\right)\right]</script><p>该过程可以分为两步：</p>
+<ol>
+<li>内部的max过程：寻找让模型犯错最大的扰动</li>
+<li>外部的min过程：寻找整体损失最小的参数</li>
+</ol>
+<p>在图像领域，扰动可以为图像上的噪点，但是在NLP中，如果直接在词编码上加上扰动，输入会偏离原先的语义。由于向量空间中语义相近的词语相互接近，在向量空间中添加微小的扰动的方式并不会对语义带来较大的破坏，因此当前NLP中的对抗训练均针对embedding做扰动。</p>
+<h1 id="对抗训练的作用"><a href="#对抗训练的作用" class="headerlink" title="对抗训练的作用"></a>对抗训练的作用</h1><ol>
+<li>提高模型应对恶意对抗样本时的鲁棒性。</li>
+<li>作为一种正则化方式(regularization)，减少过拟合(overfitting)，提高泛化能力。</li>
+</ol>
+<p>在NLP任务中，对抗训练的角色不再是为了防御基于梯度的恶意攻击，更多的是作为一种正则化方式(regularization)，提高模型的泛化能力。</p>
+<h1 id="对抗训练具体方式FGM-PGD-FreeLB"><a href="#对抗训练具体方式FGM-PGD-FreeLB" class="headerlink" title="对抗训练具体方式FGM/PGD/FreeLB"></a>对抗训练具体方式FGM/PGD/FreeLB</h1><h2 id="API介绍"><a href="#API介绍" class="headerlink" title="API介绍"></a>API介绍</h2><p>在介绍对抗训练的具体实现之前，本文先介绍下面Pytorch代码中常见的函数：</p>
+<p><strong>一般优化流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># zero the parameter gradients</span><br><span class="line">optimizer.zero_grad()</span><br><span class="line"># forward + backward + optimize</span><br><span class="line">outputs = net(inputs)</span><br><span class="line">loss = criterion(outputs, labels)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br></pre></td></tr></table></figure>
+<p><strong>具体展开流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># gradient descent</span><br><span class="line">weights = [0] * n</span><br><span class="line">alpha = 0.0001</span><br><span class="line">max_Iter = 50000</span><br><span class="line">for i in range(max_Iter):</span><br><span class="line">    loss = 0</span><br><span class="line">    d_weights = [0] * n</span><br><span class="line">    for k in range(m):</span><br><span class="line">        h = dot(input[k], weights)</span><br><span class="line">        d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)] # 梯度下降优化</span><br><span class="line">        loss += (label[k] - h) * (label[k] - h) / 2 # 梯度下降优化</span><br><span class="line">    d_weights = [d_weights[k]/m for k in range(n)]</span><br><span class="line">    weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</span><br><span class="line">    if i%10000 == 0:</span><br><span class="line">        print &quot;Iteration %d loss: %f&quot;%(i, loss/m)</span><br><span class="line">        print weights</span><br></pre></td></tr></table></figure>
+<p>可以发现它们实际上是一一对应的：</p>
+<ul>
+<li><strong>optimizer.zero_grad()对应d_weights = [0] * n</strong></li>
+</ul>
+<p>该步骤将梯度初始化为零（因为一个batch的loss关于weight的导数是所有sample的loss关于weight的导数的累加和）</p>
+<ul>
+<li><strong>outputs = net(inputs)对应h = dot(input[k], weights)</strong></li>
+</ul>
+<p>该步骤即前向传播求出预测的值</p>
+<ul>
+<li><strong>loss = criterion(outputs, labels)对应loss += (label[k] - h) * (label[k] - h) / 2</strong></li>
+</ul>
+<p>该步骤为求当前具体loss值</p>
+<ul>
+<li><strong>loss.backward()对应d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)]</strong></li>
+</ul>
+<p>该步骤即反向传播求梯度</p>
+<ul>
+<li><strong>optimizer.step()对应weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</strong></li>
+</ul>
+<p>该步骤即更新所有参数</p>
+<h2 id="FGSM-FGM"><a href="#FGSM-FGM" class="headerlink" title="FGSM/FGM"></a>FGSM/FGM</h2><p>该方式的思想为沿着梯度上升方向对扰动可以对模型带来最大的破坏。</p>
+<p>FGSM：采用Sign函数对梯度采取max归一化，max归一化是是说如果梯度某个维度上的值为正，则设为1；如果为负，则设为-1；如果为0，则设为0</p>
+<p>FGM：采用L2归一化，L2归一化则将梯度的每个维度的值除以梯度的L2范数。 理论上L2归一化更严格的保留了梯度的方向，但是max归一化则不一定和原始梯度的方向相同。</p>
+<script type="math/tex; mode=display">
+FGSM：\delta=\epsilon Sign(g)</script><script type="math/tex; mode=display">
+FGM: \delta = \epsilon (g/||g_2||)</script><script type="math/tex; mode=display">
+其中g为梯度g=\nabla x(L(f_{\theta}(X), y))</script><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FGM</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                self.backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = epsilon * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.backup</span><br><span class="line">                param.data = self.backup[name]</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">fgm = FGM(model)</span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    fgm.attack() <span class="comment"># 在embedding上添加对抗扰动</span></span><br><span class="line">    loss_adv = model(batch_input, batch_label)</span><br><span class="line">    loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    fgm.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="FGM-FGSM-流程总结"><a href="#FGM-FGSM-流程总结" class="headerlink" title="FGM/FGSM 流程总结"></a>FGM/FGSM 流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>执行对抗训练-根据当前梯度对参数值添加扰动；前向传播得到损失与最终梯度</li>
+<li>恢复embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>根据min-max公式可以看出，对抗训练主要完成内部max的过程。FGM/FGSM思想就是沿着梯度上升的方向，找寻最优解。但是<strong>FGM/FGSM 有假设：损失函数是线性或者局部线性。如果不是线性，那梯度提升方向不一定是最优方向。</strong></p>
+<h2 id="PGD"><a href="#PGD" class="headerlink" title="PGD"></a>PGD</h2><p>为了解决FGM中线性假设问题，PGD分多次迭代，若扰动超出范围将扰动映射到规定范围内。</p>
+<script type="math/tex; mode=display">
+X_{t + 1}=\prod _{X+S}(X_t + \epsilon(g_t/||g_t||))</script><script type="math/tex; mode=display">
+其中g为梯度g_t=\nabla x_t(L(f_{\theta}(X_t), y))</script><p>虽然PGD很有效，但效率并不高，若经过m次迭代，PGD需要迭代m*(K + 1)次。其代码展示如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PGD</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line">        self.grad_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, alpha=<span class="number">0.3</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span>, is_first_attack=<span class="literal">False</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                <span class="keyword">if</span> is_first_attack:</span><br><span class="line">                    self.emb_backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = alpha * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line">                    param.data = self.project(name, param.data, epsilon)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.emb_backup</span><br><span class="line">                param.data = self.emb_backup[name]</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">project</span>(<span class="params">self, param_name, param_data, epsilon</span>):</span></span><br><span class="line">        r = param_data - self.emb_backup[param_name]</span><br><span class="line">        <span class="keyword">if</span> torch.norm(r) &gt; epsilon:</span><br><span class="line">            r = epsilon * r / torch.norm(r)</span><br><span class="line">        <span class="keyword">return</span> self.emb_backup[param_name] + r</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backup_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                self.grad_backup[name] = param.grad.clone()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                param.grad = self.grad_backup[name]</span><br><span class="line">                </span><br><span class="line">pgd = PGD(model)</span><br><span class="line">K = <span class="number">3</span></span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    pgd.backup_grad()</span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(K):</span><br><span class="line">        pgd.attack(is_first_attack=(t==<span class="number">0</span>)) <span class="comment"># 在embedding上添加对抗扰动, first attack时备份param.data</span></span><br><span class="line">        <span class="keyword">if</span> t != K-<span class="number">1</span>:</span><br><span class="line">            model.zero_grad()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            pgd.restore_grad()</span><br><span class="line">        loss_adv = model(batch_input, batch_label)</span><br><span class="line">        loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    pgd.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="PGD流程总结"><a href="#PGD流程总结" class="headerlink" title="PGD流程总结"></a>PGD流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>若t=0，备份参数；梯度清零；前向传播，计算梯度与loss值</li>
+<li>若t=K-1；恢复第1步的梯度；前向传播，计算梯度与loss值</li>
+</ol>
+</li>
+<li>恢复3.1中的embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>PGD执行K次目的为分多步获取<strong>内部max的扰动-扰动表现在参数上</strong>，每一步梯度归零，但是参数值得到了累加:$x^{‘}=x+\sum_{t=0}^{K} r_t$,最后根据参数$x^{‘}$以及初始梯度前向传播计算loss和最终梯度，最后，恢复初始参数，根据最终梯度完成参数更新。</p>
+<h2 id="FreeAT"><a href="#FreeAT" class="headerlink" title="FreeAT"></a>FreeAT</h2><p>PGD中进行m次反向传播，m *（K + 1） 次前向传播效率不高</p>
+<p>FreeAT把前向传播计算出的梯度也进行回传</p>
+<p>对比图为：</p>
+<p><img src="https://pic4.zhimg.com/80/v2-b54c33d95d0e8123091297d3c4b89a2f_720w.jpg" alt="image"></p>
+<p>进行（m/k）*k=m 次反向传播，（m/k）* k = m次前向传播</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">初始化r=0</span><br><span class="line">对于epoch=1...N/m:</span><br><span class="line">  对于每个x:</span><br><span class="line">    对于每步m:</span><br><span class="line">      1.利用上一步的r，计算x+r的前后向，得到梯度</span><br><span class="line">      2.根据梯度更新参数</span><br><span class="line">      3.根据梯度更新r</span><br></pre></td></tr></table></figure>
+<h3 id="FreeAT流程总结"><a href="#FreeAT流程总结" class="headerlink" title="FreeAT流程总结"></a>FreeAT流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>前向传播得到梯度与loss值</li>
+<li>根据梯度更新参数</li>
+<li>根据梯度更新扰动</li>
+</ol>
+</li>
+</ol>
+<p><strong>缺点：FreeLB指出，FreeAT的问题在于每次的r对于当前的参数都是次优的（无法最大化loss），因为当前r是由$ r_{t-1} $和$\theta_{t-1}$计算出来的，是对于$\theta_{ t-1 }$的最优。</strong></p>
+<h2 id="FreeLB"><a href="#FreeLB" class="headerlink" title="FreeLB"></a>FreeLB</h2><p>FreeLB认为，FreeAT和YOPO对于获得最优r (inner max)的计算都存在问题，因此提出了一种类似PGD的方法。只不过PGD只使用了最后一步x+r输出的梯度，而FreeLB取了每次迭代r输出梯度的平均值，相当于把输入看作一个K倍大的虚拟batch，由[X+r1, X+r2, …, X+rk]拼接而成。具体的公式为：</p>
+<script type="math/tex; mode=display">
+min_{\theta} E(Z,y) - D(\frac{1}{K} \sum_{t=0}^{K-1}max_{r_t \in L_t} L(f_{\theta}(X+r_t),y))</script><p>PGD公式为:</p>
+<script type="math/tex; mode=display">
+min_{\theta} E(Z,y) - D(max_{||r|| \le\epsilon} L(f_{\theta}(X+r_t),y))</script><p><strong>FreeLB与PGD区别如下：</strong></p>
+<ol>
+<li>PGD是迭代K次r后取最后一次扰动的梯度更新参数，FreeLB是取K次迭代中的平均梯度</li>
+<li>PGD的扰动范围都在epsilon内，因为流程第3步将梯度归0了，每次投影都会回到以第1步x为圆心，半径是epsilon的圆内，而FreeLB每次的x都会迭代，所以r的范围更加灵活，更可能接近局部最优</li>
+</ol>
+<p>伪代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对于每个x:</span><br><span class="line">  1.通过均匀分布初始化r，梯度g为0</span><br><span class="line">  对于每步t=1...K:</span><br><span class="line">    2.根据x+r计算前后向，累计梯度g</span><br><span class="line">    3.更新r</span><br><span class="line">  4.根据g/K更新梯度</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class FreeLB(object):</span><br><span class="line">    def __init__(self, adv_K, adv_lr, adv_init_mag, adv_max_norm=0., adv_norm_type=&#x27;l2&#x27;, base_model=&#x27;bert&#x27;):</span><br><span class="line">        self.adv_K = adv_K</span><br><span class="line">        self.adv_lr = adv_lr</span><br><span class="line">        self.adv_max_norm = adv_max_norm</span><br><span class="line">        self.adv_init_mag = adv_init_mag    # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">    def attack(self, model, inputs, gradient_accumulation_steps=1):</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        if isinstance(model, torch.nn.DataParallel):</span><br><span class="line">            embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        else:</span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-self.adv_init_mag, self.adv_init_mag)</span><br><span class="line">                delta = delta * input_mask.unsqueeze(2)</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        loss, logits = None, None</span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            outputs = model(**inputs)</span><br><span class="line">            loss, logits = outputs[:2]  # model outputs are always tuple in transformers (see doc)</span><br><span class="line">            loss = loss.mean()  # mean() to average on multi-gpu parallel training</span><br><span class="line">            loss = loss / gradient_accumulation_steps</span><br><span class="line">            loss.backward()</span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1, p=float(&quot;inf&quot;)).view(-1, 1, 1)  # p=&#x27;inf&#x27;,无穷范数，获取绝对值最大者</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)  # 类似np.clip，将数值夹逼到(min, max)之间</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()  # 计算该步的delta，然后累加到原delta值上(梯度上升)</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta = torch.clamp(delta, -self.adv_max_norm, self.adv_max_norm).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line">            if isinstance(model, torch.nn.DataParallel):  </span><br><span class="line">                embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">            else:</span><br><span class="line">                embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        return loss, logits</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if args.do_adv:</span><br><span class="line">    inputs = &#123;</span><br><span class="line">        &quot;input_ids&quot;: input_ids,</span><br><span class="line">        &quot;bbox&quot;: layout,</span><br><span class="line">        &quot;token_type_ids&quot;: segment_ids,</span><br><span class="line">        &quot;attention_mask&quot;: input_mask,</span><br><span class="line">        &quot;masked_lm_labels&quot;: lm_label_ids</span><br><span class="line">    &#125;</span><br><span class="line">    loss, prediction_scores = freelb.attack(model, inputs)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br><span class="line">scheduler.step()</span><br><span class="line">model.zero_grad()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class FreeLB():</span><br><span class="line">    def __init__(self, model, args, optimizer, base_model=&#x27;xlm-roberta&#x27;):</span><br><span class="line">        self.args = args</span><br><span class="line">        self.model = model</span><br><span class="line">        self.adv_K = self.args.adv_K</span><br><span class="line">        self.adv_lr = self.args.adv_lr</span><br><span class="line">        self.adv_max_norm = self.args.adv_max_norm</span><br><span class="line">        self.adv_init_mag = self.args.adv_init_mag  # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = self.args.adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">        self.optimizer = optimizer</span><br><span class="line"></span><br><span class="line">    def attack(self, model, inputs):</span><br><span class="line">        args = self.args</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        #获取初始化时的embedding</span><br><span class="line">        embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line"></span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        # loss, logits = None, None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            # inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            loss, _ = model(input_ids=None,</span><br><span class="line">                            attention_mask=inputs[&quot;attention_mask&quot;].to(args.device),</span><br><span class="line">                             token_type_ids=inputs[&quot;token_type_ids&quot;].to(args.device),</span><br><span class="line">                             labels=inputs[&quot;sl_labels&quot;].to(args.device),</span><br><span class="line">                            inputs_embeds=inputs[&quot;inputs_embeds&quot;].to(args.device))</span><br><span class="line"></span><br><span class="line">            loss = loss / self.adv_K # 求平均的梯度</span><br><span class="line"></span><br><span class="line">            loss.backward()</span><br><span class="line"></span><br><span class="line">            if astep == self.adv_K - 1:</span><br><span class="line">                # further updates on delta</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line"></span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line">        return loss</span><br><span class="line"></span><br><span class="line">for batch_input, batch_label in data:</span><br><span class="line">    # 正常训练</span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() # 反向传播，得到正常的grad</span><br><span class="line">    # 对抗训练</span><br><span class="line">    freelb = FreeLB( model, args, optimizer, base_model)</span><br><span class="line">    loss_adv = freelb.attack(model, batch_input)</span><br><span class="line">    loss_adv.backward() # 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span><br><span class="line">    # 梯度下降，更新参数</span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="FreeLB流程总结"><a href="#FreeLB流程总结" class="headerlink" title="FreeLB流程总结"></a>FreeLB流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>前向传播，计算梯度与loss值</li>
+<li>梯度累加</li>
+<li>根据梯度计算扰动</li>
+</ol>
+</li>
+<li>恢复初始embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>该方法与FreeAT一样都想高效的利用两种梯度。<strong>不同的是，该方法并不是每次都进行更新，而是将参数梯度累积起来，用累积的梯度对参数更新</strong>。</p>
+<h2 id="通用范式"><a href="#通用范式" class="headerlink" title="通用范式"></a>通用范式</h2><p>通过对上述几种对抗训练方式的学习，不难看出对抗训练的目的为完成<strong>内部max的任务，找出最大扰动的最优解</strong>。具体表现为：求解最大扰动更新参数；根据参数进行前向传播得到loss与最终梯度；恢复最初的参数值；利用最终的梯度对最初的参数值进行更新。所以通用流程表示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1. 正常的前向传播-得到梯度与loss值</span><br><span class="line">2. 备份正常的参数</span><br><span class="line">3. 求解扰动最优值，更新参数</span><br><span class="line">4. 根据更新后参数以及最初梯度，前向传播得到最终梯度</span><br><span class="line">5. 恢复最初的参数</span><br><span class="line">6. 根据最初的参数与最终梯度，完成参数的更新</span><br></pre></td></tr></table></figure>
+<p><strong>不同对抗训练方式体现为求解扰动最优值的方式不同：</strong></p>
+<ul>
+<li>FGM/FGSM最优值求解方式为：一步到位，根据最初的梯度与参数值，得到扰动值</li>
+<li>PGD最优值求解方式为：多步走，每一步根据上一步的参数获取扰动并更新参数，最终得到多步累加的扰动值</li>
+<li>FreeAT最优值求解方式为：与PGD一样分多步，但是该方法相当于：每一步根据上一步参数和梯度获取的扰动值就是最终扰动值</li>
+<li>FreeLB最优值求解方式为：与PGD一样分多步，但是在最后进行梯度更新的时候，最终梯度为初始梯度加上每一步梯度的平均值</li>
+</ul>
+<h1 id="对抗训练展望"><a href="#对抗训练展望" class="headerlink" title="对抗训练展望"></a>对抗训练展望</h1><h2 id="虚拟对抗训练"><a href="#虚拟对抗训练" class="headerlink" title="虚拟对抗训练"></a>虚拟对抗训练</h2><p><strong>那什么是虚拟对抗训练(VAT)呢</strong>？</p>
+<blockquote>
+<p>VAT不需要标签信息，可应用于无监督学习，其梯度上升的方向是能使预测的输出分布偏离现状的方向，而传统对抗训练课找的是使模型预测最大地偏离label的方向。因此，VAT不使用真实label，而是“虚拟”label——当前模型的预测结果。</p>
+</blockquote>
+<p>该部分可以查看JayJay的博客：<a href="https://zhuanlan.zhihu.com/p/345264876">虚拟对抗训练：让预训练模型再次强大！</a></p>
+<h1 id="延伸思考"><a href="#延伸思考" class="headerlink" title="延伸思考"></a>延伸思考</h1><h2 id="对抗训练与梯度惩罚"><a href="#对抗训练与梯度惩罚" class="headerlink" title="对抗训练与梯度惩罚"></a>对抗训练与梯度惩罚</h2><p>该内容为苏神在博客<a href="https://kexue.fm/archives/7234">对抗训练浅谈：意义、方法和思考（附Keras实现）</a>中所提及：</p>
+<p>假设已经得到对抗扰动Δx，那么我们在更新θ时，考虑对$L(x+Δx,y;θ)$的展开：</p>
+<script type="math/tex; mode=display">
+\min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x+\Delta x, y;\theta)\right]\\ 
+\approx\, \min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x, y;\theta)+\langle\nabla_x L(x, y;\theta), \Delta x\rangle\right]</script><p>对应的θ的梯度为：</p>
+<script type="math/tex; mode=display">
+\nabla_{\theta}L(x, y;\theta)+\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \Delta x\rangle</script><p>代入$\Delta x=\epsilon \nabla_x L(x, y;\theta)$，得到</p>
+<script type="math/tex; mode=display">
+\nabla_{\theta}L(x, y;\theta)+\epsilon\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \nabla_x L(x, y;\theta)\rangle\\ 
+=\,\nabla_{\theta}\left(L(x, y;\theta)+\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2\right)</script><p>这个结果表示，对输入样本施加$\epsilon \nabla_x L(x, y;\theta)$的对抗扰动，一定程度上等价于往loss里边加入“梯度惩罚”</p>
+<script type="math/tex; mode=display">
+\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2</script><p>如果对抗扰动是$\nabla_x L(x, y;\theta)/\Vert \nabla_x L(x, y;\theta)\Vert$，那么对应的梯度惩罚项则是$\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert$（少了个1/2，也少了个2次方）。</p>
+<p>事实上，这个结果不是新的，它首先出现论文<a href="https://arxiv.org/abs/1711.09404">《Improving the Adversarial Robustness and Interpretability of Deep Neural Networks by Regularizing their Input Gradients》</a>里。只不过这篇文章不容易搜到，因为你一旦搜索“adversarial training gradient penalty”等关键词，出来的结果几乎都是WGAN-GP相关的东西。</p>
+<h2 id="词向量空间"><a href="#词向量空间" class="headerlink" title="词向量空间"></a>词向量空间</h2><p>NLP中对抗训练目前的方式均是对embedding向量空间添加扰动，那么向量空间究竟什么样呢？在对比学习的研究中<Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere>，同样提出一个好的对比学习系统应该具体两个特点：</p>
+<ul>
+<li><strong>Alignment：</strong>指的是相似的例子，也就是正例，映射到单位超球面后，应该有接近的特征，也即是说，在超球面上距离比较近</li>
+<li><strong>Uniformity：</strong>指的是系统应该倾向在特征里保留尽可能多的信息，这等价于使得映射到单位超球面的特征，尽可能均匀地分布在球面上，分布得越均匀，意味着保留的信息越充分。分布均匀意味着两两有差异，也意味着各自保有独有信息，这代表信息保留充分。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gykdip46wnj30nm0w4wgj.jpg" alt=""></p>
+<p>极端情况下会出现模型塌缩的情况，即所有特征映射到同一点：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gykdod8h59j31180u0taa.jpg" alt=""></p>
+<p>笔者认为，对抗训练在词向量层添加扰动，与对比学习类似，实现相似的例子在向量空间中相接近的目的，完成输入发生微小改变，输出改变幅度也不大的任务。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>对抗训练</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>对抗训练</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Python数据分析-数据可视化(二)</title>
     <url>/2022/01/09/2022-01-09-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96(%E4%BA%8C)/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>看到有些论文插图十分简洁美观，于是便摸索一下如何美化一下折线图绘图。本文将在前文<a href="https://jmxgodlz.xyz/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/#more">Python数据分析-数据可视化</a>的基础上，介绍折线图格式的调整。</p>
@@ -998,178 +1170,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>数据分析</tag>
         <tag>python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>解析NLP中的对抗训练</title>
-    <url>/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。</p>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gyk1712imxj30gh06pabe.jpg" alt=""></p>
-<span id="more"></span>
-<h1 id="对抗训练应用场景"><a href="#对抗训练应用场景" class="headerlink" title="对抗训练应用场景"></a>对抗训练应用场景</h1><p>Szegedy在14年的ICLR中提出了对抗样本的概念。对抗样本可以用来攻击和防御，而对抗训练其实是“对抗”家族中防御的一种方式，其基本原理为：通过添加扰动构建对抗样本，喂入模型一同训练，提高模型遇到对抗样本时的鲁棒性，同时一定程度也能提高模型的表现和泛化能力。</p>
-<p>对抗样本一般需要具有两个特点：</p>
-<ol>
-<li>相对于原始输入，所添加的扰动是微小的；</li>
-<li>能使模型犯错。</li>
-</ol>
-<p>对抗训练的公式如下：</p>
-<script type="math/tex; mode=display">
-\min _{\theta} \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[\max _{r_{a d v} \in \mathcal{S}} L\left(\theta, x+r_{a d v}, y\right)\right]</script><p>该过程可以分为两步：</p>
-<ol>
-<li>内部的max过程：寻找让模型犯错最大的扰动</li>
-<li>外部的min过程：寻找整体损失最小的参数</li>
-</ol>
-<p>在图像领域，扰动可以为图像上的噪点，但是在NLP中，如果直接在词编码上加上扰动，输入会偏离原先的语义。由于向量空间中语义相近的词语相互接近，在向量空间中添加微小的扰动的方式并不会对语义带来较大的破坏，因此当前NLP中的对抗训练均针对embedding做扰动。</p>
-<h1 id="对抗训练的作用"><a href="#对抗训练的作用" class="headerlink" title="对抗训练的作用"></a>对抗训练的作用</h1><ol>
-<li>提高模型应对恶意对抗样本时的鲁棒性。</li>
-<li>作为一种正则化方式(regularization)，减少过拟合(overfitting)，提高泛化能力。</li>
-</ol>
-<p>在NLP任务中，对抗训练的角色不再是为了防御基于梯度的恶意攻击，更多的是作为一种正则化方式(regularization)，提高模型的泛化能力。</p>
-<h1 id="对抗训练具体方式FGM-PGD-FreeLB"><a href="#对抗训练具体方式FGM-PGD-FreeLB" class="headerlink" title="对抗训练具体方式FGM/PGD/FreeLB"></a>对抗训练具体方式FGM/PGD/FreeLB</h1><h2 id="API介绍"><a href="#API介绍" class="headerlink" title="API介绍"></a>API介绍</h2><p>在介绍对抗训练的具体实现之前，本文先介绍下面Pytorch代码中常见的函数：</p>
-<p><strong>一般优化流程：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># zero the parameter gradients</span><br><span class="line">optimizer.zero_grad()</span><br><span class="line"># forward + backward + optimize</span><br><span class="line">outputs = net(inputs)</span><br><span class="line">loss = criterion(outputs, labels)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br></pre></td></tr></table></figure>
-<p><strong>具体展开流程：</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># gradient descent</span><br><span class="line">weights = [0] * n</span><br><span class="line">alpha = 0.0001</span><br><span class="line">max_Iter = 50000</span><br><span class="line">for i in range(max_Iter):</span><br><span class="line">    loss = 0</span><br><span class="line">    d_weights = [0] * n</span><br><span class="line">    for k in range(m):</span><br><span class="line">        h = dot(input[k], weights)</span><br><span class="line">        d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)] # 梯度下降优化</span><br><span class="line">        loss += (label[k] - h) * (label[k] - h) / 2 # 梯度下降优化</span><br><span class="line">    d_weights = [d_weights[k]/m for k in range(n)]</span><br><span class="line">    weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</span><br><span class="line">    if i%10000 == 0:</span><br><span class="line">        print &quot;Iteration %d loss: %f&quot;%(i, loss/m)</span><br><span class="line">        print weights</span><br></pre></td></tr></table></figure>
-<p>可以发现它们实际上是一一对应的：</p>
-<ul>
-<li><strong>optimizer.zero_grad()对应d_weights = [0] * n</strong></li>
-</ul>
-<p>该步骤将梯度初始化为零（因为一个batch的loss关于weight的导数是所有sample的loss关于weight的导数的累加和）</p>
-<ul>
-<li><strong>outputs = net(inputs)对应h = dot(input[k], weights)</strong></li>
-</ul>
-<p>该步骤即前向传播求出预测的值</p>
-<ul>
-<li><strong>loss = criterion(outputs, labels)对应loss += (label[k] - h) * (label[k] - h) / 2</strong></li>
-</ul>
-<p>该步骤为求当前具体loss值</p>
-<ul>
-<li><strong>loss.backward()对应d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)]</strong></li>
-</ul>
-<p>该步骤即反向传播求梯度</p>
-<ul>
-<li><strong>optimizer.step()对应weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</strong></li>
-</ul>
-<p>该步骤即更新所有参数</p>
-<h2 id="FGSM-FGM"><a href="#FGSM-FGM" class="headerlink" title="FGSM/FGM"></a>FGSM/FGM</h2><p>该方式的思想为沿着梯度上升方向对扰动可以对模型带来最大的破坏。</p>
-<p>FGSM：采用Sign函数对梯度采取max归一化，max归一化是是说如果梯度某个维度上的值为正，则设为1；如果为负，则设为-1；如果为0，则设为0</p>
-<p>FGM：采用L2归一化，L2归一化则将梯度的每个维度的值除以梯度的L2范数。 理论上L2归一化更严格的保留了梯度的方向，但是max归一化则不一定和原始梯度的方向相同。</p>
-<script type="math/tex; mode=display">
-FGSM：\delta=\epsilon Sign(g)</script><script type="math/tex; mode=display">
-FGM: \delta = \epsilon (g/||g_2||)</script><script type="math/tex; mode=display">
-其中g为梯度g=\nabla x(L(f_{\theta}(X), y))</script><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FGM</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                self.backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = epsilon * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.backup</span><br><span class="line">                param.data = self.backup[name]</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">fgm = FGM(model)</span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    fgm.attack() <span class="comment"># 在embedding上添加对抗扰动</span></span><br><span class="line">    loss_adv = model(batch_input, batch_label)</span><br><span class="line">    loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    fgm.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
-<h3 id="FGM-FGSM-流程总结"><a href="#FGM-FGSM-流程总结" class="headerlink" title="FGM/FGSM 流程总结"></a>FGM/FGSM 流程总结</h3><ol>
-<li>正常的前向传播-得到梯度与loss值</li>
-<li>执行对抗训练-根据当前梯度对参数值添加扰动；前向传播得到损失与最终梯度</li>
-<li>恢复embedding参数</li>
-<li>更新本次迭代的参数</li>
-</ol>
-<p>根据min-max公式可以看出，对抗训练主要完成内部max的过程。FGM/FGSM思想就是沿着梯度上升的方向，找寻最优解。但是<strong>FGM/FGSM 有假设：损失函数是线性或者局部线性。如果不是线性，那梯度提升方向不一定是最优方向。</strong></p>
-<h2 id="PGD"><a href="#PGD" class="headerlink" title="PGD"></a>PGD</h2><p>为了解决FGM中线性假设问题，PGD分多次迭代，若扰动超出范围将扰动映射到规定范围内。</p>
-<script type="math/tex; mode=display">
-X_{t + 1}=\prod _{X+S}(X_t + \epsilon(g_t/||g_t||))</script><script type="math/tex; mode=display">
-其中g为梯度g_t=\nabla x_t(L(f_{\theta}(X_t), y))</script><p>虽然PGD很有效，但效率并不高，若经过m次迭代，PGD需要迭代m*(K + 1)次。其代码展示如下：</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PGD</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line">        self.grad_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, alpha=<span class="number">0.3</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span>, is_first_attack=<span class="literal">False</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                <span class="keyword">if</span> is_first_attack:</span><br><span class="line">                    self.emb_backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = alpha * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line">                    param.data = self.project(name, param.data, epsilon)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.emb_backup</span><br><span class="line">                param.data = self.emb_backup[name]</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">project</span>(<span class="params">self, param_name, param_data, epsilon</span>):</span></span><br><span class="line">        r = param_data - self.emb_backup[param_name]</span><br><span class="line">        <span class="keyword">if</span> torch.norm(r) &gt; epsilon:</span><br><span class="line">            r = epsilon * r / torch.norm(r)</span><br><span class="line">        <span class="keyword">return</span> self.emb_backup[param_name] + r</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backup_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                self.grad_backup[name] = param.grad.clone()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                param.grad = self.grad_backup[name]</span><br><span class="line">                </span><br><span class="line">pgd = PGD(model)</span><br><span class="line">K = <span class="number">3</span></span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    pgd.backup_grad()</span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(K):</span><br><span class="line">        pgd.attack(is_first_attack=(t==<span class="number">0</span>)) <span class="comment"># 在embedding上添加对抗扰动, first attack时备份param.data</span></span><br><span class="line">        <span class="keyword">if</span> t != K-<span class="number">1</span>:</span><br><span class="line">            model.zero_grad()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            pgd.restore_grad()</span><br><span class="line">        loss_adv = model(batch_input, batch_label)</span><br><span class="line">        loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    pgd.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
-<h3 id="PGD流程总结"><a href="#PGD流程总结" class="headerlink" title="PGD流程总结"></a>PGD流程总结</h3><ol>
-<li>正常的前向传播-得到梯度与loss值</li>
-<li>备份正常的梯度</li>
-<li>执行K次对抗训练<ol>
-<li>若t=0，备份参数；梯度清零；前向传播，计算梯度与loss值</li>
-<li>若t=K-1；恢复第1步的梯度；前向传播，计算梯度与loss值</li>
-</ol>
-</li>
-<li>恢复3.1中的embedding参数</li>
-<li>更新本次迭代的参数</li>
-</ol>
-<p>PGD执行K次目的为分多步获取<strong>内部max的扰动-扰动表现在参数上</strong>，每一步梯度归零，但是参数值得到了累加:$x^{‘}=x+\sum_{t=0}^{K} r_t$,最后根据参数$x^{‘}$以及初始梯度前向传播计算loss和最终梯度，最后，恢复初始参数，根据最终梯度完成参数更新。</p>
-<h2 id="FreeAT"><a href="#FreeAT" class="headerlink" title="FreeAT"></a>FreeAT</h2><p>PGD中进行m次反向传播，m *（K + 1） 次前向传播效率不高</p>
-<p>FreeAT把前向传播计算出的梯度也进行回传</p>
-<p>对比图为：</p>
-<p><img src="https://pic4.zhimg.com/80/v2-b54c33d95d0e8123091297d3c4b89a2f_720w.jpg" alt="image"></p>
-<p>进行（m/k）*k=m 次反向传播，（m/k）* k = m次前向传播</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">初始化r=0</span><br><span class="line">对于epoch=1...N/m:</span><br><span class="line">  对于每个x:</span><br><span class="line">    对于每步m:</span><br><span class="line">      1.利用上一步的r，计算x+r的前后向，得到梯度</span><br><span class="line">      2.根据梯度更新参数</span><br><span class="line">      3.根据梯度更新r</span><br></pre></td></tr></table></figure>
-<h3 id="FreeAT流程总结"><a href="#FreeAT流程总结" class="headerlink" title="FreeAT流程总结"></a>FreeAT流程总结</h3><ol>
-<li>正常的前向传播-得到梯度与loss值</li>
-<li>备份正常的梯度</li>
-<li>执行K次对抗训练<ol>
-<li>前向传播得到梯度与loss值</li>
-<li>根据梯度更新参数</li>
-<li>根据梯度更新扰动</li>
-</ol>
-</li>
-</ol>
-<p><strong>缺点：FreeLB指出，FreeAT的问题在于每次的r对于当前的参数都是次优的（无法最大化loss），因为当前r是由$ r_{t-1} $和$\theta_{t-1}$计算出来的，是对于$\theta_{ t-1 }$的最优。</strong></p>
-<h2 id="FreeLB"><a href="#FreeLB" class="headerlink" title="FreeLB"></a>FreeLB</h2><p>FreeLB认为，FreeAT和YOPO对于获得最优r (inner max)的计算都存在问题，因此提出了一种类似PGD的方法。只不过PGD只使用了最后一步x+r输出的梯度，而FreeLB取了每次迭代r输出梯度的平均值，相当于把输入看作一个K倍大的虚拟batch，由[X+r1, X+r2, …, X+rk]拼接而成。具体的公式为：</p>
-<script type="math/tex; mode=display">
-min_{\theta} E(Z,y) - D(\frac{1}{K} \sum_{t=0}^{K-1}max_{r_t \in L_t} L(f_{\theta}(X+r_t),y))</script><p>PGD公式为:</p>
-<script type="math/tex; mode=display">
-min_{\theta} E(Z,y) - D(max_{||r|| \le\epsilon} L(f_{\theta}(X+r_t),y))</script><p><strong>FreeLB与PGD区别如下：</strong></p>
-<ol>
-<li>PGD是迭代K次r后取最后一次扰动的梯度更新参数，FreeLB是取K次迭代中的平均梯度</li>
-<li>PGD的扰动范围都在epsilon内，因为流程第3步将梯度归0了，每次投影都会回到以第1步x为圆心，半径是epsilon的圆内，而FreeLB每次的x都会迭代，所以r的范围更加灵活，更可能接近局部最优</li>
-</ol>
-<p>伪代码为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对于每个x:</span><br><span class="line">  1.通过均匀分布初始化r，梯度g为0</span><br><span class="line">  对于每步t=1...K:</span><br><span class="line">    2.根据x+r计算前后向，累计梯度g</span><br><span class="line">    3.更新r</span><br><span class="line">  4.根据g/K更新梯度</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class FreeLB(object):</span><br><span class="line">    def __init__(self, adv_K, adv_lr, adv_init_mag, adv_max_norm=0., adv_norm_type=&#x27;l2&#x27;, base_model=&#x27;bert&#x27;):</span><br><span class="line">        self.adv_K = adv_K</span><br><span class="line">        self.adv_lr = adv_lr</span><br><span class="line">        self.adv_max_norm = adv_max_norm</span><br><span class="line">        self.adv_init_mag = adv_init_mag    # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">    def attack(self, model, inputs, gradient_accumulation_steps=1):</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        if isinstance(model, torch.nn.DataParallel):</span><br><span class="line">            embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        else:</span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-self.adv_init_mag, self.adv_init_mag)</span><br><span class="line">                delta = delta * input_mask.unsqueeze(2)</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        loss, logits = None, None</span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            outputs = model(**inputs)</span><br><span class="line">            loss, logits = outputs[:2]  # model outputs are always tuple in transformers (see doc)</span><br><span class="line">            loss = loss.mean()  # mean() to average on multi-gpu parallel training</span><br><span class="line">            loss = loss / gradient_accumulation_steps</span><br><span class="line">            loss.backward()</span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1, p=float(&quot;inf&quot;)).view(-1, 1, 1)  # p=&#x27;inf&#x27;,无穷范数，获取绝对值最大者</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)  # 类似np.clip，将数值夹逼到(min, max)之间</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()  # 计算该步的delta，然后累加到原delta值上(梯度上升)</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta = torch.clamp(delta, -self.adv_max_norm, self.adv_max_norm).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line">            if isinstance(model, torch.nn.DataParallel):  </span><br><span class="line">                embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">            else:</span><br><span class="line">                embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        return loss, logits</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if args.do_adv:</span><br><span class="line">    inputs = &#123;</span><br><span class="line">        &quot;input_ids&quot;: input_ids,</span><br><span class="line">        &quot;bbox&quot;: layout,</span><br><span class="line">        &quot;token_type_ids&quot;: segment_ids,</span><br><span class="line">        &quot;attention_mask&quot;: input_mask,</span><br><span class="line">        &quot;masked_lm_labels&quot;: lm_label_ids</span><br><span class="line">    &#125;</span><br><span class="line">    loss, prediction_scores = freelb.attack(model, inputs)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br><span class="line">scheduler.step()</span><br><span class="line">model.zero_grad()</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class FreeLB():</span><br><span class="line">    def __init__(self, model, args, optimizer, base_model=&#x27;xlm-roberta&#x27;):</span><br><span class="line">        self.args = args</span><br><span class="line">        self.model = model</span><br><span class="line">        self.adv_K = self.args.adv_K</span><br><span class="line">        self.adv_lr = self.args.adv_lr</span><br><span class="line">        self.adv_max_norm = self.args.adv_max_norm</span><br><span class="line">        self.adv_init_mag = self.args.adv_init_mag  # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = self.args.adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">        self.optimizer = optimizer</span><br><span class="line"></span><br><span class="line">    def attack(self, model, inputs):</span><br><span class="line">        args = self.args</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        #获取初始化时的embedding</span><br><span class="line">        embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line"></span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        # loss, logits = None, None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            # inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            loss, _ = model(input_ids=None,</span><br><span class="line">                            attention_mask=inputs[&quot;attention_mask&quot;].to(args.device),</span><br><span class="line">                             token_type_ids=inputs[&quot;token_type_ids&quot;].to(args.device),</span><br><span class="line">                             labels=inputs[&quot;sl_labels&quot;].to(args.device),</span><br><span class="line">                            inputs_embeds=inputs[&quot;inputs_embeds&quot;].to(args.device))</span><br><span class="line"></span><br><span class="line">            loss = loss / self.adv_K # 求平均的梯度</span><br><span class="line"></span><br><span class="line">            loss.backward()</span><br><span class="line"></span><br><span class="line">            if astep == self.adv_K - 1:</span><br><span class="line">                # further updates on delta</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line"></span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line">        return loss</span><br><span class="line"></span><br><span class="line">for batch_input, batch_label in data:</span><br><span class="line">    # 正常训练</span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() # 反向传播，得到正常的grad</span><br><span class="line">    # 对抗训练</span><br><span class="line">    freelb = FreeLB( model, args, optimizer, base_model)</span><br><span class="line">    loss_adv = freelb.attack(model, batch_input)</span><br><span class="line">    loss_adv.backward() # 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span><br><span class="line">    # 梯度下降，更新参数</span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
-<h3 id="FreeLB流程总结"><a href="#FreeLB流程总结" class="headerlink" title="FreeLB流程总结"></a>FreeLB流程总结</h3><ol>
-<li>正常的前向传播-得到梯度与loss值</li>
-<li>备份正常的梯度</li>
-<li>执行K次对抗训练<ol>
-<li>前向传播，计算梯度与loss值</li>
-<li>梯度累加</li>
-<li>根据梯度计算扰动</li>
-</ol>
-</li>
-<li>恢复初始embedding参数</li>
-<li>更新本次迭代的参数</li>
-</ol>
-<p>该方法与FreeAT一样都想高效的利用两种梯度。<strong>不同的是，该方法并不是每次都进行更新，而是将参数梯度累积起来，用累积的梯度对参数更新</strong>。</p>
-<h2 id="通用范式"><a href="#通用范式" class="headerlink" title="通用范式"></a>通用范式</h2><p>通过对上述几种对抗训练方式的学习，不难看出对抗训练的目的为完成<strong>内部max的任务，找出最大扰动的最优解</strong>。具体表现为：求解最大扰动更新参数；根据参数进行前向传播得到loss与最终梯度；恢复最初的参数值；利用最终的梯度对最初的参数值进行更新。所以通用流程表示如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1. 正常的前向传播-得到梯度与loss值</span><br><span class="line">2. 备份正常的参数</span><br><span class="line">3. 求解扰动最优值，更新参数</span><br><span class="line">4. 根据更新后参数以及最初梯度，前向传播得到最终梯度</span><br><span class="line">5. 恢复最初的参数</span><br><span class="line">6. 根据最初的参数与最终梯度，完成参数的更新</span><br></pre></td></tr></table></figure>
-<p><strong>不同对抗训练方式体现为求解扰动最优值的方式不同：</strong></p>
-<ul>
-<li>FGM/FGSM最优值求解方式为：一步到位，根据最初的梯度与参数值，得到扰动值</li>
-<li>PGD最优值求解方式为：多步走，每一步根据上一步的参数获取扰动并更新参数，最终得到多步累加的扰动值</li>
-<li>FreeAT最优值求解方式为：与PGD一样分多步，但是该方法相当于：每一步根据上一步参数和梯度获取的扰动值就是最终扰动值</li>
-<li>FreeLB最优值求解方式为：与PGD一样分多步，但是在最后进行梯度更新的时候，最终梯度为初始梯度加上每一步梯度的平均值</li>
-</ul>
-<h1 id="对抗训练展望"><a href="#对抗训练展望" class="headerlink" title="对抗训练展望"></a>对抗训练展望</h1><h2 id="虚拟对抗训练"><a href="#虚拟对抗训练" class="headerlink" title="虚拟对抗训练"></a>虚拟对抗训练</h2><p><strong>那什么是虚拟对抗训练(VAT)呢</strong>？</p>
-<blockquote>
-<p>VAT不需要标签信息，可应用于无监督学习，其梯度上升的方向是能使预测的输出分布偏离现状的方向，而传统对抗训练课找的是使模型预测最大地偏离label的方向。因此，VAT不使用真实label，而是“虚拟”label——当前模型的预测结果。</p>
-</blockquote>
-<p>该部分可以查看JayJay的博客：<a href="https://zhuanlan.zhihu.com/p/345264876">虚拟对抗训练：让预训练模型再次强大！</a></p>
-<h1 id="延伸思考"><a href="#延伸思考" class="headerlink" title="延伸思考"></a>延伸思考</h1><h2 id="对抗训练与梯度惩罚"><a href="#对抗训练与梯度惩罚" class="headerlink" title="对抗训练与梯度惩罚"></a>对抗训练与梯度惩罚</h2><p>该内容为苏神在博客<a href="https://kexue.fm/archives/7234">对抗训练浅谈：意义、方法和思考（附Keras实现）</a>中所提及：</p>
-<p>假设已经得到对抗扰动Δx，那么我们在更新θ时，考虑对$L(x+Δx,y;θ)$的展开：</p>
-<script type="math/tex; mode=display">
-\min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x+\Delta x, y;\theta)\right]\\ 
-\approx\, \min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x, y;\theta)+\langle\nabla_x L(x, y;\theta), \Delta x\rangle\right]</script><p>对应的θ的梯度为：</p>
-<script type="math/tex; mode=display">
-\nabla_{\theta}L(x, y;\theta)+\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \Delta x\rangle</script><p>代入$\Delta x=\epsilon \nabla_x L(x, y;\theta)$，得到</p>
-<script type="math/tex; mode=display">
-\nabla_{\theta}L(x, y;\theta)+\epsilon\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \nabla_x L(x, y;\theta)\rangle\\ 
-=\,\nabla_{\theta}\left(L(x, y;\theta)+\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2\right)</script><p>这个结果表示，对输入样本施加$\epsilon \nabla_x L(x, y;\theta)$的对抗扰动，一定程度上等价于往loss里边加入“梯度惩罚”</p>
-<script type="math/tex; mode=display">
-\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2</script><p>如果对抗扰动是$\nabla_x L(x, y;\theta)/\Vert \nabla_x L(x, y;\theta)\Vert$，那么对应的梯度惩罚项则是$\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert$（少了个1/2，也少了个2次方）。</p>
-<p>事实上，这个结果不是新的，它首先出现论文<a href="https://arxiv.org/abs/1711.09404">《Improving the Adversarial Robustness and Interpretability of Deep Neural Networks by Regularizing their Input Gradients》</a>里。只不过这篇文章不容易搜到，因为你一旦搜索“adversarial training gradient penalty”等关键词，出来的结果几乎都是WGAN-GP相关的东西。</p>
-<h2 id="词向量空间"><a href="#词向量空间" class="headerlink" title="词向量空间"></a>词向量空间</h2><p>NLP中对抗训练目前的方式均是对embedding向量空间添加扰动，那么向量空间究竟什么样呢？在对比学习的研究中<Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere>，同样提出一个好的对比学习系统应该具体两个特点：</p>
-<ul>
-<li><strong>Alignment：</strong>指的是相似的例子，也就是正例，映射到单位超球面后，应该有接近的特征，也即是说，在超球面上距离比较近</li>
-<li><strong>Uniformity：</strong>指的是系统应该倾向在特征里保留尽可能多的信息，这等价于使得映射到单位超球面的特征，尽可能均匀地分布在球面上，分布得越均匀，意味着保留的信息越充分。分布均匀意味着两两有差异，也意味着各自保有独有信息，这代表信息保留充分。</li>
-</ul>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gykdip46wnj30nm0w4wgj.jpg" alt=""></p>
-<p>极端情况下会出现模型塌缩的情况，即所有特征映射到同一点：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gykdod8h59j31180u0taa.jpg" alt=""></p>
-<p>笔者认为，对抗训练在词向量层添加扰动，与对比学习类似，实现相似的例子在向量空间中相接近的目的，完成输入发生微小改变，输出改变幅度也不大的任务。</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>对抗训练</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
-        <tag>对抗训练</tag>
       </tags>
   </entry>
 </search>

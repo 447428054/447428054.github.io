@@ -1194,19 +1194,19 @@ min_{\theta} E(Z,y) - D(max_{||r|| \le\epsilon} L(f_{\theta}(X+r_t),y))</script>
 <li>限制大batch训练的是高学习率带来的训练不稳定性</li>
 <li>warmup主要限制深层的权重变化，并且冻结深层权重的变化可以取得相似的效果</li>
 </ol>
-<h4 id="batch与学习率大小的关系"><a href="#batch与学习率大小的关系" class="headerlink" title="batch与学习率大小的关系"></a>batch与学习率大小的关系</h4><p>假设现在模型已经train到第t步，权重为 <img src="https://www.zhihu.com/equation?tex=w_t" alt="[公式]"> ，我们有k个mini-batch，每个mini-batch大小为n，记为 <img src="https://www.zhihu.com/equation?tex=%5Cmathcal%7BB%7D_%7B1%3Ak%7D" alt="[公式]"> 。下面我们来看，以学习率 <img src="https://www.zhihu.com/equation?tex=%5Ceta" alt="[公式]"> 训k次 <img src="https://www.zhihu.com/equation?tex=%5Cmathcal%7BB%7D_%7B1%3Ak%7D" alt="[公式]"> 和以学习率 <img src="https://www.zhihu.com/equation?tex=%5Chat%7B%5Ceta%7D" alt="[公式]"> 一次训练$\mathcal{B}$时学习率的关系。</p>
+<h4 id="batch与学习率大小的关系"><a href="#batch与学习率大小的关系" class="headerlink" title="batch与学习率大小的关系"></a>batch与学习率大小的关系</h4><p>假设现在模型已经train到第t步，权重为$w_t$，我们有k个mini-batch，每个mini-batch大小为n，记为$\mathcal{B}_{1:k}$ 。下面我们来看，以学习率 $\eta$训k次 $\mathcal{B}_{1:k}$ 和以学习率 $\hat{\eta}$ 一次训练$\mathcal{B}$时学习率的关系。</p>
 <p>假设我们用的是SGD，那么训k次后我们可以得到：</p>
 <script type="math/tex; mode=display">
 w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t+j}\right)</script><p>如果我们一次训练就可以得到：</p>
 <script type="math/tex; mode=display">
-\hat{w}_{t+1}=w_{t}-\hat{\eta} \frac{1}{k n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t}\right)</script><p>其中$w_{t+k}$与$\hat{w}_{t+1}$代表按上述方式训练k次与1次，完成参数更新后的参数。显然，这两个是不一样的。但如果我们假设 <img src="https://www.zhihu.com/equation?tex=%5Cnabla+l%28x%2Cw_t%29%5Capprox+%5Cnabla+l%28x%2Cw_%7Bt%2Bj%7D%29" alt="[公式]"> ，那么令$\hat{\eta}=k\eta $就可以保证 <img src="https://www.zhihu.com/equation?tex=%5Chat%7Bw%7D_%7Bt%2B1%7D%5Capprox+w_%7Bt%2Bk%7D" alt="[公式]"> 。那么，在什么时候 <img src="https://www.zhihu.com/equation?tex=%5Cnabla+l%28x%2Cw_t%29%5Capprox+%5Cnabla+l%28x%2Cw_%7Bt%2Bj%7D%29" alt="[公式]"> 可能不成立呢？[1]告诉我们有两种情况：</p>
+\hat{w}_{t+1}=w_{t}-\hat{\eta} \frac{1}{k n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t}\right)</script><p>其中$w_{t+k}$与$\hat{w}_{t+1}$代表按上述方式训练k次与1次，完成参数更新后的参数。显然，这两个是不一样的。但如果我们假设$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$，那么令$\hat{\eta}=k\eta $就可以保证 <script type="math/tex">\hat{w}_{t+1} \approx w_{t+k}</script> 。那么，在什么时候 $\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$ 可能不成立呢？[1]告诉我们有两种情况：</p>
 <ul>
 <li>在训练的开始阶段，模型权重迅速改变</li>
 <li>Mini-batch 大小较小，样本方差较大</li>
 </ul>
 <p>第一种情况，模型初始参数分布取决于初始化方式，初始数据对于模型都是初次修正，所以梯度更新较大，若一开始以较大的学习率学习，易对数据造成过拟合，需要经过之后更多轮的训练进行修正。</p>
 <p>第二种情况，在训练的过程中，如果有mini-batch内的数据分布方差特别大，这会导致模型学习剧烈波动，使其学得的权重很不稳定，这在训练初期最为明显，最后期较为缓解。</p>
-<p>针对上述两种情况，并不能简单的成倍增长学习率$\hat{\eta}=k\eta $,因为此时不符合<img src="https://www.zhihu.com/equation?tex=%5Cnabla+l%28x%2Cw_t%29%5Capprox+%5Cnabla+l%28x%2Cw_%7Bt%2Bj%7D%29" alt="[公式]">假设。此时要么更改学习率增长方式[warmup]，要么解决这两种情况[数据预处理以减小样本方差]。</p>
+<p>针对上述两种情况，并不能简单的成倍增长学习率$\hat{\eta}=k\eta $,因为此时不符合$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$假设。此时要么更改学习率增长方式[warmup]，要么解决这两种情况[数据预处理以减小样本方差]。</p>
 <h4 id="warmup与模型学习的稳定性"><a href="#warmup与模型学习的稳定性" class="headerlink" title="warmup与模型学习的稳定性"></a>warmup与模型学习的稳定性</h4><p>该部分通过一些论文实验结果，推断有了warmup之后模型能够学习的更稳定。</p>
 <p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gyq8344bmwj311n0d90vs.jpg" alt=""></p>
 <p><strong>上图表示有了warmup之后，模型能够学习的更加稳定。</strong></p>

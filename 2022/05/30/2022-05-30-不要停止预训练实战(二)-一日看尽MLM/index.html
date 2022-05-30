@@ -20,26 +20,23 @@
     var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression">
+  <meta name="description" content="前言 本文在上文不要停止预训练实战-Roberta与Albert的基础上，进一步完成以下内容：  [x] keras预训练 [x] N-gram掩码任务  [x] Span掩码任务">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Coursera Machine Learning 学习笔记（二）Linear Regression">
-<meta property="og:url" content="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/index.html">
+<meta property="og:title" content="不要停止预训练实战(二)-一日看尽MLM">
+<meta property="og:url" content="https://447428054.github.io/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression">
+<meta property="og:description" content="前言 本文在上文不要停止预训练实战-Roberta与Albert的基础上，进一步完成以下内容：  [x] keras预训练 [x] N-gram掩码任务  [x] Span掩码任务">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302112701595.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302171951356.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302173355106.png">
-<meta property="article:published_time" content="2019-03-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-03T13:07:56.721Z">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qp6pp8d8j21lk0sedik.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qhfc7hgpj20sg12uwib.jpg">
+<meta property="article:published_time" content="2022-05-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-30T12:23:41.813Z">
 <meta property="article:author" content="JMXGODLZZ">
-<meta property="article:tag" content="机器学习">
-<meta property="article:tag" content="Linear Regression">
+<meta property="article:tag" content="预训练">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190302112701595.png">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qp6pp8d8j21lk0sedik.jpg">
 
-<link rel="canonical" href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/">
+<link rel="canonical" href="https://447428054.github.io/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/">
 
 
 <script id="page-configurations">
@@ -52,7 +49,7 @@
   };
 </script>
 
-  <title>Coursera Machine Learning 学习笔记（二）Linear Regression | JMX Blog</title>
+  <title>不要停止预训练实战(二)-一日看尽MLM | JMX Blog</title>
   
 
 
@@ -206,7 +203,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jmx.png">
@@ -219,7 +216,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Coursera Machine Learning 学习笔记（二）Linear Regression
+          不要停止预训练实战(二)-一日看尽MLM
         </h1>
 
         <div class="post-meta">
@@ -228,16 +225,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-03-02 00:00:00" itemprop="dateCreated datePublished" datetime="2019-03-02T00:00:00+08:00">2019-03-02</time>
+              <time title="创建时间：2022-05-30 00:00:00 / 修改时间：20:23:41" itemprop="dateCreated datePublished" datetime="2022-05-30T00:00:00+08:00">2022-05-30</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-03 21:07:56" itemprop="dateModified" datetime="2022-01-03T21:07:56+08:00">2022-01-03</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -248,7 +239,11 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E9%A2%84%E8%AE%AD%E7%BB%83/" itemprop="url" rel="index"><span itemprop="name">预训练</span></a>
                 </span>
             </span>
 
@@ -268,8 +263,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -279,14 +274,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -298,62 +293,124 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qp6pp8d8j21lk0sedik.jpg" alt=""></p>
+<p>本文在上文<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2022/03/20/2022-03-20-预训练实战/#more">不要停止预训练实战-Roberta与Albert</a>的基础上，进一步完成以下内容：</p>
+<ul>
+<li>[x] keras预训练</li>
+<li>[x] N-gram掩码任务 </li>
+<li>[x] Span掩码任务 </li>
+</ul>
 <span id="more"></span>
-<blockquote>
-<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
-</blockquote>
-<h1 id="02：Linear-Regression"><a href="#02：Linear-Regression" class="headerlink" title="02：Linear Regression"></a>02：Linear Regression</h1><p>仍然以房价预测作为示例，具体示例仍需见课程内容。<br>符号含义：</p>
-<ol>
-<li>m 为数据集的大小</li>
-<li>x’s为输入数据</li>
-<li>y’s为对应的目标输出结果</li>
-<li>(x,y)为所有训练数据</li>
-<li>(x<sup>i</sup>, y<sup>i</sup>)为具体第i行数据，第i个训练数据</li>
-</ol>
-<p>假设函数h(x)，以一元线性回归为例：<br><img src="https://img-blog.csdnimg.cn/20190302112701595.png" alt="假设函数"></p>
-<script type="math/tex; mode=display">\theta_0：截距  \theta_1：梯度</script><h5 id="Linear-regression-implementation（损失函数cost-function）"><a href="#Linear-regression-implementation（损失函数cost-function）" class="headerlink" title="Linear regression - implementation（损失函数cost function）"></a>Linear regression - implementation（损失函数cost function）</h5><p>计算由不同θ 取值带来的不同损失函数值，本质上是一个最小化问题：使下式取值最小</p>
-<script type="math/tex; mode=display">Minimize ：(h_\theta(x)-y)^2</script><p>即可以看成下述式子：</p>
-<script type="math/tex; mode=display">J(\theta_0,\theta_1) = \frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2</script><script type="math/tex; mode=display">\frac1 m 是求平均\frac1 {2m}是为了数学计算方便</script><p>这个损失函数是均方误差，适用于多类回归问题，当然也可以有其他的损失函数。</p>
-<h5 id="梯度下降算法（Gradient-descent-algorithm）"><a href="#梯度下降算法（Gradient-descent-algorithm）" class="headerlink" title="梯度下降算法（Gradient descent algorithm）"></a>梯度下降算法（Gradient descent algorithm）</h5><p><strong>目的：</strong> 使损失函数J最小</p>
-<h6 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h6><ul>
-<li>从随机初始化开始</li>
-</ul>
-<ol>
-<li>对θ 随机赋值，可以为任何值</li>
-<li>每次一点点改变θ，使J(θ)减小</li>
-</ol>
+<h1 id="掩码任务"><a href="#掩码任务" class="headerlink" title="掩码任务"></a>掩码任务</h1><p>BERT等预训练模型中掩码任务主要涉及下列要素：</p>
 <ul>
-<li>每次沿着梯度下降最大的方向</li>
-<li>重复上述操作直到达到局部最小值</li>
-<li>从哪里开始的可能决定你到达哪个局部最优解<br><img src="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70" alt="梯度下降"><br><strong>一个更正规的定义：</strong><br>做下述操作直到收敛：<br><img src="https://img-blog.csdnimg.cn/20190302171951356.png" alt="参数更新"><br>符号解释：</li>
+<li>掩码比例</li>
+<li>替换策略</li>
+<li>掩码方式</li>
 </ul>
-<ol>
-<li><strong>:=</strong><br>表示赋值<br>NB a = b 是一个正确的断言</li>
-<li>α (alpha)<br>学习率，控制参数更新的步长<ol>
-<li>如果学习率过大，可能无法得到最优解，误差会增大</li>
-<li>如果学习率过小，那么达到最优解需要非常多步，耗费很长时间</li>
-</ol>
-</li>
-</ol>
-<p>注： 参数的更新必须<strong>同步</strong>即需要一个中间变量保存之前的值，原因是二者的式子中包含了对方，一方的更新会导致第二方式子内值的变化。<br><img src="https://img-blog.csdnimg.cn/20190302173355106.png" alt="在这里插入图片描述"><br><strong>当我们达到局部最优解时：</strong></p>
-<ol>
-<li>后面部分的梯度为0</li>
-<li>各参数值就保持不变了 </li>
-</ol>
-<h5 id="使用梯度下降的线性回归算法"><a href="#使用梯度下降的线性回归算法" class="headerlink" title="使用梯度下降的线性回归算法"></a>使用梯度下降的线性回归算法</h5><ul>
-<li>将梯度下降算法应用到最小化损失函数J(θ)上</li>
-</ul>
-<script type="math/tex; mode=display">\frac{\partial} {\partial\theta_j}=\frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2=\frac{\partial} {\partial\theta_j}\frac 1 {2m}\sum_1^m(\theta_0+\theta_1x^{(i)}-y^{(i)})^2</script><p>按照求导公式可以推出：</p>
-<script type="math/tex; mode=display">j=0:\frac{\partial} {\partial\theta_0}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})</script><script type="math/tex; mode=display">j=1:\frac{\partial} {\partial\theta_1}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})*x^{(i)}</script><p>注：因为线性回归是一个凸函数，是一个碗形的图，所以会趋于局部最优解</p>
+<h2 id="掩码比例"><a href="#掩码比例" class="headerlink" title="掩码比例"></a>掩码比例</h2><p>常用掩码比例设置为15%，该比例经过许多研究，已证明该比例能够取得很好的效果。</p>
+<p>从理论上来说，笔者从网上找到的说法为：“当取15%时，恰好大概7个词mask一个，正好就是CBOW中，长度为7的滑动窗口的中心词，因此会有比较好的效果”</p>
+<p>而近日丹琦大佬等人的论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2202.08005">Should You Mask 15% in Masked Language Modeling?</a>表明掩码40%能够取得与15%差不多的效果。</p>
+<p>该论文表明<strong>“所谓的optimal masking rate并不是一个一成不变的神奇数字，而是一个随着模型大小、mask策略、训练recipe、下游任务变化的函数。”</strong></p>
+<h2 id="替换策略"><a href="#替换策略" class="headerlink" title="替换策略"></a>替换策略</h2><p>常用的替换策略如下：</p>
 <ul>
-<li>现在的这种梯度下降算法又叫Batch Gradient Descent 原因是每一次都遍历了整个数据集，后面会提到取数据集中的部分进行的Gradient Descent</li>
-<li>线性回归也有正规方程求解，但其中矩阵运算当数据集过大时不宜使用，这时就可以使用梯度下降</li>
+<li>80%词语替换为[MASK]</li>
+<li>10%词语保持不变</li>
+<li>10%词语随机替换为其他词语</li>
 </ul>
-<h5 id="数值求解的正规方程法"><a href="#数值求解的正规方程法" class="headerlink" title="数值求解的正规方程法"></a>数值求解的正规方程法</h5><ul>
-<li>直接通过数值求解来避免繁琐的迭代过程，从数学上求解出min(J(θ))<br><strong>正规方程的优缺点：</strong><br><strong>优点：</strong><br>1.不需要学习率这个参数<br>2.对某些问题可以很快的解决<br><strong>缺点：</strong><br>会很复杂</li>
+<p>这样做的目的在于强迫模型学习词语上下文的语义信息。任何一个词语都有可能被替换，不仅靠当前词语，还需要利用上下文的信息预测当前词语。</p>
+<p>但是[MASK]标签并未出现在下游任务中，因此<strong>存在预训练与微调的不一致问题。</strong></p>
+<p>MacBERT提出<strong>MLM as correction</strong>的方法，替换策略如下：</p>
+<ul>
+<li>80%词语替换为同义词</li>
+<li>10%词语保持不变</li>
+<li>10%词语随机替换为其他词语</li>
 </ul>
-<h5 id="面对数据量很大的时候"><a href="#面对数据量很大的时候" class="headerlink" title="面对数据量很大的时候"></a>面对数据量很大的时候</h5><p>这个时候就需要<strong>将数据向量化</strong>利用线性代数中矩阵运算来完成计算</p>
+<p>MacBERT论文中与下列替换策略进行对比，对比结果如图所示：</p>
+<ul>
+<li>MacBERT：80%替换为同义词，10%替换为随机词语，10%保持不变；</li>
+<li>Random Replace：90%替换为随机词语，10%保持不变；</li>
+<li>Partial Mask：同原生的BERT一样，80%替换为[MASK]，10%替换为随机词语，10%保持不变；</li>
+<li>ALL Mask：90%替换为[MASK]，10%保持不变。</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qhfc7hgpj20sg12uwib.jpg" alt="ss"></p>
+<p>图中横坐标代表训练步数，纵坐标代表EM值。第一幅图是CMRC数据集结果，第二幅图是DRCD数据集结果。</p>
+<h2 id="掩码方式"><a href="#掩码方式" class="headerlink" title="掩码方式"></a>掩码方式</h2><p>目前的掩码方式主要分为以下几种：</p>
+<ul>
+<li>单词掩码</li>
+<li>全词掩码</li>
+<li>实体掩码</li>
+<li>N-gram掩码</li>
+<li>Span掩码</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">中文</th>
+<th style="text-align:center">英文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">原句</td>
+<td style="text-align:center">使用语言模型来预测下一个词的概率。</td>
+<td style="text-align:center">we use a language model to predict the probability of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">分词</td>
+<td style="text-align:center">使用 语言 模型 来 预测 下 一个 词 的 概率 。</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">BERT Tokenizer</td>
+<td style="text-align:center">使 用 语 言 模 型 来 预 测 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>model</strong> to <strong>pre ##di ##ct</strong> the <strong>pro ##ba ##bility</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">单词掩码</td>
+<td style="text-align:center">使 用 语 言 <strong>[M]</strong> 型 来 <strong>[M]</strong> 测 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] ##di ##ct</strong> the <strong>pro [M] ##bility</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">全词掩码</td>
+<td style="text-align:center">使 用 语 言 <strong>[M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">实体掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">N-gram掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">Span掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M] [M] [M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M] [M] [M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">MAC掩码</td>
+<td style="text-align:center">使 用 语 法 建 模 来 预 见 下 一 个 词 的 几 率 。</td>
+<td style="text-align:center">we use a <strong>text system</strong> to <strong>ca ##lc ##ulate</strong> the <strong>po ##si ##bility</strong> of the next word.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="全词掩码"><a href="#全词掩码" class="headerlink" title="全词掩码"></a>全词掩码</h3><p>以分词结果为最小粒度，完成掩码任务。</p>
+<h3 id="N-gram掩码"><a href="#N-gram掩码" class="headerlink" title="N-gram掩码"></a>N-gram掩码</h3><p>同样以分词结果为最小粒度，以n-gram取词语进行掩码。</p>
+<p>例如MacBERT采用基于分词的n-gram masking，1-gram~4gram Masking的概率分别是40%、30%、20%、10%。</p>
+<h3 id="实体掩码"><a href="#实体掩码" class="headerlink" title="实体掩码"></a>实体掩码</h3><p>代表模型为：<strong>ERNIE</strong></p>
+<p>引入命名实体信息，将实体作为最小粒度，进行掩码。</p>
+<h3 id="Span掩码"><a href="#Span掩码" class="headerlink" title="Span掩码"></a>Span掩码</h3><p>代表模型为：<strong>SpanBERT</strong></p>
+<p>以上做法让人认为，或许必须得引入类似词边界信息才能帮助训练。但前不久的 MASS 模型，却表明可能并不需要，随机遮盖可能效果也很好，于是就有SpanBERT的 idea：</p>
+<p>根据<strong>几何分布</strong>，先随机选择一段（span）的<strong>长度</strong>，之后再根据均匀分布随机选择这一段的<strong>起始位置</strong>，最后按照长度遮盖。文中使用几何分布取 <em>p=0.2</em>，最大长度只能是 10，利用此方案获得平均采样长度分布。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>相关代码实现可见：<a target="_blank" rel="noopener" href="https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining">https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining</a></p>
+<p>Span掩码核心代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">def __init__(</span><br><span class="line">    self, tokenizer, word_segment, lower=1, upper=10, p=0.3, mask_rate=0.15, sequence_length=512</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;参数说明：</span><br><span class="line">        tokenizer必须是bert4keras自带的tokenizer类；</span><br><span class="line">        word_segment是任意分词函数。</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    super(TrainingDatasetRoBERTa, self).__init__(tokenizer, sequence_length)</span><br><span class="line">    self.word_segment = word_segment</span><br><span class="line">    self.mask_rate = mask_rate</span><br><span class="line"></span><br><span class="line">    self.lower = lower</span><br><span class="line">    self.upper = upper</span><br><span class="line">    self.p = p</span><br><span class="line"></span><br><span class="line">    self.lens = list(range(self.lower, self.upper + 1))</span><br><span class="line">    self.len_distrib = [self.p * (1-self.p)**(i - self.lower) for i in range(self.lower, self.upper + 1)] if self.p &gt;= 0 else None</span><br><span class="line">    self.len_distrib = [x / (sum(self.len_distrib)) for x in self.len_distrib]</span><br><span class="line">    print(self.len_distrib, self.lens)</span><br><span class="line"></span><br><span class="line">def sentence_process(self, text):</span><br><span class="line">    &quot;&quot;&quot;单个文本的处理函数</span><br><span class="line">    流程：分词，然后转id，按照mask_rate构建全词mask的序列</span><br><span class="line">          来指定哪些token是否要被mask</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    word_tokens = self.tokenizer.tokenize(text=text)[1:-1]</span><br><span class="line">    word_token_ids = self.tokenizer.tokens_to_ids(word_tokens)</span><br><span class="line"></span><br><span class="line">    sent_length = len(word_tokens)</span><br><span class="line">    mask_num = math.ceil(sent_length * self.mask_rate)</span><br><span class="line">    mask = set()</span><br><span class="line">    spans = []</span><br><span class="line"></span><br><span class="line">    while len(mask) &lt; mask_num:</span><br><span class="line">        span_len = np.random.choice(self.lens, p=self.len_distrib) # 随机选择span长度</span><br><span class="line"></span><br><span class="line">        anchor = np.random.choice(sent_length)</span><br><span class="line">        if anchor in mask: # 随机生成起点</span><br><span class="line">            continue</span><br><span class="line">        left1 = anchor</span><br><span class="line">        spans.append([left1, left1])</span><br><span class="line">        right1 = min(anchor + span_len, sent_length)</span><br><span class="line">        for i in range(left1, right1):</span><br><span class="line">            if len(mask) &gt;= mask_num:</span><br><span class="line">                break</span><br><span class="line">            mask.add(i)</span><br><span class="line">            spans[-1][-1] = i</span><br><span class="line"></span><br><span class="line">    spans = merge_intervals(spans)</span><br><span class="line">    word_mask_ids = [0] * len(word_tokens)</span><br><span class="line">    for (st, ed) in spans:</span><br><span class="line">        for idx in range(st, ed + 1):</span><br><span class="line">            wid = word_token_ids[idx]</span><br><span class="line">            word_mask_ids[idx] = self.token_process(wid) + 1</span><br><span class="line"></span><br><span class="line">    return [word_token_ids, word_mask_ids]</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -378,7 +435,10 @@
   <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/2019/03/02/2019-03-02-Coursera Machine Learning 学习笔记（一）Introduction/" rel="bookmark">Coursera Machine Learning 学习笔记（一）Introduction</a></div>
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/03/20/2022-03-20-预训练实战/" rel="bookmark">不要停止预训练实战-Roberta与Albert</a></div>
     </li>
   </ul>
 
@@ -391,7 +451,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/" title="Coursera Machine Learning 学习笔记（二）Linear Regression">https://447428054.github.io/2019/03/02/2019-03-02-Coursera Machine Learning 学习笔记（二）Linear Regression/</a>
+    <a href="https://447428054.github.io/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/" title="不要停止预训练实战(二)-一日看尽MLM">https://447428054.github.io/2022/05/30/2022-05-30-不要停止预训练实战(二)-一日看尽MLM/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -402,8 +462,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
-              <a href="/tags/Linear-Regression/" rel="tag"><i class="fa fa-tag"></i> Linear Regression</a>
+              <a href="/tags/%E9%A2%84%E8%AE%AD%E7%BB%83/" rel="tag"><i class="fa fa-tag"></i> 预训练</a>
           </div>
 
         
@@ -412,13 +471,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/" rel="prev" title="Coursera Machine Learning 学习笔记（一）Introduction">
-      <i class="fa fa-chevron-left"></i> Coursera Machine Learning 学习笔记（一）Introduction
+    <a href="/2022/03/20/2022-03-20-%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98/" rel="prev" title="不要停止预训练实战-Roberta与Albert">
+      <i class="fa fa-chevron-left"></i> 不要停止预训练实战-Roberta与Albert
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="next" title="Python数据分析-数据可视化">
-      Python数据分析-数据可视化 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -478,7 +534,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#02%EF%BC%9ALinear-Regression"><span class="nav-number">1.</span> <span class="nav-text">02：Linear Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Linear-regression-implementation%EF%BC%88%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0cost-function%EF%BC%89"><span class="nav-number">1.0.0.0.1.</span> <span class="nav-text">Linear regression - implementation（损失函数cost function）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95%EF%BC%88Gradient-descent-algorithm%EF%BC%89"><span class="nav-number">1.0.0.0.2.</span> <span class="nav-text">梯度下降算法（Gradient descent algorithm）</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="nav-number">1.0.0.0.2.1.</span> <span class="nav-text">工作方式</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">1.0.0.0.3.</span> <span class="nav-text">使用梯度下降的线性回归算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E5%80%BC%E6%B1%82%E8%A7%A3%E7%9A%84%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E6%B3%95"><span class="nav-number">1.0.0.0.4.</span> <span class="nav-text">数值求解的正规方程法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9D%A2%E5%AF%B9%E6%95%B0%E6%8D%AE%E9%87%8F%E5%BE%88%E5%A4%A7%E7%9A%84%E6%97%B6%E5%80%99"><span class="nav-number">1.0.0.0.5.</span> <span class="nav-text">面对数据量很大的时候</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A9%E7%A0%81%E4%BB%BB%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">掩码任务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A9%E7%A0%81%E6%AF%94%E4%BE%8B"><span class="nav-number">2.1.</span> <span class="nav-text">掩码比例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E7%AD%96%E7%95%A5"><span class="nav-number">2.2.</span> <span class="nav-text">替换策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A9%E7%A0%81%E6%96%B9%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">掩码方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E8%AF%8D%E6%8E%A9%E7%A0%81"><span class="nav-number">2.3.1.</span> <span class="nav-text">全词掩码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#N-gram%E6%8E%A9%E7%A0%81"><span class="nav-number">2.3.2.</span> <span class="nav-text">N-gram掩码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93%E6%8E%A9%E7%A0%81"><span class="nav-number">2.3.3.</span> <span class="nav-text">实体掩码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Span%E6%8E%A9%E7%A0%81"><span class="nav-number">2.3.4.</span> <span class="nav-text">Span掩码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.4.</span> <span class="nav-text">代码实现</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

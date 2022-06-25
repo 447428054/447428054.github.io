@@ -1619,6 +1619,8 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
     <url>/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
 <p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgqimr09j21dc0u0788.jpg" alt=""></p>
+<span id="more"></span>
 <h1 id="概率统计"><a href="#概率统计" class="headerlink" title="概率统计"></a>概率统计</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgl2gpjuj213z0u0tc3.jpg" alt=""></p>
 <p>概率统计是人工智能算法的基础，图中分为贝叶斯、信息理论、模型、采样、基础五部分。笔者知识体系在“基础、采样、贝叶斯部分”存在缺漏，将在后面对该部分内容展开学习。</p>
 <h1 id="机器学习"><a href="#机器学习" class="headerlink" title="机器学习"></a>机器学习</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgp8m5exj21370u0gou.jpg" alt=""></p>

@@ -1646,7 +1646,7 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>终于，Pytorch也支持MAC的硬件加速，两个字评价一下感受：真香～</p>
 <p>周末笔者在自己机器上完成环境安装，笔者机器环境如下：</p>
 <p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h495zuj103j20vy0bkq3r.jpg" alt=""></p>
-<p>笔者在该文用卷积、BERT模型对比了有无MAC硬件加速的模型运行时间</p>
+<p>接着，笔者在该文用卷积、BERT模型对比了有无MAC硬件加速的模型运行时间</p>
 <span id="more"></span>
 <h1 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h1><p>按照官网给出的命令，即可完成安装MAC硬件加速版pytorch。</p>
 <p><a href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-started/locally/</a></p>
@@ -1671,7 +1671,7 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
 <p>硬件加速下运行时间约20min：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Num processes: 1</span><br><span class="line">Process index: 0</span><br><span class="line">Local process index: 0</span><br><span class="line">Device: mps</span><br><span class="line">...</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ - ***** Running training *****</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num examples = 3668</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num Epochs = 3</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Instantaneous batch size per device = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total train batch size (w. parallel, distributed &amp; accumulation) = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Gradient Accumulation steps = 1</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total optimization steps = 345</span><br><span class="line">  5%|██████████▋                                                                                                                                                                                                 | 18/345 [01:03&lt;20:14,  3.71s/it]</span><br></pre></td></tr></table></figure>
 <p>观察MAC活动监视器，可以看到程序确实有用到GPU硬件加速。</p>
-<p><img src="/Users/jmxgodlzz/Library/Application%20Support/marktext/images/2022-07-16-22-52-19-image.png" alt=""></p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h496jqdjjbj21fu05m754.jpg" alt=""></p>
 <h2 id="bug-fix"><a href="#bug-fix" class="headerlink" title="bug fix"></a>bug fix</h2><p>在运行过程中出现如下错误：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">OMP: Error #15: Initializing libomp.dylib, but found libiomp5.dylib already initialize异常</span><br></pre></td></tr></table></figure>
 <p>参照该<a href="http://t.zoukankan.com/yxym2016-p-13900887.html">链接</a>解决了问题，<strong>如果Python是基本于Conda安装的，则Conda上的numpy包中的mkl很容易与系统内库发生冲突，可选择update numpy package in Conda或者设置为系统库。</strong></p>

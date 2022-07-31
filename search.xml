@@ -1690,4 +1690,92 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
         <tag>GPU</tag>
       </tags>
   </entry>
+  <entry>
+    <title>一文梳理NLP主要模型发展脉络.md</title>
+    <url>/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h335vr18jdj22fa0u043j.jpg" alt=""></p>
+<p>下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。</p>
+<h1 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h1><p>自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输入”的特征，该特征能够很好的处理序列数据。因此，RNN模型相较于其他模型，更适合处理自然语言处理任务。</p>
+<p>当待处理序列长度较长时，RNN模型在反向传播的过程中，受链式求导法则的影响，当求导过程导数过小或过大时，会导致梯度消失或梯度爆炸。</p>
+<h1 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h1><p>RNN模型的权重矩阵在时间维度上是共享的。LSTM相较于RNN模型，通过引入门控机制，缓解梯度消失，那么<strong>LSTM如何避免梯度消失？</strong></p>
+<p>这里给出几个关键结论，详细分析后续开一篇介绍。</p>
+<ul>
+<li><p>RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g=\sum{g_t}$。</p>
+</li>
+<li><p>RNN中总的梯度不会消失，只是远距离梯度消失，梯度被近距离梯度主导，无法捕获远距离特征。</p>
+</li>
+<li><p>梯度消失的本质：由于RNN模型在时间维度共享参数矩阵，导致针对隐藏状态h求导时，循环计算矩阵乘法，最终梯度上出现了参数矩阵的累乘。</p>
+</li>
+<li><p>LSTM缓解梯度消失的本质：引入门控机制，将矩阵乘法转为逐元素相乘的哈达马积:$c_{t}=f_{t} \odot c_{t-1}+i_{t} \odot \tanh \left(W_{c}\left[h_{t-1}, x_{t}\right]+b_{c}\right)$</p>
+</li>
+</ul>
+<h1 id="GRU"><a href="#GRU" class="headerlink" title="GRU"></a>GRU</h1><p>GRU与LSTM模型相同，引入门控机制，避免梯度消失。区别在于，GRU只用了重置门与更新门两个门结构，参数量较LSTM少，训练速度更快。</p>
+<h1 id="Encoder-Decoder"><a href="#Encoder-Decoder" class="headerlink" title="Encoder-Decoder"></a>Encoder-Decoder</h1><p>RNN模型“上一时刻输出作为下一时刻的输入”的特征，也存在模型输入输出一直是等长的问题。Encoder-Decoder模型通过编码器与解码器两个部分，解决了输入输出定长的问题。其中Encoder端负责文本序列的特征表示获取，Decoder端根据特征向量解码输出序列。</p>
+<p>但Encoder-Decoder模型仍然存在以下问题：</p>
+<ul>
+<li><p>文本序列的特征表示向量选取</p>
+</li>
+<li><p>特征表示向量包含特征的有限性</p>
+</li>
+<li><p>OOV问题</p>
+</li>
+</ul>
+<p>第一个与第二个问题通过<strong>注意力机制</strong>解决，利用注意力机制有选择的关注文本序列重要的特征。</p>
+<p>第三个问题则通过<strong>拷贝机制</strong>以及<strong>Subword编码</strong>解决。</p>
+<h1 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h1><p>Transformer模型主要包含多头自注意力模块、前馈神经网络、残差结构与Dropout，其中核心模块为<strong>多头自注意力模块</strong>，各组件的功能如下：</p>
+<ul>
+<li><p><strong>自注意力机制</strong>在编码器端有选择的关注文本序列重要的特征，解决文本序列的特征表示向量选取及该向量包含特征的有限性问题。</p>
+</li>
+<li><p><strong>多头机制</strong>中每一头映射到不同空间，得到不同侧重点的特征表示，使得特征表示的更充分。</p>
+</li>
+<li><p><strong>残差结构</strong>有效避免梯度消失。</p>
+</li>
+<li><p><strong>Dropout</strong>有效避免过拟合。</p>
+</li>
+<li><p><strong>前馈神经网络</strong>完成隐含层到输出空间的映射</p>
+</li>
+</ul>
+<p>接下来将重点介绍<strong>Transformer</strong>模型的<strong>优点</strong>。</p>
+<h2 id="1-Transformer能够实现长距离依赖"><a href="#1-Transformer能够实现长距离依赖" class="headerlink" title="1. Transformer能够实现长距离依赖"></a>1. Transformer能够实现长距离依赖</h2><p>在自注意力机制中，每个字符能够与其他所有字符计算注意力得分。这种计算方式未考虑时序特征，能够捕获长距离依赖。</p>
+<p>但该方式缺点在于，注意力得分计算的时间复杂度为$O(n^2)$，当输入序列较长时，时间复杂度过高，因此不适合处理过长数据。</p>
+<h2 id="2-Transformer能够实现并行化"><a href="#2-Transformer能够实现并行化" class="headerlink" title="2. Transformer能够实现并行化"></a>2. Transformer能够实现并行化</h2><p>假设输入序列为（a,b,c,d）</p>
+<p>传统RNN需要计算a的embedding向量得到$e_a$,再经过特征抽取得到$h_a$,然后以相同方式计算b,c,d。</p>
+<p>Transformer通过self-attention机制，每个词都可以与全部序列交互，应此模型可以同时处理整个序列，得到$e_a,e_b,e_c,e_d$，然后再一起计算$h_a,h_b,h_c,h_d$。</p>
+<h2 id="3-Transformer适合预训练"><a href="#3-Transformer适合预训练" class="headerlink" title="3. Transformer适合预训练"></a>3. Transformer适合预训练</h2><ul>
+<li><p>RNN模型作出输入数据具有时序性的假设，将前一时刻的输出作为下一时刻的输入。</p>
+</li>
+<li><p>CNN模型基于输入数据为图像的假设，在结构中加入一些特质【如卷积生成特征】，使前向传播更加高效，降低网络的参数量。</p>
+</li>
+</ul>
+<p>与CNN、RNN模型不同， Transformer 模型是一种灵活的架构，对输入数据的结构无限制，因此适合在大规模数据上进行预训练，但该点也带来了Transformer模型在小规模数据集上泛化性差的问题。改进方法包括引入结构偏差或正则化，对大规模未标记数据进行预训练等。</p>
+<h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h3 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h3><p>首先，BERT模型参照GPT模型，采样预训练-微调两阶段的训练方式。但是，与GPT使用Transformer解码器部分不同，BERT为了充分利用上下文信息，使用Transformer编码器部分作为模型结构。</p>
+<h3 id="训练任务"><a href="#训练任务" class="headerlink" title="训练任务"></a>训练任务</h3><p>如果BERT与GPT同样使用语言模型作为学习任务，则模型存在标签泄露的问题【一个词的上下文包含了另一个词的预测目标】。因此为了利用上下文信息，BERT提出MLM掩码语言模型任务，通过上下文预测遮盖词，MLM有关介绍可见-<a href="https://jmxgodlz.xyz/2022/05/30/2022-05-30-不要停止预训练实战(二">不要停止预训练实战(二)-一日看尽MLM</a>-一日看尽MLM/#more)。</p>
+<h3 id="改进点"><a href="#改进点" class="headerlink" title="改进点"></a>改进点</h3><p>针对Transformer结构及预训练方式，BERT模型仍存在以下改进点：</p>
+<ul>
+<li><p>训练方式：针对掩码方式与多任务训练方式进行改进，调整NSP训练任务与掩码的方式</p>
+</li>
+<li><p>模型结构调整：针对Transformer $O(n^2)$的时间复杂度以及输入结构无假设的两点，调整模型结构</p>
+</li>
+<li><p>架构调整：轻量化结构、加强跨块连接、自适应计算时间、分治策略的Transformer</p>
+</li>
+<li><p>预训练：使用完整Encoder模型，如T5，BART模型</p>
+</li>
+<li><p>多模态等下游任务应用</p>
+</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h4ludsfcu4j20sq12jwm7.jpg" alt=""></p>
+<p>BERT模型未来发展方向主要包含：更大更深的模型、多模态、跨语言、小样本、模型蒸馏，有关讨论可见-<a href="https://jmxgodlz.xyz/2021/12/31/2021-12-31-2022预训练的下一步是什么/">2022预训练的下一步是什么</a></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://arxiv.org/pdf/2106.04554.pdf">https://arxiv.org/pdf/2106.04554.pdf</a></p>
+<p><a href="https://www.zhihu.com/question/34878706">https://www.zhihu.com/question/34878706</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>预训练</tag>
+      </tags>
+  </entry>
 </search>

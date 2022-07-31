@@ -20,26 +20,24 @@
     var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression">
+  <meta name="description" content="前言本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～  下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。 RNN自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Coursera Machine Learning 学习笔记（二）Linear Regression">
-<meta property="og:url" content="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/index.html">
+<meta property="og:title" content="一文梳理NLP主要模型发展脉络.md">
+<meta property="og:url" content="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression">
+<meta property="og:description" content="前言本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～  下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。 RNN自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302112701595.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302171951356.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190302173355106.png">
-<meta property="article:published_time" content="2019-03-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-03T13:07:56.721Z">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h335vr18jdj22fa0u043j.jpg">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h4ludsfcu4j20sq12jwm7.jpg">
+<meta property="article:published_time" content="2022-07-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-07-31T15:05:55.453Z">
 <meta property="article:author" content="JMXGODLZZ">
-<meta property="article:tag" content="机器学习">
-<meta property="article:tag" content="Linear Regression">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="预训练">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190302112701595.png">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h335vr18jdj22fa0u043j.jpg">
 
-<link rel="canonical" href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/">
+<link rel="canonical" href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
 
 
 <script id="page-configurations">
@@ -52,7 +50,7 @@
   };
 </script>
 
-  <title>Coursera Machine Learning 学习笔记（二）Linear Regression | JMX Blog</title>
+  <title>一文梳理NLP主要模型发展脉络.md | JMX Blog</title>
   
 
 
@@ -206,7 +204,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jmx.png">
@@ -219,7 +217,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Coursera Machine Learning 学习笔记（二）Linear Regression
+          一文梳理NLP主要模型发展脉络.md
         </h1>
 
         <div class="post-meta">
@@ -228,16 +226,10 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-03-02 00:00:00" itemprop="dateCreated datePublished" datetime="2019-03-02T00:00:00+08:00">2019-03-02</time>
+              <time title="创建时间：2022-07-31 00:00:00 / 修改时间：23:05:55" itemprop="dateCreated datePublished" datetime="2022-07-31T00:00:00+08:00">2022-07-31</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-03 21:07:56" itemprop="dateModified" datetime="2022-01-03T21:07:56+08:00">2022-01-03</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -248,7 +240,7 @@
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
                 </span>
             </span>
 
@@ -268,8 +260,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -279,14 +271,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1.6k</span>
+              <span>2.5k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -298,62 +290,81 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
-<span id="more"></span>
-<blockquote>
-<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
-</blockquote>
-<h1 id="02：Linear-Regression"><a href="#02：Linear-Regression" class="headerlink" title="02：Linear Regression"></a>02：Linear Regression</h1><p>仍然以房价预测作为示例，具体示例仍需见课程内容。<br>符号含义：</p>
-<ol>
-<li>m 为数据集的大小</li>
-<li>x’s为输入数据</li>
-<li>y’s为对应的目标输出结果</li>
-<li>(x,y)为所有训练数据</li>
-<li>(x<sup>i</sup>, y<sup>i</sup>)为具体第i行数据，第i个训练数据</li>
-</ol>
-<p>假设函数h(x)，以一元线性回归为例：<br><img src="https://img-blog.csdnimg.cn/20190302112701595.png" alt="假设函数"></p>
-<script type="math/tex; mode=display">\theta_0：截距  \theta_1：梯度</script><h5 id="Linear-regression-implementation（损失函数cost-function）"><a href="#Linear-regression-implementation（损失函数cost-function）" class="headerlink" title="Linear regression - implementation（损失函数cost function）"></a>Linear regression - implementation（损失函数cost function）</h5><p>计算由不同θ 取值带来的不同损失函数值，本质上是一个最小化问题：使下式取值最小</p>
-<script type="math/tex; mode=display">Minimize ：(h_\theta(x)-y)^2</script><p>即可以看成下述式子：</p>
-<script type="math/tex; mode=display">J(\theta_0,\theta_1) = \frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2</script><script type="math/tex; mode=display">\frac1 m 是求平均\frac1 {2m}是为了数学计算方便</script><p>这个损失函数是均方误差，适用于多类回归问题，当然也可以有其他的损失函数。</p>
-<h5 id="梯度下降算法（Gradient-descent-algorithm）"><a href="#梯度下降算法（Gradient-descent-algorithm）" class="headerlink" title="梯度下降算法（Gradient descent algorithm）"></a>梯度下降算法（Gradient descent algorithm）</h5><p><strong>目的：</strong> 使损失函数J最小</p>
-<h6 id="工作方式"><a href="#工作方式" class="headerlink" title="工作方式"></a>工作方式</h6><ul>
-<li>从随机初始化开始</li>
-</ul>
-<ol>
-<li>对θ 随机赋值，可以为任何值</li>
-<li>每次一点点改变θ，使J(θ)减小</li>
-</ol>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h335vr18jdj22fa0u043j.jpg" alt=""></p>
+<p>下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。</p>
+<h1 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h1><p>自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输入”的特征，该特征能够很好的处理序列数据。因此，RNN模型相较于其他模型，更适合处理自然语言处理任务。</p>
+<p>当待处理序列长度较长时，RNN模型在反向传播的过程中，受链式求导法则的影响，当求导过程导数过小或过大时，会导致梯度消失或梯度爆炸。</p>
+<h1 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h1><p>RNN模型的权重矩阵在时间维度上是共享的。LSTM相较于RNN模型，通过引入门控机制，缓解梯度消失，那么<strong>LSTM如何避免梯度消失？</strong></p>
+<p>这里给出几个关键结论，详细分析后续开一篇介绍。</p>
 <ul>
-<li>每次沿着梯度下降最大的方向</li>
-<li>重复上述操作直到达到局部最小值</li>
-<li>从哪里开始的可能决定你到达哪个局部最优解<br><img src="https://img-blog.csdnimg.cn/2019030217133153.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwNjc2MDMz,size_16,color_FFFFFF,t_70" alt="梯度下降"><br><strong>一个更正规的定义：</strong><br>做下述操作直到收敛：<br><img src="https://img-blog.csdnimg.cn/20190302171951356.png" alt="参数更新"><br>符号解释：</li>
-</ul>
-<ol>
-<li><strong>:=</strong><br>表示赋值<br>NB a = b 是一个正确的断言</li>
-<li>α (alpha)<br>学习率，控制参数更新的步长<ol>
-<li>如果学习率过大，可能无法得到最优解，误差会增大</li>
-<li>如果学习率过小，那么达到最优解需要非常多步，耗费很长时间</li>
-</ol>
+<li><p>RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g=\sum{g_t}$。</p>
 </li>
-</ol>
-<p>注： 参数的更新必须<strong>同步</strong>即需要一个中间变量保存之前的值，原因是二者的式子中包含了对方，一方的更新会导致第二方式子内值的变化。<br><img src="https://img-blog.csdnimg.cn/20190302173355106.png" alt="在这里插入图片描述"><br><strong>当我们达到局部最优解时：</strong></p>
-<ol>
-<li>后面部分的梯度为0</li>
-<li>各参数值就保持不变了 </li>
-</ol>
-<h5 id="使用梯度下降的线性回归算法"><a href="#使用梯度下降的线性回归算法" class="headerlink" title="使用梯度下降的线性回归算法"></a>使用梯度下降的线性回归算法</h5><ul>
-<li>将梯度下降算法应用到最小化损失函数J(θ)上</li>
+<li><p>RNN中总的梯度不会消失，只是远距离梯度消失，梯度被近距离梯度主导，无法捕获远距离特征。</p>
+</li>
+<li><p>梯度消失的本质：由于RNN模型在时间维度共享参数矩阵，导致针对隐藏状态h求导时，循环计算矩阵乘法，最终梯度上出现了参数矩阵的累乘。</p>
+</li>
+<li><p>LSTM缓解梯度消失的本质：引入门控机制，将矩阵乘法转为逐元素相乘的哈达马积:$c_{t}=f_{t} \odot c_{t-1}+i_{t} \odot \tanh \left(W_{c}\left[h_{t-1}, x_{t}\right]+b_{c}\right)$</p>
+</li>
 </ul>
-<script type="math/tex; mode=display">\frac{\partial} {\partial\theta_j}=\frac 1 {2m}\sum_1^m(h_\theta(x^{(i)})-y^{(i)})^2=\frac{\partial} {\partial\theta_j}\frac 1 {2m}\sum_1^m(\theta_0+\theta_1x^{(i)}-y^{(i)})^2</script><p>按照求导公式可以推出：</p>
-<script type="math/tex; mode=display">j=0:\frac{\partial} {\partial\theta_0}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})</script><script type="math/tex; mode=display">j=1:\frac{\partial} {\partial\theta_1}J(\theta_0,\theta_1)=\frac1 m\sum_1^m(h_\theta(x^{(i)})-y^{(i)})*x^{(i)}</script><p>注：因为线性回归是一个凸函数，是一个碗形的图，所以会趋于局部最优解</p>
+<h1 id="GRU"><a href="#GRU" class="headerlink" title="GRU"></a>GRU</h1><p>GRU与LSTM模型相同，引入门控机制，避免梯度消失。区别在于，GRU只用了重置门与更新门两个门结构，参数量较LSTM少，训练速度更快。</p>
+<h1 id="Encoder-Decoder"><a href="#Encoder-Decoder" class="headerlink" title="Encoder-Decoder"></a>Encoder-Decoder</h1><p>RNN模型“上一时刻输出作为下一时刻的输入”的特征，也存在模型输入输出一直是等长的问题。Encoder-Decoder模型通过编码器与解码器两个部分，解决了输入输出定长的问题。其中Encoder端负责文本序列的特征表示获取，Decoder端根据特征向量解码输出序列。</p>
+<p>但Encoder-Decoder模型仍然存在以下问题：</p>
 <ul>
-<li>现在的这种梯度下降算法又叫Batch Gradient Descent 原因是每一次都遍历了整个数据集，后面会提到取数据集中的部分进行的Gradient Descent</li>
-<li>线性回归也有正规方程求解，但其中矩阵运算当数据集过大时不宜使用，这时就可以使用梯度下降</li>
+<li><p>文本序列的特征表示向量选取</p>
+</li>
+<li><p>特征表示向量包含特征的有限性</p>
+</li>
+<li><p>OOV问题</p>
+</li>
 </ul>
-<h5 id="数值求解的正规方程法"><a href="#数值求解的正规方程法" class="headerlink" title="数值求解的正规方程法"></a>数值求解的正规方程法</h5><ul>
-<li>直接通过数值求解来避免繁琐的迭代过程，从数学上求解出min(J(θ))<br><strong>正规方程的优缺点：</strong><br><strong>优点：</strong><br>1.不需要学习率这个参数<br>2.对某些问题可以很快的解决<br><strong>缺点：</strong><br>会很复杂</li>
+<p>第一个与第二个问题通过<strong>注意力机制</strong>解决，利用注意力机制有选择的关注文本序列重要的特征。</p>
+<p>第三个问题则通过<strong>拷贝机制</strong>以及<strong>Subword编码</strong>解决。</p>
+<h1 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h1><p>Transformer模型主要包含多头自注意力模块、前馈神经网络、残差结构与Dropout，其中核心模块为<strong>多头自注意力模块</strong>，各组件的功能如下：</p>
+<ul>
+<li><p><strong>自注意力机制</strong>在编码器端有选择的关注文本序列重要的特征，解决文本序列的特征表示向量选取及该向量包含特征的有限性问题。</p>
+</li>
+<li><p><strong>多头机制</strong>中每一头映射到不同空间，得到不同侧重点的特征表示，使得特征表示的更充分。</p>
+</li>
+<li><p><strong>残差结构</strong>有效避免梯度消失。</p>
+</li>
+<li><p><strong>Dropout</strong>有效避免过拟合。</p>
+</li>
+<li><p><strong>前馈神经网络</strong>完成隐含层到输出空间的映射</p>
+</li>
 </ul>
-<h5 id="面对数据量很大的时候"><a href="#面对数据量很大的时候" class="headerlink" title="面对数据量很大的时候"></a>面对数据量很大的时候</h5><p>这个时候就需要<strong>将数据向量化</strong>利用线性代数中矩阵运算来完成计算</p>
+<p>接下来将重点介绍<strong>Transformer</strong>模型的<strong>优点</strong>。</p>
+<h2 id="1-Transformer能够实现长距离依赖"><a href="#1-Transformer能够实现长距离依赖" class="headerlink" title="1. Transformer能够实现长距离依赖"></a>1. Transformer能够实现长距离依赖</h2><p>在自注意力机制中，每个字符能够与其他所有字符计算注意力得分。这种计算方式未考虑时序特征，能够捕获长距离依赖。</p>
+<p>但该方式缺点在于，注意力得分计算的时间复杂度为$O(n^2)$，当输入序列较长时，时间复杂度过高，因此不适合处理过长数据。</p>
+<h2 id="2-Transformer能够实现并行化"><a href="#2-Transformer能够实现并行化" class="headerlink" title="2. Transformer能够实现并行化"></a>2. Transformer能够实现并行化</h2><p>假设输入序列为（a,b,c,d）</p>
+<p>传统RNN需要计算a的embedding向量得到$e_a$,再经过特征抽取得到$h_a$,然后以相同方式计算b,c,d。</p>
+<p>Transformer通过self-attention机制，每个词都可以与全部序列交互，应此模型可以同时处理整个序列，得到$e_a,e_b,e_c,e_d$，然后再一起计算$h_a,h_b,h_c,h_d$。</p>
+<h2 id="3-Transformer适合预训练"><a href="#3-Transformer适合预训练" class="headerlink" title="3. Transformer适合预训练"></a>3. Transformer适合预训练</h2><ul>
+<li><p>RNN模型作出输入数据具有时序性的假设，将前一时刻的输出作为下一时刻的输入。</p>
+</li>
+<li><p>CNN模型基于输入数据为图像的假设，在结构中加入一些特质【如卷积生成特征】，使前向传播更加高效，降低网络的参数量。</p>
+</li>
+</ul>
+<p>与CNN、RNN模型不同， Transformer 模型是一种灵活的架构，对输入数据的结构无限制，因此适合在大规模数据上进行预训练，但该点也带来了Transformer模型在小规模数据集上泛化性差的问题。改进方法包括引入结构偏差或正则化，对大规模未标记数据进行预训练等。</p>
+<h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h3 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h3><p>首先，BERT模型参照GPT模型，采样预训练-微调两阶段的训练方式。但是，与GPT使用Transformer解码器部分不同，BERT为了充分利用上下文信息，使用Transformer编码器部分作为模型结构。</p>
+<h3 id="训练任务"><a href="#训练任务" class="headerlink" title="训练任务"></a>训练任务</h3><p>如果BERT与GPT同样使用语言模型作为学习任务，则模型存在标签泄露的问题【一个词的上下文包含了另一个词的预测目标】。因此为了利用上下文信息，BERT提出MLM掩码语言模型任务，通过上下文预测遮盖词，MLM有关介绍可见-<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2022/05/30/2022-05-30-不要停止预训练实战(二">不要停止预训练实战(二)-一日看尽MLM</a>-一日看尽MLM/#more)。</p>
+<h3 id="改进点"><a href="#改进点" class="headerlink" title="改进点"></a>改进点</h3><p>针对Transformer结构及预训练方式，BERT模型仍存在以下改进点：</p>
+<ul>
+<li><p>训练方式：针对掩码方式与多任务训练方式进行改进，调整NSP训练任务与掩码的方式</p>
+</li>
+<li><p>模型结构调整：针对Transformer $O(n^2)$的时间复杂度以及输入结构无假设的两点，调整模型结构</p>
+</li>
+<li><p>架构调整：轻量化结构、加强跨块连接、自适应计算时间、分治策略的Transformer</p>
+</li>
+<li><p>预训练：使用完整Encoder模型，如T5，BART模型</p>
+</li>
+<li><p>多模态等下游任务应用</p>
+</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h4ludsfcu4j20sq12jwm7.jpg" alt=""></p>
+<p>BERT模型未来发展方向主要包含：更大更深的模型、多模态、跨语言、小样本、模型蒸馏，有关讨论可见-<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2021/12/31/2021-12-31-2022预训练的下一步是什么/">2022预训练的下一步是什么</a></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2106.04554.pdf">https://arxiv.org/pdf/2106.04554.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/34878706">https://www.zhihu.com/question/34878706</a></p>
 
     </div>
 
@@ -378,7 +389,19 @@
   <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
   <ul class="popular-posts">
     <li class="popular-posts-item">
-      <div class="popular-posts-title"><a href="/2019/03/02/2019-03-02-Coursera Machine Learning 学习笔记（一）Introduction/" rel="bookmark">Coursera Machine Learning 学习笔记（一）Introduction</a></div>
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/03/20/2022-03-20-预训练实战/" rel="bookmark">不要停止预训练实战-Roberta与Albert</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/05/30/2022-05-30-不要停止预训练实战(二)-一日看尽MLM/" rel="bookmark">不要停止预训练实战(二)-一日看尽MLM</a></div>
     </li>
   </ul>
 
@@ -391,7 +414,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/" title="Coursera Machine Learning 学习笔记（二）Linear Regression">https://447428054.github.io/2019/03/02/2019-03-02-Coursera Machine Learning 学习笔记（二）Linear Regression/</a>
+    <a href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/" title="一文梳理NLP主要模型发展脉络.md">https://447428054.github.io/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -402,8 +425,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> 机器学习</a>
-              <a href="/tags/Linear-Regression/" rel="tag"><i class="fa fa-tag"></i> Linear Regression</a>
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/%E9%A2%84%E8%AE%AD%E7%BB%83/" rel="tag"><i class="fa fa-tag"></i> 预训练</a>
           </div>
 
         
@@ -412,13 +435,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/" rel="prev" title="Coursera Machine Learning 学习笔记（一）Introduction">
-      <i class="fa fa-chevron-left"></i> Coursera Machine Learning 学习笔记（一）Introduction
+    <a href="/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/" rel="prev" title="真香～BERT在MAC Pytorch的使用.md">
+      <i class="fa fa-chevron-left"></i> 真香～BERT在MAC Pytorch的使用.md
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/03/2020-01-03-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="next" title="Python数据分析-数据可视化">
-      Python数据分析-数据可视化 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -478,7 +498,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#02%EF%BC%9ALinear-Regression"><span class="nav-number">1.</span> <span class="nav-text">02：Linear Regression</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Linear-regression-implementation%EF%BC%88%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0cost-function%EF%BC%89"><span class="nav-number">1.0.0.0.1.</span> <span class="nav-text">Linear regression - implementation（损失函数cost function）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%AE%97%E6%B3%95%EF%BC%88Gradient-descent-algorithm%EF%BC%89"><span class="nav-number">1.0.0.0.2.</span> <span class="nav-text">梯度下降算法（Gradient descent algorithm）</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="nav-number">1.0.0.0.2.1.</span> <span class="nav-text">工作方式</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95"><span class="nav-number">1.0.0.0.3.</span> <span class="nav-text">使用梯度下降的线性回归算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E5%80%BC%E6%B1%82%E8%A7%A3%E7%9A%84%E6%AD%A3%E8%A7%84%E6%96%B9%E7%A8%8B%E6%B3%95"><span class="nav-number">1.0.0.0.4.</span> <span class="nav-text">数值求解的正规方程法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9D%A2%E5%AF%B9%E6%95%B0%E6%8D%AE%E9%87%8F%E5%BE%88%E5%A4%A7%E7%9A%84%E6%97%B6%E5%80%99"><span class="nav-number">1.0.0.0.5.</span> <span class="nav-text">面对数据量很大的时候</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RNN"><span class="nav-number">2.</span> <span class="nav-text">RNN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LSTM"><span class="nav-number">3.</span> <span class="nav-text">LSTM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GRU"><span class="nav-number">4.</span> <span class="nav-text">GRU</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Encoder-Decoder"><span class="nav-number">5.</span> <span class="nav-text">Encoder-Decoder</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transformer"><span class="nav-number">6.</span> <span class="nav-text">Transformer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Transformer%E8%83%BD%E5%A4%9F%E5%AE%9E%E7%8E%B0%E9%95%BF%E8%B7%9D%E7%A6%BB%E4%BE%9D%E8%B5%96"><span class="nav-number">6.1.</span> <span class="nav-text">1. Transformer能够实现长距离依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Transformer%E8%83%BD%E5%A4%9F%E5%AE%9E%E7%8E%B0%E5%B9%B6%E8%A1%8C%E5%8C%96"><span class="nav-number">6.2.</span> <span class="nav-text">2. Transformer能够实现并行化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Transformer%E9%80%82%E5%90%88%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-number">6.3.</span> <span class="nav-text">3. Transformer适合预训练</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BERT"><span class="nav-number">7.</span> <span class="nav-text">BERT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">7.0.1.</span> <span class="nav-text">模型结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E4%BB%BB%E5%8A%A1"><span class="nav-number">7.0.2.</span> <span class="nav-text">训练任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%B9%E8%BF%9B%E7%82%B9"><span class="nav-number">7.0.3.</span> <span class="nav-text">改进点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">8.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

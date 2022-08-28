@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 11:02:00" itemprop="dateModified" datetime="2022-08-28T11:02:00+08:00">2022-08-28</time>
+                <time title="修改时间：2022-08-28 14:54:21" itemprop="dateModified" datetime="2022-08-28T14:54:21+08:00">2022-08-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -291,114 +291,14 @@
 <li><p><strong>LSTM缓解梯度消失的本质：引入门控机制，将矩阵乘法转为逐元素相乘的哈达马积:</strong>$c_{t}=f_{t} \odot c_{t-1}+i_{t} \odot \tanh \left(W_{c}\left[h_{t-1}, x_{t}\right]+b_{c}\right)$</p>
 </li>
 </ol>
-<h1 id="梯度消失分析"><a href="#梯度消失分析" class="headerlink" title="梯度消失分析"></a>梯度消失分析</h1><h2 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h2><p>RNN的状态更新公式如下：</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-h_t=f(Wh_{t-1}+Ux_t) \tag{1}
-\end{equation}</script><script type="math/tex; mode=display">
-y_t=f(Vh_t) \tag{2}</script><p>其中，h表示隐藏状态，f表示激活函数，W、U表示参数矩阵，x表示输入。从该式中可以看出<strong>不同时间维度的参数矩阵是共享的</strong>。</p>
-<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p>我们在反向传播过程进行梯度求导，以对参数矩阵U求导为例</p>
-<script type="math/tex; mode=display">
-\frac{\partial y_{t}}{\partial U}=\frac{\partial y_{t}}{\partial h_{t}}\frac{\partial h_{t}}{\partial U} \tag{3}</script><p>其中</p>
-<script type="math/tex; mode=display">
-\begin{equation}
-\frac{\partial h_{t}}{\partial U}=\sum_{s=0}^{t}\frac{\partial h_{t}}{\partial h_s}\frac{\partial h_{s}}{\partial U} \tag{4}
-\end{equation}</script><script type="math/tex; mode=display">
-\frac{\partial h_{t}}{\partial h_{s}}=\frac{\partial h_{t}}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial h_{t-2}} \ldots \frac{\partial h_{s+1}}{\partial h_{s}} \tag{5}</script><p>从式（1）（2）中可以递推到$h_0$，每一个隐藏状态h均与参数矩阵有关，最后的梯度$y_t$<strong>依赖于每一个隐藏状态</strong>。</p>
-<p>$以y_2为例,y_2=f(Vh_2)=f(Vf(Wh_1+Ux_1))=f(Vf(Wf(Wh_0+Ux_0)+Ux_1))$,通过全微分求导，$h_t$对$U,h_{t-1}$求偏导数</p>
-<script type="math/tex; mode=display">
-\frac{\partial y_{2}}{\partial U}=\frac{\partial y_{2}}{\partial h_{2}} \frac{\partial h_{2}}{\partial U} = \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial U})
-\\=  \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * (\frac{\partial h_{1}}{\partial h_{0}} * \frac{\partial h_{0}}{\partial U} + \frac{\partial h_{1}}{\partial U}) + \frac{\partial h_{2}}{\partial U})
-\\=\frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial h_0} \frac{\partial h_{0}}{\partial U})
-\tag{6}</script><script type="math/tex; mode=display">
-设:z_t=Wh_{t-1}+Ux_t \tag{7}</script><p>$z_t$代表未经过激活函数的神经网络输出，式（1）转化为：</p>
-<script type="math/tex; mode=display">
-h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
-\frac{\partial h_{t}}{\partial h_{t-1}}=\frac{\partial h_{t}}{\partial z_{t}} \frac{\partial z_{t}}{\partial h_{t-1}} \tag{9}</script><p>式（8）可以拆分为两部分：</p>
-<script type="math/tex; mode=display">
-\frac{\partial z_{t}}{\partial h_{t-1}} = W \tag{10}</script><script type="math/tex; mode=display">
-\frac{\partial h_{t}}{\partial z_{t}}=\left(\begin{array}{cccc}\frac{\partial h_{t, 1}}{\partial z_{t, 1}} & \frac{\partial h_{t, 1}}{\partial z_{t, 2}} & \cdots & \frac{\partial h_{t, 1}}{\partial z_{t, n}} \\ \vdots & \vdots & \ddots & \vdots \\ \frac{\partial h_{t, n}}{\partial z_{t, 1}} & \frac{\partial h_{t, n}}{\partial z_{t, 2}} & \cdots & \frac{\partial h_{t, n}}{\partial z_{t, n}}\end{array}\right) \tag{11}</script><p>其中，$h_t$元素由$z_t$逐元素激活得到，因此两者对应元素才具有依赖关系，未对应元素无依赖关系，导数为0，式（10）成为一个对角矩阵.</p>
-<script type="math/tex; mode=display">
-\frac{\partial h_{t}}{\partial z{t}}=\left(\begin{array}{cccc}f^{\prime}\left(\text { z}_{t, 1}\right) & 0 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & f^{\prime}\left(z_{t, n}\right)\end{array}\right)=diag[f^{\prime}(z_t)] \tag{12}</script><p>根据式（9）（11），式（5）求解得到：</p>
-<script type="math/tex; mode=display">
-\frac{\partial h_{t}}{\partial h_{s}}=\prod_{k=s+1}^{t} W^{T} \operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right] \tag{13}</script><p>在式（12）中已经出现了<strong>矩阵的连乘</strong>，根据矩阵的相容性”$||X Y|| \le ||X|| ||Y||$”</p>
-<script type="math/tex; mode=display">
-||\frac{\partial h_{t}}{\partial h_{s}}||=\prod_{k=s+1}^{t} || W^{T} \operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]|| \le \prod_{k=s+1}^{t} ||W^{T}|| ||\operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]||  \le \prod_{k=s+1}^{t} \sigma_{max} \gamma = (\sigma_{max} \gamma)^{t-s}      \tag{14}</script><p>其中,<strong>$\sigma$ 代表矩阵W的最大奇异解，$\gamma$代表激活函数f的上界</strong>，例如双曲正切函数的上界为$||tanh^{‘}(x)|| \le 1$，sigmoid函数的上界为$||sigmoid^{‘}(x) \le \frac{1}{4}||$。<br>因此在远距离依赖，即t-s较大的情况下，<strong>当$\sigma_{max} \gamma \lt 1$时，会发生梯度消失;当$\sigma_{max} \gamma \gt 1$时，会发生梯度爆炸。</strong></p>
-<p><strong>TIPS：</strong>这里只是不等式情况，因此即使不等式右边远大于1，也有可能发生梯度消失。但是，<strong>在实际情况下，矩阵范数的约束与实际值相当接近。</strong></p>
-<h3 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h3><p>对于传统RNN模型，在训练初期避免梯度消失与参数矩阵的初始化，即最大奇异解$\sigma$值有关。</p>
-<p><strong>避免梯度消失的矩阵最小初始化方式如下：</strong></p>
-<p>以双曲正切函数为例，双曲正切函数的$\gamma = 1$，为了使$\sigma_{max} \gamma = 1$，即$\sigma=1$。</p>
-<p>为了使不等式置信度更高，将矩阵W的所有奇异解设置为1.</p>
-<p>对于每一列而言，$\Sigma_{i} w_{i j}^{2}=1$，其中j代表第j列，矩阵中每个元素是一个n维向量，i代表矩阵第i行，w代表列向量。</p>
-<p>$n \mathbb{E}\left(w^{2}\right)=1$，</p>
-<p>我们假设w服从均匀分布，区间为$[-R,R]$,均匀分布的均值为0，方差$\mathbb{E}\left(w^{2}\right)=\frac{R^2}{3}$【均匀分布方差为$\frac{(b-a)^2}{12}$】。</p>
-<p>代入得到<script type="math/tex">n\frac{R^2}{3}=1 \tag{15}</script></p>
-<p>即<script type="math/tex">R=\frac{\sqrt{3}}{\sqrt{n}} \tag{16}</script></p>
-<p>因此w符合的分布为$[-\frac{\sqrt{3}}{\sqrt{n}}, \frac{\sqrt{3}}{\sqrt{n}}]$，当矩阵是方阵时的Xavier-Glorot initialization分布；当矩阵行列不同时，Xavier-Glorot initialization分布为$\left[-\frac{\sqrt{6}}{\sqrt{m+n}}, \frac{\sqrt{6}}{\sqrt{m+n}}\right]$。</p>
-<h1 id="LSTM提出"><a href="#LSTM提出" class="headerlink" title="LSTM提出"></a>LSTM提出</h1><p>关于RNN反向传播的一些评论：</p>
-<ol>
-<li>RNN模型在时间维度共享参数矩阵</li>
-<li>权重更新的频率与梯度的准确性需要权衡，越少的更新次数，梯度准确性越高，但训练速度也下降了。【由反向传递时，使用上一时刻状态做近似导致】</li>
-<li>梯度消失带来不稳定的梯度流；共享参数带来对最新更新的过度敏感</li>
-<li>针对上述三点，进行错误传播过程的梯度截断是有必要的</li>
-<li>传播梯度分量也是可以的</li>
-</ol>
-<p>LSTM缓解梯度消失的根本方法：<strong>write it down</strong>【将状态记录下来】，但是如果无限制的写入也会带来问题，因此升级为有选择的读写，这样带来了LSTM的三个关键机制：</p>
-<ol>
-<li>有选择的写入，写入关键信息</li>
-<li>有选择的读取信息</li>
-<li>有选择的遗忘信息</li>
-</ol>
-<p>我们可以通过门机制实现选择性，但要如何将这三个机制结合起来呢？</p>
-<h2 id="LSTM原型"><a href="#LSTM原型" class="headerlink" title="LSTM原型"></a>LSTM原型</h2><p>首先，提出一个LSTM原型，本着先读取状态，再写入的原则，每一次更新状态的增量$\tilde{s}_{t}$，由$o_t$选择性读取上一个状态的内容，$i_t$为选择写入，$f_t$选择性遗忘上一状态的内容：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i} s_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} s_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} s_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(o_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \end{aligned} \tag{17}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5efsnq04aj20uw0s8q3v.jpg" alt=""></p>
-<h2 id="三个起效果的改进版本"><a href="#三个起效果的改进版本" class="headerlink" title="三个起效果的改进版本"></a>三个起效果的改进版本</h2><p>按理说上述LSTM原型能够起效果，但事与愿违，<strong>选择性读取与选择性写入未能很好的协调，导致状态值非常大，紧接着门机制变得饱和。</strong>这种情况源于的$s_t$是无界的，会变得非常大从而导致门机制饱和，因此接下来的三个改进的生效版本均是约束$s_t$的大小，将其约束成有界。</p>
-<h3 id="归一化LSTM原型"><a href="#归一化LSTM原型" class="headerlink" title="归一化LSTM原型"></a>归一化LSTM原型</h3><p>针对$s_t$进行正态归一化，$s_t = \frac{s_t-mean(s_t)}{\sqrt{Var(s_t) + 1}}$，也可以类似于层归一化等方式添加缩放与平移分量。</p>
-<p>归一化后的$s_t$从无界成为有界。</p>
-<h3 id="GRU：将写入与遗忘强绑定"><a href="#GRU：将写入与遗忘强绑定" class="headerlink" title="GRU：将写入与遗忘强绑定"></a>GRU：将写入与遗忘强绑定</h3><script type="math/tex; mode=display">s_{t}=\left(1-i_{t}\right) \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \tag{18}</script><p>GRU将写入门与遗忘门绑定起来，使之加和为1。将$s_t$变成$s_{t-1}$与$\tilde{s}_{t}$的element-wise加权平均，当两者均有界时，$s_t$也有界。</p>
-<p>以下给出GRU的计算公式，与原理图：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} r_{t} &=\sigma\left(W_{r} s_{t-1}+U_{r} x_{t}+b_{r}\right) \\ z_{t} &=\sigma\left(W_{z} s_{t-1}+U_{z} x_{t}+b_{z}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(r_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=z_{t} \odot s_{t-1}+\left(1-z_{t}\right) \odot \tilde{s}_{t} \end{aligned} \tag{19}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eifszm1pj20rg0rwt9h.jpg" alt=""></p>
-<h3 id="伪LSTM：通过激活函数约束"><a href="#伪LSTM：通过激活函数约束" class="headerlink" title="伪LSTM：通过激活函数约束"></a>伪LSTM：通过激活函数约束</h3><p>通过激活函数，将$s_t$限制到激活函数的上界内。</p>
-<p>只有在更新写入时，为了避免信息的变化，未使用激活函数约束。</p>
-<p>以下给出伪LSTM的计算公式，与原理图：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i}\left(\phi\left(s_{t-1}\right)\right)+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o}\left(\phi\left(s_{t-1}\right)\right)+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f}\left(\phi\left(s_{t-1}\right)\right)+U_{f} x_{t}+b_{f}\right) \\ \tilde{s}_{t} &=\phi\left(W\left(o_{t} \odot \phi\left(s_{t-1}\right)\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \\ \mathbf{r n n}_{\text {out }} &=\phi\left(s_{t}\right) \end{aligned} \tag{20}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eoc8r5nyj20vi0r6gmm.jpg" alt=""></p>
-<h2 id="LSTM提出-1"><a href="#LSTM提出-1" class="headerlink" title="LSTM提出"></a>LSTM提出</h2><p>LSTM与伪LSTM的几点关键区别如下：</p>
-<ol>
-<li><p>LSTM是先写后读，因此添加了一个“影子”状态，Hochreiter and Schmidhuber等人认为状态s与剩余的RNN cell是独立的。</p>
-</li>
-<li><p>使用门控影子状态$h_{t-1}=o_{t-1}\odot \phi(c_{t-1})$计算门结构，替换激活后的$\phi(c_{t-1})$。这样隐藏状态均是当前时间下的信息，与读取信息时$(o_t \odot s_{t-1})$利用前一时刻信息不同。</p>
-</li>
-<li><p>使用门控影子状态作为RNN cell的输出$h_{t}=o_{t}\odot \phi(c_{t})$，替代$\phi(c_t)$。</p>
-</li>
-</ol>
-<p>这样一来，LSTM的输入就是上一时刻的$c_{t-1},h_{t-1}$，输出为$c_t,h_t$。</p>
-<h3 id="基础LSTM"><a href="#基础LSTM" class="headerlink" title="基础LSTM"></a>基础LSTM</h3><p>基础LSTM单元的公式与原理图如下：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i} h_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} h_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} h_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{c}_{t} &=\phi\left(W h_{t-1}+U x_{t}+b\right) \\ c_{t} &=f_{t} \odot c_{t-1}+i_{t} \odot \tilde{c}_{t} \\ h_{t} &=o_{t} \odot \phi\left(c_{t}\right) \\ \mathrm{rnn}_{\text {out }} &=h_{t} \end{aligned} \tag{21}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eqltmndlj20tc0r2dgx.jpg" alt=""></p>
-<h3 id="The-LSTM-with-peepholes"><a href="#The-LSTM-with-peepholes" class="headerlink" title="The LSTM with peepholes"></a>The LSTM with peepholes</h3><p>利用前一状态$c_{t-1}$来进行门控机制的计算，但输出利用实时信息$c_t$。</p>
-<p>计算公式如下：</p>
-<script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i} h_{t-1}+U_{i} x_{t}+P_{i} c_{t-1}+b_{i}\right) \\ f_{t} &=\sigma\left(W_{f} h_{t-1}+U_{f} x_{t}+P_{f} c_{t-1}+b_{f}\right) \\ \tilde{c}_{t} &=\phi\left(W h_{t-1}+U x_{t}+b\right) \\ c_{t} &=f_{t} \odot c_{t-1}+i_{t} \odot \tilde{c}_{t} \\ o_{t} &=\sigma\left(W_{o} h_{t-1}+U_{o} x_{t}+P_{o} c_{t}+b_{o}\right) \\ h_{t} &=o_{t} \odot \phi\left(c_{t}\right) \\ \operatorname{rnn}_{\text {out }} &=h_{t} \end{aligned} \tag{22}</script><h1 id="LSTM如何解决梯度消失"><a href="#LSTM如何解决梯度消失" class="headerlink" title="LSTM如何解决梯度消失"></a>LSTM如何解决梯度消失</h1><p>从上述分析可以得到，梯度消失中最大原因是需要计算$\frac{\partial h_{t}}{\partial h_{s}}$，如果这个值不随着层数的增加，趋于0或者无穷大，那么就能够捕获到长距离依赖信息。</p>
-<p>LSTM将状态与其他部分分开，状态更新部分变成:</p>
-<script type="math/tex; mode=display">c_t = f_t \odot c_{t-1} + i_t * \tilde c_t = c_{t}=f_{t} \odot c_{t-1}+i_{t} \odot \tanh \left(W_{c}\left[h_{t-1}, x_{t}\right]+b_{c}\right) \tag{23}</script><p>针对状态进行求导，同时$c_t$与$c_{t-1},\tilde c_{t-1},f_t,i_t$有关，因此进行全微分求导</p>
-<script type="math/tex; mode=display">
-\frac{\partial C_{t}}{\partial C_{t-1}} = \frac{\partial C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial C_{t-1}} 
-\\=\frac{\partial C_{t}}{\partial C_{t-1}} +  \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}}
-\\= f_t + i_t * tanh^{'}(*)W_c * o_{t-1} tanh^{'}(C_{t-1}) + \tilde C_t * \sigma^{'}(*)W_i * o_{t-1} tanh^{'}(C_{t-1}) + C_{t-1} * \sigma^{'}(*)W_f * o_{t-1} tanh^{'}(C_{t-1})
-\tag{24}</script><p>从上式可以得到，$\frac{\partial C_{t}}{\partial C_{t-1}}$成为上述4部分的加和，在连乘的任意时刻可能是$[0, +\infty)$的范围，并不会一直趋于0，或者$\infty$。同时$f_t,i_t,o_{t-1},\tilde C_t$都是网络学习的值，也就是说由网络自己学习哪些梯度保留，哪些梯度剔除。</p>
-<p>在这些机制的帮助下，LSTM很好的<strong>缓解了</strong>梯度消失问题。</p>
-<h1 id="LSTM延伸"><a href="#LSTM延伸" class="headerlink" title="LSTM延伸"></a>LSTM延伸</h1><p>Highway网络和residual网络同样包含了LSTM最基本的思想：与原先一层网络输出$x_{t + 1} = Net(x_t)$的计算方式相比，计算增量$x_{t + 1} = x_t + \Delta x_{t + 1}$。</p>
-<p>因此这两种方式，同样会遇到LSTM的问题：读写的不协调。</p>
-<p>关于这两者的介绍，再后续有时间展开进行介绍。</p>
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/34878706">https://www.zhihu.com/question/34878706</a></p>
-<p><a target="_blank" rel="noopener" href="https://r2rt.com/written-memories-understanding-deriving-and-extending-the-lstm.html">https://r2rt.com/written-memories-understanding-deriving-and-extending-the-lstm.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/34878706">https://www.zhihu.com/question/34878706</a></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/109519044">https://zhuanlan.zhihu.com/p/109519044</a></p>
-<p><a target="_blank" rel="noopener" href="https://weberna.github.io/blog/2017/11/15/LSTM-Vanishing-Gradients.html?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=1088177386838749184">https://weberna.github.io/blog/2017/11/15/LSTM-Vanishing-Gradients.html?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=1088177386838749184</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

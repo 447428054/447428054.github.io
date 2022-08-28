@@ -22,7 +22,7 @@
 
   <meta name="description" content="前言首先抛出关键性结论：  RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g&#x3D;\sum{g_t}$。  RNN中总的梯度不会消失，只是远距离梯度消失，梯度被近距离梯度主导，无法捕获远距离特征。  梯度消失的本质：由于RNN模型在时间维度共享参数矩阵，导致针对隐藏状态h求导时，循环计算矩阵乘法，最终梯度上出现了参数矩阵的累乘。  LSTM缓解梯度消失的本质：引入门控">
 <meta property="og:type" content="article">
-<meta property="og:title" content="详解LSTM与梯度消失.md">
+<meta property="og:title" content="公式向-完美解释梯度消失与LSTM.md">
 <meta property="og:url" content="https://447428054.github.io/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/index.html">
 <meta property="og:site_name" content="JMX Blog">
 <meta property="og:description" content="前言首先抛出关键性结论：  RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g&#x3D;\sum{g_t}$。  RNN中总的梯度不会消失，只是远距离梯度消失，梯度被近距离梯度主导，无法捕获远距离特征。  梯度消失的本质：由于RNN模型在时间维度共享参数矩阵，导致针对隐藏状态h求导时，循环计算矩阵乘法，最终梯度上出现了参数矩阵的累乘。  LSTM缓解梯度消失的本质：引入门控">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eoc8r5nyj20vi0r6gmm.jpg">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eqltmndlj20tc0r2dgx.jpg">
 <meta property="article:published_time" content="2022-08-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-08-28T07:00:01.134Z">
+<meta property="article:modified_time" content="2022-08-28T07:12:41.354Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="预训练">
@@ -52,7 +52,7 @@
   };
 </script>
 
-  <title>详解LSTM与梯度消失.md | JMX Blog</title>
+  <title>公式向-完美解释梯度消失与LSTM.md | JMX Blog</title>
   
 
 
@@ -219,7 +219,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          详解LSTM与梯度消失.md
+          公式向-完美解释梯度消失与LSTM.md
         </h1>
 
         <div class="post-meta">
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 15:00:01" itemprop="dateModified" datetime="2022-08-28T15:00:01+08:00">2022-08-28</time>
+                <time title="修改时间：2022-08-28 15:12:41" itemprop="dateModified" datetime="2022-08-28T15:12:41+08:00">2022-08-28</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,14 +279,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.3k</span>
+              <span>9.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>8 分钟</span>
+              <span>9 分钟</span>
             </span>
 
         </div>
@@ -326,10 +326,12 @@ y_t=f(Vh_t) \tag{2}</script><p>其中，h表示隐藏状态，f表示激活函�
 \frac{\partial h_{t}}{\partial h_{s}}=\frac{\partial h_{t}}{\partial h_{t-1}} \frac{\partial h_{t-1}}{\partial h_{t-2}} \ldots \frac{\partial h_{s+1}}{\partial h_{s}} \tag{5}</script><p>从式（1）（2）中可以递推到$h_0$，每一个隐藏状态h均与参数矩阵有关，最后的梯度$y_t$<strong>依赖于每一个隐藏状态</strong>。</p>
 <p>$以y_2为例,y_2=f(Vh_2)=f(Vf(Wh_1+Ux_1))=f(Vf(Wf(Wh_0+Ux_0)+Ux_1))$,通过全微分求导，$h_t$对$U,h_{t-1}$求偏导数</p>
 <script type="math/tex; mode=display">
-\frac{\partial y_{2}}{\partial U}=\frac{\partial y_{2}}{\partial h_{2}} \frac{\partial h_{2}}{\partial U} 
-\\ = \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial U})
-\\=  \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * (\frac{\partial h_{1}}{\partial h_{0}} * \frac{\partial h_{0}}{\partial U} + \frac{\partial h_{1}}{\partial U}) + \frac{\partial h_{2}}{\partial U})
-\\=\frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial h_0} \frac{\partial h_{0}}{\partial U})
+\begin{aligned} 
+\frac{\partial y_{2}}{\partial U}&=\frac{\partial y_{2}}{\partial h_{2}} \frac{\partial h_{2}}{\partial U} 
+\\ &= \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial U})
+\\ &=  \frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial h_{1}} * (\frac{\partial h_{1}}{\partial h_{0}} * \frac{\partial h_{0}}{\partial U} + \frac{\partial h_{1}}{\partial U}) + \frac{\partial h_{2}}{\partial U})
+\\ &=\frac{\partial y_{2}}{\partial h_{2}} (\frac{\partial h_{2}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial U} + \frac{\partial h_{2}}{\partial h_1} \frac{\partial h_{1}}{\partial h_0} \frac{\partial h_{0}}{\partial U})
+\end{aligned}
 \tag{6}</script><script type="math/tex; mode=display">
 设:z_t=Wh_{t-1}+Ux_t \tag{7}</script><p>$z_t$代表未经过激活函数的神经网络输出，式（1）转化为：</p>
 <script type="math/tex; mode=display">
@@ -343,8 +345,12 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <script type="math/tex; mode=display">
 \frac{\partial h_{t}}{\partial h_{s}}=\prod_{k=s+1}^{t} W^{T} \operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right] \tag{13}</script><p>在式（12）中已经出现了<strong>矩阵的连乘</strong>，根据矩阵的相容性”$||X Y|| \le ||X|| ||Y||$”</p>
 <script type="math/tex; mode=display">
-||\frac{\partial h_{t}}{\partial h_{s}}||=\prod_{k=s+1}^{t} || W^{T} \operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]|| 
-\\ \le \prod_{k=s+1}^{t} ||W^{T}|| ||\operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]||  \le \prod_{k=s+1}^{t} \sigma_{max} \gamma = (\sigma_{max} \gamma)^{t-s}      \tag{14}</script><p>其中,<strong>$\sigma$ 代表矩阵W的最大奇异解，$\gamma$代表激活函数f的上界</strong>，例如双曲正切函数的上界为$||tanh^{‘}(x)|| \le 1$，sigmoid函数的上界为$||sigmoid^{‘}(x) \le \frac{1}{4}||$。<br>因此在远距离依赖，即t-s较大的情况下，<strong>当$\sigma_{max} \gamma \lt 1$时，会发生梯度消失;当$\sigma_{max} \gamma \gt 1$时，会发生梯度爆炸。</strong></p>
+\begin{aligned} 
+||\frac{\partial h_{t}}{\partial h_{s}}||&=\prod_{k=s+1}^{t} || W^{T} \operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]|| 
+\\ &\le \prod_{k=s+1}^{t} ||W^{T}|| ||\operatorname{diag}\left[f^{\prime}\left(\operatorname{z}_{k}\right)\right]||  
+\\ &\le \prod_{k=s+1}^{t} \sigma_{max} \gamma = (\sigma_{max} \gamma)^{t-s}   
+\end{aligned} 
+\tag{14}</script><p>其中,<strong>$\sigma$ 代表矩阵W的最大奇异解，$\gamma$代表激活函数f的上界</strong>，例如双曲正切函数的上界为$||tanh^{‘}(x)|| \le 1$，sigmoid函数的上界为$||sigmoid^{‘}(x) \le \frac{1}{4}||$。<br>因此在远距离依赖，即t-s较大的情况下，<strong>当$\sigma_{max} \gamma \lt 1$时，会发生梯度消失;当$\sigma_{max} \gamma \gt 1$时，会发生梯度爆炸。</strong></p>
 <p><strong>TIPS：</strong>这里只是不等式情况，因此即使不等式右边远大于1，也有可能发生梯度消失。但是，<strong>在实际情况下，矩阵范数的约束与实际值相当接近。</strong></p>
 <h3 id="补充说明"><a href="#补充说明" class="headerlink" title="补充说明"></a>补充说明</h3><p>对于传统RNN模型，在训练初期避免梯度消失与参数矩阵的初始化，即最大奇异解$\sigma$值有关。</p>
 <p><strong>避免梯度消失的矩阵最小初始化方式如下：</strong></p>
@@ -406,11 +412,13 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <p>LSTM将状态与其他部分分开，状态更新部分变成:</p>
 <script type="math/tex; mode=display">c_t = f_t \odot c_{t-1} + i_t * \tilde c_t = c_{t}=f_{t} \odot c_{t-1}+i_{t} \odot \tanh \left(W_{c}\left[h_{t-1}, x_{t}\right]+b_{c}\right) \tag{23}</script><p>针对状态进行求导，同时$c_t$与$c_{t-1},\tilde c_{t-1},f_t,i_t$有关，因此进行全微分求导</p>
 <script type="math/tex; mode=display">
-\frac{\partial C_{t}}{\partial C_{t-1}} = \frac{\partial C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial C_{t-1}} 
-\\=\frac{\partial C_{t}}{\partial C_{t-1}} +  \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} 
-\\ + \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}}
-\\= f_t + i_t * tanh^{'}(*)W_c * o_{t-1} tanh^{'}(C_{t-1}) 
-\\ + \tilde C_t * \sigma^{'}(*)W_i * o_{t-1} tanh^{'}(C_{t-1}) + C_{t-1} * \sigma^{'}(*)W_f * o_{t-1} tanh^{'}(C_{t-1})
+\begin{aligned}
+\frac{\partial C_{t}}{\partial C_{t-1}} &= \frac{\partial C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial C_{t-1}} 
+\\ &=\frac{\partial C_{t}}{\partial C_{t-1}} +  \frac{\partial C_{t}}{\partial \tilde C_{t}} * \frac{\partial \tilde C_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} 
+\\ &+ \frac{\partial C_{t}}{\partial i_{t}} * \frac{\partial i_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}} + \frac{\partial C_{t}}{\partial f_{t}} * \frac{\partial f_{t}}{\partial h_{t-1}} * \frac{\partial h_{t-1}}{\partial C_{t-1}}
+\\ &= f_t + i_t * tanh^{'}(*)W_c * o_{t-1} tanh^{'}(C_{t-1}) 
+\\ &+ \tilde C_t * \sigma^{'}(*)W_i * o_{t-1} tanh^{'}(C_{t-1}) + C_{t-1} * \sigma^{'}(*)W_f * o_{t-1} tanh^{'}(C_{t-1})
+\end{aligned}
 \tag{24}</script><p>从上式可以得到，$\frac{\partial C_{t}}{\partial C_{t-1}}$成为上述4部分的加和，在连乘的任意时刻可能是$[0, +\infty)$的范围，并不会一直趋于0，或者$\infty$。同时$f_t,i_t,o_{t-1},\tilde C_t$都是网络学习的值，也就是说由网络自己学习哪些梯度保留，哪些梯度剔除。</p>
 <p>在这些机制的帮助下，LSTM很好的<strong>缓解了</strong>梯度消失问题。</p>
 <h1 id="LSTM延伸"><a href="#LSTM延伸" class="headerlink" title="LSTM延伸"></a>LSTM延伸</h1><p>Highway网络和residual网络同样包含了LSTM最基本的思想：与原先一层网络输出$x_{t + 1} = Net(x_t)$的计算方式相比，计算增量$x_{t + 1} = x_t + \Delta x_{t + 1}$。</p>
@@ -470,7 +478,7 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/" title="详解LSTM与梯度消失.md">https://447428054.github.io/2022/08/07/2022-08-07-详解LSTM与梯度消失/</a>
+    <a href="https://447428054.github.io/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/" title="公式向-完美解释梯度消失与LSTM.md">https://447428054.github.io/2022/08/07/2022-08-07-详解LSTM与梯度消失/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -606,7 +614,7 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
     </div>
     <ul class="links-of-recent-posts-list">
         <li class="links-of-recent-posts-item">
-          <a href="/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/" title="2022&#x2F;08&#x2F;07&#x2F;2022-08-07-详解LSTM与梯度消失&#x2F;">详解LSTM与梯度消失.md</a>
+          <a href="/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/" title="2022&#x2F;08&#x2F;07&#x2F;2022-08-07-详解LSTM与梯度消失&#x2F;">公式向-完美解释梯度消失与LSTM.md</a>
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/" title="2022&#x2F;07&#x2F;31&#x2F;2022-07-31-一文梳理NLP主要模型发展脉络&#x2F;">一文梳理NLP主要模型发展脉络.md</a>

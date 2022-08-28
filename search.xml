@@ -1700,7 +1700,7 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
 <h1 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h1><p>自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输入”的特征，该特征能够很好的处理序列数据。因此，RNN模型相较于其他模型，更适合处理自然语言处理任务。</p>
 <p>当待处理序列长度较长时，RNN模型在反向传播的过程中，受链式求导法则的影响，当求导过程导数过小或过大时，会导致梯度消失或梯度爆炸。</p>
 <h1 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h1><p>RNN模型的权重矩阵在时间维度上是共享的。LSTM相较于RNN模型，通过引入门控机制，缓解梯度消失，那么<strong>LSTM如何避免梯度消失？</strong></p>
-<p>这里给出几个关键结论，详细分析后续开一篇介绍。</p>
+<p>这里给出几个关键结论，详细分析见<a href="https://jmxgodlz.xyz/2022/08/07/2022-08-07-详解LSTM与梯度消失/#more">详解LSTM与梯度消失</a>。</p>
 <ul>
 <li><p>RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g=\sum{g_t}$。</p>
 </li>

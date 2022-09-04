@@ -194,6 +194,129 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" class="post-title-link" itemprop="url">Pytorch多机多卡的多种打开方式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-04 00:00:00 / 修改时间：21:58:38" itemprop="dateCreated datePublished" datetime="2022-09-04T00:00:00+08:00">2022-09-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>12k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>11 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在上一篇介绍<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2021/09/12/2021-09-12-Pytorch多卡训练原理/#more">多卡训练原理</a>的基础上，本篇主要介绍Pytorch多机多卡的几种实现方式：<strong>DDP、multiprocessing、Accelerate</strong>。</p>
+<p>在介绍具体实现之前，torch.distributed 涉及的分布式概念如下：</p>
+<ul>
+<li><strong>group：</strong>进程组，通常一个job只有一个组，即一个world，使用多机时，一个group产生了多个world。</li>
+<li><strong>world_size：</strong>一个job的全局进程数量</li>
+<li><strong>rank：</strong>进程的序号，一般设置rank=0的主机为master节点。</li>
+<li><strong>local_rank：</strong>进程内部的GPU序号。</li>
+</ul>
+<p>比如，有两台8卡机器，这时具有一个group，2个world，每个world_size为8，第一个主机rank=0，显卡编号依次为0,…,7，第二个主机rank=1，显卡编号依次为0,…,7。</p>
+<p>在多机多卡的分布式训练过程中，为每个进程的模型、数据配置好这些参数至关重要。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1292,145 +1415,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2021/12/31/2021-12-31-2022%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/jmx.png">
-      <meta itemprop="name" content="JMXGODLZZ">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="JMX Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/12/31/2021-12-31-2022%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88/" class="post-title-link" itemprop="url">2022预训练的下一步是什么</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-12-31 00:00:00" itemprop="dateCreated datePublished" datetime="2021-12-31T00:00:00+08:00">2021-12-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-03 21:17:45" itemprop="dateModified" datetime="2022-01-03T21:17:45+08:00">2022-01-03</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">年度总结</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/2021/" itemprop="url" rel="index"><span itemprop="name">2021</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/12/31/2021-12-31-2022%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/12/31/2021-12-31-2022%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文内容为自己对2021年自身算法经历的回顾，同时展望了未来研究的方向。如有理解不对的地方，欢迎指正批评。</p>
-<p>2021年研究热点</p>
-<ul>
-<li>大规模预训练</li>
-<li>对比学习</li>
-<li>prompt</li>
-</ul>
-<p>展望未来</p>
-<p>回顾自身算法经历</p>
-<ol>
-<li>需求分析</li>
-<li>模型选型及设计</li>
-<li>数据分析</li>
-<li>模型训练及优化</li>
-<li>分析负例<ol>
-<li>检查数据质量是否过差</li>
-<li>根据指标进行分析<ul>
-<li>recall低</li>
-<li>precision低</li>
-</ul>
-</li>
-</ol>
-</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/12/31/2021-12-31-2022%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84%E4%B8%8B%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1502,7 +1486,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">18</span>
+          <span class="site-state-item-count">19</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1538,6 +1522,9 @@
     </div>
     <ul class="links-of-recent-posts-list">
         <li class="links-of-recent-posts-item">
+          <a href="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" title="2022&#x2F;09&#x2F;04&#x2F;2022-09-04-Pytorch多机多卡的多种打开方式&#x2F;">Pytorch多机多卡的多种打开方式</a>
+        </li>
+        <li class="links-of-recent-posts-item">
           <a href="/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/" title="2022&#x2F;08&#x2F;07&#x2F;2022-08-07-详解LSTM与梯度消失&#x2F;">公式向-完美解释梯度消失与LSTM.md</a>
         </li>
         <li class="links-of-recent-posts-item">
@@ -1548,9 +1535,6 @@
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/" title="2022&#x2F;06&#x2F;25&#x2F;2022-06-25-NLP技能树学习路线-（一）路线总览&#x2F;">NLP技能树学习路线-（一）路线总览.md</a>
-        </li>
-        <li class="links-of-recent-posts-item">
-          <a href="/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/" title="2022&#x2F;05&#x2F;30&#x2F;2022-05-30-不要停止预训练实战(二)-一日看尽MLM&#x2F;">不要停止预训练实战(二)-一日看尽MLM</a>
         </li>
     </ul>
   </div>
@@ -1850,12 +1834,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">124k</span>
+    <span title="站点总字数">136k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:53</span>
+    <span title="站点阅读时长">2:04</span>
 </div>
   <div class="powered-by">
 

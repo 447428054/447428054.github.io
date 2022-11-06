@@ -41,6 +41,65 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
+    <title>Coursera Machine Learning 学习笔记（一）Introduction</title>
+    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/</url>
+    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（一）Introduction</p>
+<span id="more"></span>
+<blockquote>
+<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
+</blockquote>
+<h1 id="01-Introduction"><a href="#01-Introduction" class="headerlink" title="01:Introduction"></a>01:Introduction</h1><h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><ul>
+<li><p>Arthur Samuel(1959)<br>  <strong>Machine Learning:</strong>“Field of study that gives computers the ability to learn without being explicitly programmed”</p>
+</li>
+<li><p>Tom Michel(1999)<br>  <strong>Well posed learning problem:</strong>“A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”<br>  在下棋的例子中：</p>
+</li>
+</ul>
+<ol>
+<li>E经验为1000场下棋游戏</li>
+<li>T任务为下棋</li>
+<li>P评价准则为是否获胜</li>
+</ol>
+<ul>
+<li><p>学习算法的类型<br>  。 有监督学习（Supervised learning）</p>
+<pre><code>      Teach the computer how to do something, then let it use it;s new found knowledge to do it
+
+      注：一般是有标注的训练集
+</code></pre><p>  。无监督学习（Unsupervised learning）<br>  Let the computer learn how to do something, and use this to determine structure and patterns in data</p>
+<pre><code>      注：一般是无标注训练集，使机器从中提取特征，常见算法为聚类
+</code></pre><p>  。强化学习（Reinforcement learning）</p>
+<p>  。推荐系统（Recommender systems）</p>
+</li>
+</ul>
+<h3 id="有监督学习介绍"><a href="#有监督学习介绍" class="headerlink" title="有监督学习介绍"></a>有监督学习介绍</h3><h5 id="问题分类："><a href="#问题分类：" class="headerlink" title="问题分类："></a>问题分类：</h5><ul>
+<li>预测问题<br>课程内拿房价预测作为示例：具体可以看课程内容<br>预测问题也叫回归问题，具有以下特征：</li>
+</ul>
+<ol>
+<li>预测连续的输出</li>
+<li>没有明显得离散划分</li>
+</ol>
+<ul>
+<li>分类问题<br>课程内以肿瘤划分作为示例</li>
+</ul>
+<h3 id="无监督学习介绍"><a href="#无监督学习介绍" class="headerlink" title="无监督学习介绍"></a>无监督学习介绍</h3><p>在无监督学习里我们获得的是没有标注的数据，将这些数据划分成不同的数据簇</p>
+<h5 id="聚类算法"><a href="#聚类算法" class="headerlink" title="聚类算法"></a>聚类算法</h5><p>具体应用示例：</p>
+<ol>
+<li>新闻划分</li>
+<li>基因组排序</li>
+<li>分布式计算机集群划分</li>
+<li>社交网络划分</li>
+<li>天文数据分析</li>
+</ol>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>Introduction</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Coursera Machine Learning 学习笔记（二）Linear Regression</title>
     <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/</url>
     <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
@@ -107,65 +166,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>机器学习</tag>
         <tag>Linear Regression</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Coursera Machine Learning 学习笔记（一）Introduction</title>
-    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/</url>
-    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（一）Introduction</p>
-<span id="more"></span>
-<blockquote>
-<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
-</blockquote>
-<h1 id="01-Introduction"><a href="#01-Introduction" class="headerlink" title="01:Introduction"></a>01:Introduction</h1><h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><ul>
-<li><p>Arthur Samuel(1959)<br>  <strong>Machine Learning:</strong>“Field of study that gives computers the ability to learn without being explicitly programmed”</p>
-</li>
-<li><p>Tom Michel(1999)<br>  <strong>Well posed learning problem:</strong>“A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”<br>  在下棋的例子中：</p>
-</li>
-</ul>
-<ol>
-<li>E经验为1000场下棋游戏</li>
-<li>T任务为下棋</li>
-<li>P评价准则为是否获胜</li>
-</ol>
-<ul>
-<li><p>学习算法的类型<br>  。 有监督学习（Supervised learning）</p>
-<pre><code>      Teach the computer how to do something, then let it use it;s new found knowledge to do it
-
-      注：一般是有标注的训练集
-</code></pre><p>  。无监督学习（Unsupervised learning）<br>  Let the computer learn how to do something, and use this to determine structure and patterns in data</p>
-<pre><code>      注：一般是无标注训练集，使机器从中提取特征，常见算法为聚类
-</code></pre><p>  。强化学习（Reinforcement learning）</p>
-<p>  。推荐系统（Recommender systems）</p>
-</li>
-</ul>
-<h3 id="有监督学习介绍"><a href="#有监督学习介绍" class="headerlink" title="有监督学习介绍"></a>有监督学习介绍</h3><h5 id="问题分类："><a href="#问题分类：" class="headerlink" title="问题分类："></a>问题分类：</h5><ul>
-<li>预测问题<br>课程内拿房价预测作为示例：具体可以看课程内容<br>预测问题也叫回归问题，具有以下特征：</li>
-</ul>
-<ol>
-<li>预测连续的输出</li>
-<li>没有明显得离散划分</li>
-</ol>
-<ul>
-<li>分类问题<br>课程内以肿瘤划分作为示例</li>
-</ul>
-<h3 id="无监督学习介绍"><a href="#无监督学习介绍" class="headerlink" title="无监督学习介绍"></a>无监督学习介绍</h3><p>在无监督学习里我们获得的是没有标注的数据，将这些数据划分成不同的数据簇</p>
-<h5 id="聚类算法"><a href="#聚类算法" class="headerlink" title="聚类算法"></a>聚类算法</h5><p>具体应用示例：</p>
-<ol>
-<li>新闻划分</li>
-<li>基因组排序</li>
-<li>分布式计算机集群划分</li>
-<li>社交网络划分</li>
-<li>天文数据分析</li>
-</ol>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-        <tag>Introduction</tag>
       </tags>
   </entry>
   <entry>
@@ -333,37 +333,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
-    <title>Attention可视化</title>
-    <url>/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/</url>
-    <content><![CDATA[<p>本文介绍了Attention可视化的方式，包含两种热力图可视化、文本可视化。</p>
-<ol>
-<li>使用matplotlib与seaborn完成attention矩阵的热力图绘制</li>
-<li>根据注意力矩阵，得到html颜色深浅代表相关性强弱</li>
-</ol>
-<span id="more"></span>
-<h1 id="热力图可视化"><a href="#热力图可视化" class="headerlink" title="热力图可视化"></a>热力图可视化</h1><blockquote>
-<p>使用matplotlib与seaborn完成attention矩阵的热力图绘制</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># author:   LZ</span><br><span class="line"># create time:  2021/11/15 14:54</span><br><span class="line"># file: genpic.py</span><br><span class="line"># IDE:  PyCharm</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pandas as pd</span><br><span class="line">import matplotlib.ticker as ticker</span><br><span class="line">import seaborn as sns</span><br><span class="line">import matplotlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newgperes = &#123;&#125;</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">     for w, a in v.items():</span><br><span class="line">          newgperes.setdefault(w, &#123;&#125;)</span><br><span class="line">          newgperes[w][k] = a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.rcParams[&#x27;font.sans-serif&#x27;]=[&#x27;Arial Unicode MS&#x27;]</span><br><span class="line">plt.rcParams[&#x27;axes.unicode_minus&#x27;] = False</span><br><span class="line">gpedata = pd.DataFrame(newgperes)</span><br><span class="line">ax = sns.heatmap(gpedata, cmap=&quot;YlOrRd&quot;)</span><br><span class="line">ax.xaxis.tick_top()</span><br><span class="line">ax.set_yticklabels(ax.get_yticklabels(), rotation=0)</span><br><span class="line">plt.savefig(&#x27;loctest.png&#x27;)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p><img src="https://s3.bmp.ovh/imgs/2021/12/4100fe169b8b9921.png" alt="gpe.png"></p>
-<h1 id="NLP文本注意力可视化"><a href="#NLP文本注意力可视化" class="headerlink" title="NLP文本注意力可视化"></a>NLP文本注意力可视化</h1><blockquote>
-<p>根据注意力矩阵，得到html颜色深浅代表相关性强弱</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Credits to Lin Zhouhan(@hantek) for the complete visualization code</span><br><span class="line">import random, os, numpy, scipy</span><br><span class="line">from codecs import open</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createHTML(texts, weights, savepath):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Creates a html file with text heat.</span><br><span class="line">	weights: attention weights for visualizing</span><br><span class="line">	texts: text on which attention weights are to be visualized</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    fOut = open(savepath, &quot;w&quot;, encoding=&quot;utf-8&quot;)</span><br><span class="line">    part1 = &quot;&quot;&quot;</span><br><span class="line">    &lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">    body &#123;</span><br><span class="line">    font-family: Sans-Serif;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/style&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">    &lt;h3&gt;</span><br><span class="line">    Heatmaps</span><br><span class="line">    &lt;/h3&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    part2 = &quot;&quot;&quot;</span><br><span class="line">    var color = &quot;255,0,0&quot;;</span><br><span class="line">    var ngram_length = 3;</span><br><span class="line">    var half_ngram = 1;</span><br><span class="line">    for (var k=0; k &lt; any_text.length; k++) &#123;</span><br><span class="line">    var tokens = any_text[k].split(&quot; &quot;);</span><br><span class="line">    var intensity = new Array(tokens.length);</span><br><span class="line">    var max_intensity = Number.MIN_SAFE_INTEGER;</span><br><span class="line">    var min_intensity = Number.MAX_SAFE_INTEGER;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = 0.0;</span><br><span class="line">    for (var j = -half_ngram; j &lt; ngram_length-half_ngram; j++) &#123;</span><br><span class="line">    if (i+j &lt; intensity.length &amp;&amp; i+j &gt; -1) &#123;</span><br><span class="line">    intensity[i] += trigram_weights[k][i + j];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (i == 0 || i == intensity.length-1) &#123;</span><br><span class="line">    intensity[i] /= 2.0;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    intensity[i] /= 3.0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &gt; max_intensity) &#123;</span><br><span class="line">    max_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &lt; min_intensity) &#123;</span><br><span class="line">    min_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    var denominator = max_intensity - min_intensity;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = (intensity[i] - min_intensity) / denominator;</span><br><span class="line">    &#125;</span><br><span class="line">    if (k%2 == 0) &#123;</span><br><span class="line">    var heat_text = &quot;&lt;p&gt;&lt;br&gt;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    var heat_text = &quot;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    var space = &quot;&quot;;</span><br><span class="line">    for (var i = 0; i &lt; tokens.length; i++) &#123;</span><br><span class="line">    heat_text += &quot;&lt;span style=&#x27;background-color:rgba(&quot; + color + &quot;,&quot; + intensity[i] + &quot;)&#x27;&gt;&quot; + space + tokens[i] + &quot;&lt;/span&gt;&quot;;</span><br><span class="line">    if (space == &quot;&quot;) &#123;</span><br><span class="line">    space = &quot; &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //heat_text += &quot;&lt;p&gt;&quot;;</span><br><span class="line">    document.body.innerHTML += heat_text;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">    &lt;/html&gt;&quot;&quot;&quot;</span><br><span class="line">    putQuote = lambda x: &quot;\&quot;%s\&quot;&quot; % x</span><br><span class="line">    textsString = &quot;var any_text = [%s];\n&quot; % (&quot;,&quot;.join(map(putQuote, texts)))</span><br><span class="line">    weightsString = &quot;var trigram_weights = [%s];\n&quot; % (&quot;,&quot;.join(map(str, weights)))</span><br><span class="line">    fOut.write(part1)</span><br><span class="line">    fOut.write(textsString)</span><br><span class="line">    fOut.write(weightsString)</span><br><span class="line">    fOut.write(part2)</span><br><span class="line">    fOut.close()</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">matrix = []</span><br><span class="line"># 获取矩阵表示</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">    matrix.append(list(v.values()))</span><br><span class="line">str_ = &#x27;武 汉 市 长 江 大 桥&#x27;</span><br><span class="line">createHTML([str_] * 7,</span><br><span class="line">           matrix,</span><br><span class="line">           &#x27;./visualization/test.html&#x27;)</span><br></pre></td></tr></table></figure>
-<p><img src="https://i.bmp.ovh/imgs/2021/12/04573a3a1f1fb2b6.png" alt="wx20211211-193035@2x.png"></p>
-<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/qq_38607066/article/details/101345282#t17">https://blog.csdn.net/qq_38607066/article/details/101345282#t17</a></p>
-<p><a href="https://blog.csdn.net/u010490755/article/details/89574847">https://blog.csdn.net/u010490755/article/details/89574847</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>Attention</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Nvidia-Docker配置python3与pytorch环境</title>
     <url>/2021/09/28/2021-09-28-Nvidia-Docker%E9%85%8D%E7%BD%AEpython3%E4%B8%8Epytorch%E7%8E%AF%E5%A2%83/</url>
     <content><![CDATA[<p>本文将介绍Nvidia-Docker配置python3与pytorch环境，完成docker容器内安装GPU深度学习环境。<br>TIPS：为了避免下载源过慢，建议添加中科大源/清华源<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1. sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak</span><br><span class="line">2. sudo sed -i &#x27;s/archive.ubuntu.com/mirrors.ustc.edu.cn/g&#x27; /etc/apt/sources.list</span><br><span class="line">3. sudo apt update</span><br></pre></td></tr></table></figure></p>
@@ -446,6 +415,37 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>深度学习</tag>
         <tag>权重初始化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Attention可视化</title>
+    <url>/2021/12/24/2021-12-24-Attention%E5%8F%AF%E8%A7%86%E5%8C%96/</url>
+    <content><![CDATA[<p>本文介绍了Attention可视化的方式，包含两种热力图可视化、文本可视化。</p>
+<ol>
+<li>使用matplotlib与seaborn完成attention矩阵的热力图绘制</li>
+<li>根据注意力矩阵，得到html颜色深浅代表相关性强弱</li>
+</ol>
+<span id="more"></span>
+<h1 id="热力图可视化"><a href="#热力图可视化" class="headerlink" title="热力图可视化"></a>热力图可视化</h1><blockquote>
+<p>使用matplotlib与seaborn完成attention矩阵的热力图绘制</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># -*- coding:utf-8 -*-</span><br><span class="line"># author:   LZ</span><br><span class="line"># create time:  2021/11/15 14:54</span><br><span class="line"># file: genpic.py</span><br><span class="line"># IDE:  PyCharm</span><br><span class="line"></span><br><span class="line">import numpy as np</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line">import pandas as pd</span><br><span class="line">import matplotlib.ticker as ticker</span><br><span class="line">import seaborn as sns</span><br><span class="line">import matplotlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">newgperes = &#123;&#125;</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">     for w, a in v.items():</span><br><span class="line">          newgperes.setdefault(w, &#123;&#125;)</span><br><span class="line">          newgperes[w][k] = a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.rcParams[&#x27;font.sans-serif&#x27;]=[&#x27;Arial Unicode MS&#x27;]</span><br><span class="line">plt.rcParams[&#x27;axes.unicode_minus&#x27;] = False</span><br><span class="line">gpedata = pd.DataFrame(newgperes)</span><br><span class="line">ax = sns.heatmap(gpedata, cmap=&quot;YlOrRd&quot;)</span><br><span class="line">ax.xaxis.tick_top()</span><br><span class="line">ax.set_yticklabels(ax.get_yticklabels(), rotation=0)</span><br><span class="line">plt.savefig(&#x27;loctest.png&#x27;)</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://s3.bmp.ovh/imgs/2021/12/4100fe169b8b9921.png" alt="gpe.png"></p>
+<h1 id="NLP文本注意力可视化"><a href="#NLP文本注意力可视化" class="headerlink" title="NLP文本注意力可视化"></a>NLP文本注意力可视化</h1><blockquote>
+<p>根据注意力矩阵，得到html颜色深浅代表相关性强弱</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Credits to Lin Zhouhan(@hantek) for the complete visualization code</span><br><span class="line">import random, os, numpy, scipy</span><br><span class="line">from codecs import open</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def createHTML(texts, weights, savepath):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Creates a html file with text heat.</span><br><span class="line">	weights: attention weights for visualizing</span><br><span class="line">	texts: text on which attention weights are to be visualized</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    fOut = open(savepath, &quot;w&quot;, encoding=&quot;utf-8&quot;)</span><br><span class="line">    part1 = &quot;&quot;&quot;</span><br><span class="line">    &lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">    &lt;head&gt;</span><br><span class="line">    &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;</span><br><span class="line">    &lt;style&gt;</span><br><span class="line">    body &#123;</span><br><span class="line">    font-family: Sans-Serif;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/style&gt;</span><br><span class="line">    &lt;/head&gt;</span><br><span class="line">    &lt;body&gt;</span><br><span class="line">    &lt;h3&gt;</span><br><span class="line">    Heatmaps</span><br><span class="line">    &lt;/h3&gt;</span><br><span class="line">    &lt;/body&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    part2 = &quot;&quot;&quot;</span><br><span class="line">    var color = &quot;255,0,0&quot;;</span><br><span class="line">    var ngram_length = 3;</span><br><span class="line">    var half_ngram = 1;</span><br><span class="line">    for (var k=0; k &lt; any_text.length; k++) &#123;</span><br><span class="line">    var tokens = any_text[k].split(&quot; &quot;);</span><br><span class="line">    var intensity = new Array(tokens.length);</span><br><span class="line">    var max_intensity = Number.MIN_SAFE_INTEGER;</span><br><span class="line">    var min_intensity = Number.MAX_SAFE_INTEGER;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = 0.0;</span><br><span class="line">    for (var j = -half_ngram; j &lt; ngram_length-half_ngram; j++) &#123;</span><br><span class="line">    if (i+j &lt; intensity.length &amp;&amp; i+j &gt; -1) &#123;</span><br><span class="line">    intensity[i] += trigram_weights[k][i + j];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if (i == 0 || i == intensity.length-1) &#123;</span><br><span class="line">    intensity[i] /= 2.0;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    intensity[i] /= 3.0;</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &gt; max_intensity) &#123;</span><br><span class="line">    max_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    if (intensity[i] &lt; min_intensity) &#123;</span><br><span class="line">    min_intensity = intensity[i];</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    var denominator = max_intensity - min_intensity;</span><br><span class="line">    for (var i = 0; i &lt; intensity.length; i++) &#123;</span><br><span class="line">    intensity[i] = (intensity[i] - min_intensity) / denominator;</span><br><span class="line">    &#125;</span><br><span class="line">    if (k%2 == 0) &#123;</span><br><span class="line">    var heat_text = &quot;&lt;p&gt;&lt;br&gt;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">    var heat_text = &quot;&lt;b&gt;Example:&lt;/b&gt;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    var space = &quot;&quot;;</span><br><span class="line">    for (var i = 0; i &lt; tokens.length; i++) &#123;</span><br><span class="line">    heat_text += &quot;&lt;span style=&#x27;background-color:rgba(&quot; + color + &quot;,&quot; + intensity[i] + &quot;)&#x27;&gt;&quot; + space + tokens[i] + &quot;&lt;/span&gt;&quot;;</span><br><span class="line">    if (space == &quot;&quot;) &#123;</span><br><span class="line">    space = &quot; &quot;;</span><br><span class="line">    &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    //heat_text += &quot;&lt;p&gt;&quot;;</span><br><span class="line">    document.body.innerHTML += heat_text;</span><br><span class="line">    &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">    &lt;/html&gt;&quot;&quot;&quot;</span><br><span class="line">    putQuote = lambda x: &quot;\&quot;%s\&quot;&quot; % x</span><br><span class="line">    textsString = &quot;var any_text = [%s];\n&quot; % (&quot;,&quot;.join(map(putQuote, texts)))</span><br><span class="line">    weightsString = &quot;var trigram_weights = [%s];\n&quot; % (&quot;,&quot;.join(map(str, weights)))</span><br><span class="line">    fOut.write(part1)</span><br><span class="line">    fOut.write(textsString)</span><br><span class="line">    fOut.write(weightsString)</span><br><span class="line">    fOut.write(part2)</span><br><span class="line">    fOut.close()</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line">gperes = &#123;</span><br><span class="line">     &#x27;武&#x27;: &#123;&#x27;武&#x27;: 0.1, &#x27;汉&#x27;: 0.9, &#x27;市&#x27;: 1, &#x27;长&#x27;: 0.05, &#x27;江&#x27;: 0.09, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.2&#125;,</span><br><span class="line">     &#x27;汉&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0.2, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.03, &#x27;江&#x27;: 0.04, &#x27;大&#x27;: 0.02, &#x27;桥&#x27;: 0.07&#125;,</span><br><span class="line">     &#x27;市&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0.1, &#x27;长&#x27;: 0.01, &#x27;江&#x27;: 0.02, &#x27;大&#x27;: 0.03, &#x27;桥&#x27;: 0.05&#125;,</span><br><span class="line">     &#x27;长&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0.25, &#x27;江&#x27;: 0.1, &#x27;大&#x27;: 0.08, &#x27;桥&#x27;: 0.09&#125;,</span><br><span class="line">     &#x27;江&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0.15, &#x27;大&#x27;: 0.04, &#x27;桥&#x27;: 0.015&#125;,</span><br><span class="line">     &#x27;大&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0.14, &#x27;桥&#x27;: 0.15&#125;,</span><br><span class="line">     &#x27;桥&#x27;: &#123;&#x27;武&#x27;: 0, &#x27;汉&#x27;: 0, &#x27;市&#x27;: 0, &#x27;长&#x27;: 0, &#x27;江&#x27;: 0, &#x27;大&#x27;: 0, &#x27;桥&#x27;: 0.12&#125;,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">matrix = []</span><br><span class="line"># 获取矩阵表示</span><br><span class="line">for k, v in gperes.items():</span><br><span class="line">    matrix.append(list(v.values()))</span><br><span class="line">str_ = &#x27;武 汉 市 长 江 大 桥&#x27;</span><br><span class="line">createHTML([str_] * 7,</span><br><span class="line">           matrix,</span><br><span class="line">           &#x27;./visualization/test.html&#x27;)</span><br></pre></td></tr></table></figure>
+<p><img src="https://i.bmp.ovh/imgs/2021/12/04573a3a1f1fb2b6.png" alt="wx20211211-193035@2x.png"></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a href="https://blog.csdn.net/qq_38607066/article/details/101345282#t17">https://blog.csdn.net/qq_38607066/article/details/101345282#t17</a></p>
+<p><a href="https://blog.csdn.net/u010490755/article/details/89574847">https://blog.csdn.net/u010490755/article/details/89574847</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Attention</tag>
       </tags>
   </entry>
   <entry>
@@ -1269,6 +1269,32 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
       </tags>
   </entry>
   <entry>
+    <title>NLP技能树学习路线-（一）路线总览.md</title>
+    <url>/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
+<p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgqimr09j21dc0u0788.jpg" alt=""></p>
+<span id="more"></span>
+<h1 id="概率统计"><a href="#概率统计" class="headerlink" title="概率统计"></a>概率统计</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgl2gpjuj213z0u0tc3.jpg" alt=""></p>
+<p>概率统计是人工智能算法的基础，图中分为贝叶斯、信息理论、模型、采样、基础五部分。笔者知识体系在“基础、采样、贝叶斯部分”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="机器学习"><a href="#机器学习" class="headerlink" title="机器学习"></a>机器学习</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgp8m5exj21370u0gou.jpg" alt=""></p>
+<p>机器学习算法也是NLP的基石，含有许多基础概念，图中分为训练、降维、聚类、非概率、线性回归、逻辑回归、正则化七部分。笔者知识体系在“降维、聚类”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="NLP下的数据挖掘"><a href="#NLP下的数据挖掘" class="headerlink" title="NLP下的数据挖掘"></a>NLP下的数据挖掘</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgpw1yppj20xv0u0acz.jpg" alt=""></p>
+<p>NLP下的数据挖掘包含常见NLP数据处理操作，图中分为基础流程、序列标注、词嵌入、NLP基本假设、图、文档六部分。笔者知识体系在“主题模型、NLP基本假设、图”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="NLP"><a href="#NLP" class="headerlink" title="NLP"></a>NLP</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgqimr09j21dc0u0788.jpg" alt=""></p>
+<p>该部分正式介绍NLP的学习路线，分为基础学习、分布式特征、具体任务、语言模型四部分。笔者知识体系在一些具体模型存在缺漏，将在后面对该部分内容展开学习。</p>
+<p>若大家需要思维导图源文件可以私我，有兴趣一起学习也可以私我加好友～</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>学习路线</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>不要停止预训练实战-Roberta与Albert</title>
     <url>/2022/03/20/2022-03-20-%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文在LCQMC数据集上，再次对roberta、albert模型进行预训练，详细介绍了预训练的过程并对比了预训练前后的结果。</p>
@@ -1483,6 +1509,56 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
       </tags>
   </entry>
   <entry>
+    <title>真香～BERT在MAC Pytorch的使用.md</title>
+    <url>/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>终于，Pytorch也支持MAC的硬件加速，两个字评价一下感受：真香～</p>
+<p>周末笔者在自己机器上完成环境安装，笔者机器环境如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h495zuj103j20vy0bkq3r.jpg" alt=""></p>
+<p>接着，笔者在该文用卷积、BERT模型对比了有无MAC硬件加速的模型运行时间</p>
+<span id="more"></span>
+<h1 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h1><p>按照官网给出的命令，即可完成安装MAC硬件加速版pytorch。</p>
+<p><a href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-started/locally/</a></p>
+<blockquote>
+<p>conda install pytorch torchvision torchaudio -c pytorch</p>
+</blockquote>
+<h1 id="简单测试"><a href="#简单测试" class="headerlink" title="简单测试"></a>简单测试</h1><p>利用卷积操作，测试有无硬件加速的效果。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import torch</span><br><span class="line"></span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dev = &#x27;mps:0&#x27;</span><br><span class="line"></span><br><span class="line">conv = torch.nn.Conv2d(10, 10, 3).to(dev)</span><br><span class="line"></span><br><span class="line">img = torch.randn(64, 10, 64, 64).to(dev)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">t0 = time.time()</span><br><span class="line"></span><br><span class="line">for i in range(1000):</span><br><span class="line"></span><br><span class="line">    conv(img)</span><br><span class="line"></span><br><span class="line">t1 = time.time()</span><br><span class="line"></span><br><span class="line">print(&#x27;Use mps, time:&#123;&#125;&#x27;.format(t1-t0))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dev = &#x27;cpu&#x27;</span><br><span class="line"></span><br><span class="line">conv = torch.nn.Conv2d(10, 10, 3).to(dev)</span><br><span class="line"></span><br><span class="line">img = torch.randn(64, 10, 64, 64).to(dev)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">t0 = time.time()</span><br><span class="line"></span><br><span class="line">for i in range(1000):</span><br><span class="line"></span><br><span class="line">    conv(img)</span><br><span class="line"></span><br><span class="line">t1 = time.time()</span><br><span class="line"></span><br><span class="line">print(&#x27;Use cpu, time:&#123;&#125;&#x27;.format(t1-t0))</span><br></pre></td></tr></table></figure>
+<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h48wmn5k4vj20fo03674a.jpg" alt=""></p>
+<h1 id="BERT测试"><a href="#BERT测试" class="headerlink" title="BERT测试"></a>BERT测试</h1><p>使用huggingface的glue代码作示例。</p>
+<h2 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h2><p>运行下述代码完成数据下载工作。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27;&#x27; Script for downloading all GLUE data.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Note: for legal reasons, we are unable to host MRPC.</span><br><span class="line"></span><br><span class="line">You can either use the version hosted by the SentEval team, which is already tokenized,</span><br><span class="line"></span><br><span class="line">or you can download the original data from (https://download.microsoft.com/download/D/4/6/D46FF87A-F6B9-4252-AA8B-3604ED519838/MSRParaphraseCorpus.msi) and extract the data from it manually.</span><br><span class="line"></span><br><span class="line">For Windows users, you can run the .msi file. For Mac and Linux users, consider an external library such as &#x27;cabextract&#x27; (see below for an example).</span><br><span class="line"></span><br><span class="line">You should then rename and place specific files in a folder (see below for an example).</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mkdir MRPC</span><br><span class="line"></span><br><span class="line">cabextract MSRParaphraseCorpus.msi -d MRPC</span><br><span class="line"></span><br><span class="line">cat MRPC/_2DEC3DBE877E4DB192D17C0256E90F1D | tr -d $&#x27;\r&#x27; &gt; MRPC/msr_paraphrase_train.txt</span><br><span class="line"></span><br><span class="line">cat MRPC/_D7B391F9EAFF4B1B8BCE8F21B20B1B61 | tr -d $&#x27;\r&#x27; &gt; MRPC/msr_paraphrase_test.txt</span><br><span class="line"></span><br><span class="line">rm MRPC/_*</span><br><span class="line"></span><br><span class="line">rm MSRParaphraseCorpus.msi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">1/30/19: It looks like SentEval is no longer hosting their extracted and tokenized MRPC data, so you&#x27;ll need to download the data from the original source for now.</span><br><span class="line"></span><br><span class="line">2/11/19: It looks like SentEval actually *is* hosting the extracted data. Hooray!</span><br><span class="line"></span><br><span class="line">&#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">import shutil</span><br><span class="line"></span><br><span class="line">import argparse</span><br><span class="line"></span><br><span class="line">import tempfile</span><br><span class="line"></span><br><span class="line">import urllib.request</span><br><span class="line"></span><br><span class="line">import zipfile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TASKS = [&quot;CoLA&quot;, &quot;SST&quot;, &quot;MRPC&quot;, &quot;QQP&quot;, &quot;STS&quot;, &quot;MNLI&quot;, &quot;QNLI&quot;, &quot;RTE&quot;, &quot;WNLI&quot;, &quot;diagnostic&quot;]</span><br><span class="line"></span><br><span class="line">TASK2PATH = &#123;&quot;CoLA&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/CoLA.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;SST&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/SST-2.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;QQP&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/QQP-clean.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;STS&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/STS-B.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;MNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/MNLI.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;QNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/QNLIv2.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;RTE&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/RTE.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;WNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/WNLI.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;diagnostic&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/AX.tsv&#x27;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">MRPC_TRAIN = &#x27;https://dl.fbaipublicfiles.com/senteval/senteval_data/msr_paraphrase_train.txt&#x27;</span><br><span class="line"></span><br><span class="line">MRPC_TEST = &#x27;https://dl.fbaipublicfiles.com/senteval/senteval_data/msr_paraphrase_test.txt&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def download_and_extract(task, data_dir):</span><br><span class="line"></span><br><span class="line">    print(&quot;Downloading and extracting %s...&quot; % task)</span><br><span class="line"></span><br><span class="line">    if task == &quot;MNLI&quot;:</span><br><span class="line"></span><br><span class="line">        print(</span><br><span class="line"></span><br><span class="line">            &quot;\tNote (12/10/20): This script no longer downloads SNLI. You will need to manually download and format the data to use SNLI.&quot;)</span><br><span class="line"></span><br><span class="line">    data_file = &quot;%s.zip&quot; % task</span><br><span class="line"></span><br><span class="line">    urllib.request.urlretrieve(TASK2PATH[task], data_file)</span><br><span class="line"></span><br><span class="line">    with zipfile.ZipFile(data_file) as zip_ref:</span><br><span class="line"></span><br><span class="line">        zip_ref.extractall(data_dir)</span><br><span class="line"></span><br><span class="line">    os.remove(data_file)</span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def format_mrpc(data_dir, path_to_data):</span><br><span class="line"></span><br><span class="line">    print(&quot;Processing MRPC...&quot;)</span><br><span class="line"></span><br><span class="line">    mrpc_dir = os.path.join(data_dir, &quot;MRPC&quot;)</span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(mrpc_dir):</span><br><span class="line"></span><br><span class="line">        os.mkdir(mrpc_dir)</span><br><span class="line"></span><br><span class="line">    if path_to_data:</span><br><span class="line"></span><br><span class="line">        mrpc_train_file = os.path.join(path_to_data, &quot;msr_paraphrase_train.txt&quot;)</span><br><span class="line"></span><br><span class="line">        mrpc_test_file = os.path.join(path_to_data, &quot;msr_paraphrase_test.txt&quot;)</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line"></span><br><span class="line">        try:</span><br><span class="line"></span><br><span class="line">            mrpc_train_file = os.path.join(mrpc_dir, &quot;msr_paraphrase_train.txt&quot;)</span><br><span class="line"></span><br><span class="line">            mrpc_test_file = os.path.join(mrpc_dir, &quot;msr_paraphrase_test.txt&quot;)</span><br><span class="line"></span><br><span class="line">            URLLIB.urlretrieve(MRPC_TRAIN, mrpc_train_file)</span><br><span class="line"></span><br><span class="line">            URLLIB.urlretrieve(MRPC_TEST, mrpc_test_file)</span><br><span class="line"></span><br><span class="line">        except urllib.error.HTTPError:</span><br><span class="line"></span><br><span class="line">            print(&quot;Error downloading MRPC&quot;)</span><br><span class="line"></span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">    assert os.path.isfile(mrpc_train_file), &quot;Train data not found at %s&quot; % mrpc_train_file</span><br><span class="line"></span><br><span class="line">    assert os.path.isfile(mrpc_test_file), &quot;Test data not found at %s&quot; % mrpc_test_file</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    with io.open(mrpc_test_file, encoding=&#x27;utf-8&#x27;) as data_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;test.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as test_fh:</span><br><span class="line"></span><br><span class="line">        header = data_fh.readline()</span><br><span class="line"></span><br><span class="line">        test_fh.write(&quot;index\t#1 ID\t#2 ID\t#1 String\t#2 String\n&quot;)</span><br><span class="line"></span><br><span class="line">        for idx, row in enumerate(data_fh):</span><br><span class="line"></span><br><span class="line">            label, id1, id2, s1, s2 = row.strip().split(&#x27;\t&#x27;)</span><br><span class="line"></span><br><span class="line">            test_fh.write(&quot;%d\t%s\t%s\t%s\t%s\n&quot; % (idx, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line"></span><br><span class="line">        URLLIB.urlretrieve(TASK2PATH[&quot;MRPC&quot;], os.path.join(mrpc_dir, &quot;dev_ids.tsv&quot;))</span><br><span class="line"></span><br><span class="line">    except KeyError or urllib.error.HTTPError:</span><br><span class="line"></span><br><span class="line">        print(&quot;\tError downloading standard development IDs for MRPC. You will need to manually split your data.&quot;)</span><br><span class="line"></span><br><span class="line">        return</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    dev_ids = []</span><br><span class="line"></span><br><span class="line">    with io.open(os.path.join(mrpc_dir, &quot;dev_ids.tsv&quot;), encoding=&#x27;utf-8&#x27;) as ids_fh:</span><br><span class="line"></span><br><span class="line">        for row in ids_fh:</span><br><span class="line"></span><br><span class="line">            dev_ids.append(row.strip().split(&#x27;\t&#x27;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    with io.open(mrpc_train_file, encoding=&#x27;utf-8&#x27;) as data_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;train.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as train_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;dev.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as dev_fh:</span><br><span class="line"></span><br><span class="line">        header = data_fh.readline()</span><br><span class="line"></span><br><span class="line">        train_fh.write(header)</span><br><span class="line"></span><br><span class="line">        dev_fh.write(header)</span><br><span class="line"></span><br><span class="line">        for row in data_fh:</span><br><span class="line"></span><br><span class="line">            label, id1, id2, s1, s2 = row.strip().split(&#x27;\t&#x27;)</span><br><span class="line"></span><br><span class="line">            if [id1, id2] in dev_ids:</span><br><span class="line"></span><br><span class="line">                dev_fh.write(&quot;%s\t%s\t%s\t%s\t%s\n&quot; % (label, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line"></span><br><span class="line">                train_fh.write(&quot;%s\t%s\t%s\t%s\t%s\n&quot; % (label, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def download_diagnostic(data_dir):</span><br><span class="line"></span><br><span class="line">    print(&quot;Downloading and extracting diagnostic...&quot;)</span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(os.path.join(data_dir, &quot;diagnostic&quot;)):</span><br><span class="line"></span><br><span class="line">        os.mkdir(os.path.join(data_dir, &quot;diagnostic&quot;))</span><br><span class="line"></span><br><span class="line">    data_file = os.path.join(data_dir, &quot;diagnostic&quot;, &quot;diagnostic.tsv&quot;)</span><br><span class="line"></span><br><span class="line">    urllib.request.urlretrieve(TASK2PATH[&quot;diagnostic&quot;], data_file)</span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_tasks(task_names):</span><br><span class="line"></span><br><span class="line">    task_names = task_names.split(&#x27;,&#x27;)</span><br><span class="line"></span><br><span class="line">    if &quot;all&quot; in task_names:</span><br><span class="line"></span><br><span class="line">        tasks = TASKS</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line"></span><br><span class="line">        tasks = []</span><br><span class="line"></span><br><span class="line">        for task_name in task_names:</span><br><span class="line"></span><br><span class="line">            assert task_name in TASKS, &quot;Task %s not found!&quot; % task_name</span><br><span class="line"></span><br><span class="line">            tasks.append(task_name)</span><br><span class="line"></span><br><span class="line">    return tasks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main(arguments):</span><br><span class="line"></span><br><span class="line">    parser = argparse.ArgumentParser()</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--data_dir&#x27;, help=&#x27;directory to save data to&#x27;, type=str, default=&#x27;glue_data&#x27;)</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--tasks&#x27;, help=&#x27;tasks to download data for as a comma separated string&#x27;,</span><br><span class="line"></span><br><span class="line">                        type=str, default=&#x27;all&#x27;)</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--path_to_mrpc&#x27;,</span><br><span class="line"></span><br><span class="line">                        help=&#x27;path to directory containing extracted MRPC data, msr_paraphrase_train.txt and msr_paraphrase_text.txt&#x27;,</span><br><span class="line"></span><br><span class="line">                        type=str, default=&#x27;&#x27;)</span><br><span class="line"></span><br><span class="line">    args = parser.parse_args(arguments)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(args.data_dir):</span><br><span class="line"></span><br><span class="line">        os.mkdir(args.data_dir)</span><br><span class="line"></span><br><span class="line">    tasks = get_tasks(args.tasks)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    for task in tasks:</span><br><span class="line"></span><br><span class="line">        if task == &#x27;MRPC&#x27;:</span><br><span class="line"></span><br><span class="line">            format_mrpc(args.data_dir, args.path_to_mrpc)</span><br><span class="line"></span><br><span class="line">        elif task == &#x27;diagnostic&#x27;:</span><br><span class="line"></span><br><span class="line">            download_diagnostic(args.data_dir)</span><br><span class="line"></span><br><span class="line">        else:</span><br><span class="line"></span><br><span class="line">            download_and_extract(task, args.data_dir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line"></span><br><span class="line">    sys.exit(main(sys.argv[1:]))</span><br></pre></td></tr></table></figure>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>requirements内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">accelerate</span><br><span class="line"></span><br><span class="line">datasets &gt;= 1.8.0</span><br><span class="line"></span><br><span class="line">sentencepiece != 0.1.92</span><br><span class="line"></span><br><span class="line">scipy</span><br><span class="line"></span><br><span class="line">scikit-learn</span><br><span class="line"></span><br><span class="line">protobuf</span><br><span class="line"></span><br><span class="line">numpy==1.17.3</span><br><span class="line"></span><br><span class="line">#torch &gt;= 1.3</span><br></pre></td></tr></table></figure>
+<h2 id="代码准备"><a href="#代码准备" class="headerlink" title="代码准备"></a>代码准备</h2><p>利用huggingface的<strong>run_glue_no_trainer.py</strong>。</p>
+<p>运行脚本如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export TASK_NAME=mrpc</span><br><span class="line"></span><br><span class="line">python run_glue_no_trainer.py \</span><br><span class="line">  --model_name_or_path Pretrained_LMs/bert-base-cased \</span><br><span class="line">  --task_name $TASK_NAME \</span><br><span class="line">  --max_length 128 \</span><br><span class="line">  --per_device_train_batch_size 32 \</span><br><span class="line">  --learning_rate 2e-5 \</span><br><span class="line">  --num_train_epochs 3 \</span><br><span class="line">  --output_dir ./output/$TASK_NAME/</span><br></pre></td></tr></table></figure>
+<p>在代码中修改运行设备方式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    accelerator.state.device = &#x27;mps&#x27;</span><br><span class="line"></span><br><span class="line">    print(&#x27;-&#x27; * 100)</span><br><span class="line"></span><br><span class="line">    print(accelerator.state.device)</span><br><span class="line"></span><br><span class="line">    print(&#x27;-&#x27; * 100)</span><br></pre></td></tr></table></figure>
+<h2 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h2><p>CPU下运行时间约1h：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Num processes: 1</span><br><span class="line">Process index: 0</span><br><span class="line">Local process index: 0</span><br><span class="line">Device: cpu</span><br><span class="line">...</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ - ***** Running training *****</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Num examples = 3668</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Num Epochs = 3</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Instantaneous batch size per device = 32</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Total train batch size (w. parallel, distributed &amp; accumulation) = 32</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Gradient Accumulation steps = 1</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Total optimization steps = 345</span><br><span class="line">  2%|███▌                                                                                                                                                                                                       | 6/345 [01:06&lt;1:03:49, 11.30s/it]</span><br></pre></td></tr></table></figure>
+<p>硬件加速下运行时间约20min：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Num processes: 1</span><br><span class="line">Process index: 0</span><br><span class="line">Local process index: 0</span><br><span class="line">Device: mps</span><br><span class="line">...</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ - ***** Running training *****</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num examples = 3668</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num Epochs = 3</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Instantaneous batch size per device = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total train batch size (w. parallel, distributed &amp; accumulation) = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Gradient Accumulation steps = 1</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total optimization steps = 345</span><br><span class="line">  5%|██████████▋                                                                                                                                                                                                 | 18/345 [01:03&lt;20:14,  3.71s/it]</span><br></pre></td></tr></table></figure>
+<p>观察MAC活动监视器，可以看到程序确实有用到GPU硬件加速。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h496jqdjjbj21fu05m754.jpg" alt=""></p>
+<h2 id="bug-fix"><a href="#bug-fix" class="headerlink" title="bug fix"></a>bug fix</h2><p>在运行过程中出现如下错误：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">OMP: Error #15: Initializing libomp.dylib, but found libiomp5.dylib already initialize异常</span><br></pre></td></tr></table></figure>
+<p>参照该<a href="http://t.zoukankan.com/yxym2016-p-13900887.html">链接</a>解决了问题，<strong>如果Python是基本于Conda安装的，则Conda上的numpy包中的mkl很容易与系统内库发生冲突，可选择update numpy package in Conda或者设置为系统库。</strong></p>
+<p><strong>解决方案</strong>:降低numpy的版本，此处笔者将版本降低到1.17.3</p>
+<blockquote>
+<p>pip install numpy==1.17.3</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>深度学习</category>
+        <category>工具</category>
+      </categories>
+      <tags>
+        <tag>Pytorch</tag>
+        <tag>GPU</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>不要停止预训练实战(二)-一日看尽MLM</title>
     <url>/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h2qp6pp8d8j21lk0sedik.jpg" alt=""></p>
@@ -1612,82 +1688,6 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
       </categories>
       <tags>
         <tag>预训练</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NLP技能树学习路线-（一）路线总览.md</title>
-    <url>/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
-<p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgqimr09j21dc0u0788.jpg" alt=""></p>
-<span id="more"></span>
-<h1 id="概率统计"><a href="#概率统计" class="headerlink" title="概率统计"></a>概率统计</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgl2gpjuj213z0u0tc3.jpg" alt=""></p>
-<p>概率统计是人工智能算法的基础，图中分为贝叶斯、信息理论、模型、采样、基础五部分。笔者知识体系在“基础、采样、贝叶斯部分”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="机器学习"><a href="#机器学习" class="headerlink" title="机器学习"></a>机器学习</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgp8m5exj21370u0gou.jpg" alt=""></p>
-<p>机器学习算法也是NLP的基石，含有许多基础概念，图中分为训练、降维、聚类、非概率、线性回归、逻辑回归、正则化七部分。笔者知识体系在“降维、聚类”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="NLP下的数据挖掘"><a href="#NLP下的数据挖掘" class="headerlink" title="NLP下的数据挖掘"></a>NLP下的数据挖掘</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgpw1yppj20xv0u0acz.jpg" alt=""></p>
-<p>NLP下的数据挖掘包含常见NLP数据处理操作，图中分为基础流程、序列标注、词嵌入、NLP基本假设、图、文档六部分。笔者知识体系在“主题模型、NLP基本假设、图”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="NLP"><a href="#NLP" class="headerlink" title="NLP"></a>NLP</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h3kgqimr09j21dc0u0788.jpg" alt=""></p>
-<p>该部分正式介绍NLP的学习路线，分为基础学习、分布式特征、具体任务、语言模型四部分。笔者知识体系在一些具体模型存在缺漏，将在后面对该部分内容展开学习。</p>
-<p>若大家需要思维导图源文件可以私我，有兴趣一起学习也可以私我加好友～</p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>学习路线</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>真香～BERT在MAC Pytorch的使用.md</title>
-    <url>/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>终于，Pytorch也支持MAC的硬件加速，两个字评价一下感受：真香～</p>
-<p>周末笔者在自己机器上完成环境安装，笔者机器环境如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h495zuj103j20vy0bkq3r.jpg" alt=""></p>
-<p>接着，笔者在该文用卷积、BERT模型对比了有无MAC硬件加速的模型运行时间</p>
-<span id="more"></span>
-<h1 id="软件安装"><a href="#软件安装" class="headerlink" title="软件安装"></a>软件安装</h1><p>按照官网给出的命令，即可完成安装MAC硬件加速版pytorch。</p>
-<p><a href="https://pytorch.org/get-started/locally/">https://pytorch.org/get-started/locally/</a></p>
-<blockquote>
-<p>conda install pytorch torchvision torchaudio -c pytorch</p>
-</blockquote>
-<h1 id="简单测试"><a href="#简单测试" class="headerlink" title="简单测试"></a>简单测试</h1><p>利用卷积操作，测试有无硬件加速的效果。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import torch</span><br><span class="line"></span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dev = &#x27;mps:0&#x27;</span><br><span class="line"></span><br><span class="line">conv = torch.nn.Conv2d(10, 10, 3).to(dev)</span><br><span class="line"></span><br><span class="line">img = torch.randn(64, 10, 64, 64).to(dev)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">t0 = time.time()</span><br><span class="line"></span><br><span class="line">for i in range(1000):</span><br><span class="line"></span><br><span class="line">    conv(img)</span><br><span class="line"></span><br><span class="line">t1 = time.time()</span><br><span class="line"></span><br><span class="line">print(&#x27;Use mps, time:&#123;&#125;&#x27;.format(t1-t0))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">dev = &#x27;cpu&#x27;</span><br><span class="line"></span><br><span class="line">conv = torch.nn.Conv2d(10, 10, 3).to(dev)</span><br><span class="line"></span><br><span class="line">img = torch.randn(64, 10, 64, 64).to(dev)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">t0 = time.time()</span><br><span class="line"></span><br><span class="line">for i in range(1000):</span><br><span class="line"></span><br><span class="line">    conv(img)</span><br><span class="line"></span><br><span class="line">t1 = time.time()</span><br><span class="line"></span><br><span class="line">print(&#x27;Use cpu, time:&#123;&#125;&#x27;.format(t1-t0))</span><br></pre></td></tr></table></figure>
-<h2 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h48wmn5k4vj20fo03674a.jpg" alt=""></p>
-<h1 id="BERT测试"><a href="#BERT测试" class="headerlink" title="BERT测试"></a>BERT测试</h1><p>使用huggingface的glue代码作示例。</p>
-<h2 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h2><p>运行下述代码完成数据下载工作。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27;&#x27; Script for downloading all GLUE data.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Note: for legal reasons, we are unable to host MRPC.</span><br><span class="line"></span><br><span class="line">You can either use the version hosted by the SentEval team, which is already tokenized,</span><br><span class="line"></span><br><span class="line">or you can download the original data from (https://download.microsoft.com/download/D/4/6/D46FF87A-F6B9-4252-AA8B-3604ED519838/MSRParaphraseCorpus.msi) and extract the data from it manually.</span><br><span class="line"></span><br><span class="line">For Windows users, you can run the .msi file. For Mac and Linux users, consider an external library such as &#x27;cabextract&#x27; (see below for an example).</span><br><span class="line"></span><br><span class="line">You should then rename and place specific files in a folder (see below for an example).</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mkdir MRPC</span><br><span class="line"></span><br><span class="line">cabextract MSRParaphraseCorpus.msi -d MRPC</span><br><span class="line"></span><br><span class="line">cat MRPC/_2DEC3DBE877E4DB192D17C0256E90F1D | tr -d $&#x27;\r&#x27; &gt; MRPC/msr_paraphrase_train.txt</span><br><span class="line"></span><br><span class="line">cat MRPC/_D7B391F9EAFF4B1B8BCE8F21B20B1B61 | tr -d $&#x27;\r&#x27; &gt; MRPC/msr_paraphrase_test.txt</span><br><span class="line"></span><br><span class="line">rm MRPC/_*</span><br><span class="line"></span><br><span class="line">rm MSRParaphraseCorpus.msi</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">1/30/19: It looks like SentEval is no longer hosting their extracted and tokenized MRPC data, so you&#x27;ll need to download the data from the original source for now.</span><br><span class="line"></span><br><span class="line">2/11/19: It looks like SentEval actually *is* hosting the extracted data. Hooray!</span><br><span class="line"></span><br><span class="line">&#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import os</span><br><span class="line"></span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">import shutil</span><br><span class="line"></span><br><span class="line">import argparse</span><br><span class="line"></span><br><span class="line">import tempfile</span><br><span class="line"></span><br><span class="line">import urllib.request</span><br><span class="line"></span><br><span class="line">import zipfile</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TASKS = [&quot;CoLA&quot;, &quot;SST&quot;, &quot;MRPC&quot;, &quot;QQP&quot;, &quot;STS&quot;, &quot;MNLI&quot;, &quot;QNLI&quot;, &quot;RTE&quot;, &quot;WNLI&quot;, &quot;diagnostic&quot;]</span><br><span class="line"></span><br><span class="line">TASK2PATH = &#123;&quot;CoLA&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/CoLA.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;SST&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/SST-2.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;QQP&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/QQP-clean.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;STS&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/STS-B.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;MNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/MNLI.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;QNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/QNLIv2.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;RTE&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/RTE.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;WNLI&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/WNLI.zip&#x27;,</span><br><span class="line"></span><br><span class="line">             &quot;diagnostic&quot;: &#x27;https://dl.fbaipublicfiles.com/glue/data/AX.tsv&#x27;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">MRPC_TRAIN = &#x27;https://dl.fbaipublicfiles.com/senteval/senteval_data/msr_paraphrase_train.txt&#x27;</span><br><span class="line"></span><br><span class="line">MRPC_TEST = &#x27;https://dl.fbaipublicfiles.com/senteval/senteval_data/msr_paraphrase_test.txt&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def download_and_extract(task, data_dir):</span><br><span class="line"></span><br><span class="line">    print(&quot;Downloading and extracting %s...&quot; % task)</span><br><span class="line"></span><br><span class="line">    if task == &quot;MNLI&quot;:</span><br><span class="line"></span><br><span class="line">        print(</span><br><span class="line"></span><br><span class="line">            &quot;\tNote (12/10/20): This script no longer downloads SNLI. You will need to manually download and format the data to use SNLI.&quot;)</span><br><span class="line"></span><br><span class="line">    data_file = &quot;%s.zip&quot; % task</span><br><span class="line"></span><br><span class="line">    urllib.request.urlretrieve(TASK2PATH[task], data_file)</span><br><span class="line"></span><br><span class="line">    with zipfile.ZipFile(data_file) as zip_ref:</span><br><span class="line"></span><br><span class="line">        zip_ref.extractall(data_dir)</span><br><span class="line"></span><br><span class="line">    os.remove(data_file)</span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def format_mrpc(data_dir, path_to_data):</span><br><span class="line"></span><br><span class="line">    print(&quot;Processing MRPC...&quot;)</span><br><span class="line"></span><br><span class="line">    mrpc_dir = os.path.join(data_dir, &quot;MRPC&quot;)</span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(mrpc_dir):</span><br><span class="line"></span><br><span class="line">        os.mkdir(mrpc_dir)</span><br><span class="line"></span><br><span class="line">    if path_to_data:</span><br><span class="line"></span><br><span class="line">        mrpc_train_file = os.path.join(path_to_data, &quot;msr_paraphrase_train.txt&quot;)</span><br><span class="line"></span><br><span class="line">        mrpc_test_file = os.path.join(path_to_data, &quot;msr_paraphrase_test.txt&quot;)</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line"></span><br><span class="line">        try:</span><br><span class="line"></span><br><span class="line">            mrpc_train_file = os.path.join(mrpc_dir, &quot;msr_paraphrase_train.txt&quot;)</span><br><span class="line"></span><br><span class="line">            mrpc_test_file = os.path.join(mrpc_dir, &quot;msr_paraphrase_test.txt&quot;)</span><br><span class="line"></span><br><span class="line">            URLLIB.urlretrieve(MRPC_TRAIN, mrpc_train_file)</span><br><span class="line"></span><br><span class="line">            URLLIB.urlretrieve(MRPC_TEST, mrpc_test_file)</span><br><span class="line"></span><br><span class="line">        except urllib.error.HTTPError:</span><br><span class="line"></span><br><span class="line">            print(&quot;Error downloading MRPC&quot;)</span><br><span class="line"></span><br><span class="line">            return</span><br><span class="line"></span><br><span class="line">    assert os.path.isfile(mrpc_train_file), &quot;Train data not found at %s&quot; % mrpc_train_file</span><br><span class="line"></span><br><span class="line">    assert os.path.isfile(mrpc_test_file), &quot;Test data not found at %s&quot; % mrpc_test_file</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    with io.open(mrpc_test_file, encoding=&#x27;utf-8&#x27;) as data_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;test.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as test_fh:</span><br><span class="line"></span><br><span class="line">        header = data_fh.readline()</span><br><span class="line"></span><br><span class="line">        test_fh.write(&quot;index\t#1 ID\t#2 ID\t#1 String\t#2 String\n&quot;)</span><br><span class="line"></span><br><span class="line">        for idx, row in enumerate(data_fh):</span><br><span class="line"></span><br><span class="line">            label, id1, id2, s1, s2 = row.strip().split(&#x27;\t&#x27;)</span><br><span class="line"></span><br><span class="line">            test_fh.write(&quot;%d\t%s\t%s\t%s\t%s\n&quot; % (idx, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    try:</span><br><span class="line"></span><br><span class="line">        URLLIB.urlretrieve(TASK2PATH[&quot;MRPC&quot;], os.path.join(mrpc_dir, &quot;dev_ids.tsv&quot;))</span><br><span class="line"></span><br><span class="line">    except KeyError or urllib.error.HTTPError:</span><br><span class="line"></span><br><span class="line">        print(&quot;\tError downloading standard development IDs for MRPC. You will need to manually split your data.&quot;)</span><br><span class="line"></span><br><span class="line">        return</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    dev_ids = []</span><br><span class="line"></span><br><span class="line">    with io.open(os.path.join(mrpc_dir, &quot;dev_ids.tsv&quot;), encoding=&#x27;utf-8&#x27;) as ids_fh:</span><br><span class="line"></span><br><span class="line">        for row in ids_fh:</span><br><span class="line"></span><br><span class="line">            dev_ids.append(row.strip().split(&#x27;\t&#x27;))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    with io.open(mrpc_train_file, encoding=&#x27;utf-8&#x27;) as data_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;train.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as train_fh, \</span><br><span class="line"></span><br><span class="line">            io.open(os.path.join(mrpc_dir, &quot;dev.tsv&quot;), &#x27;w&#x27;, encoding=&#x27;utf-8&#x27;) as dev_fh:</span><br><span class="line"></span><br><span class="line">        header = data_fh.readline()</span><br><span class="line"></span><br><span class="line">        train_fh.write(header)</span><br><span class="line"></span><br><span class="line">        dev_fh.write(header)</span><br><span class="line"></span><br><span class="line">        for row in data_fh:</span><br><span class="line"></span><br><span class="line">            label, id1, id2, s1, s2 = row.strip().split(&#x27;\t&#x27;)</span><br><span class="line"></span><br><span class="line">            if [id1, id2] in dev_ids:</span><br><span class="line"></span><br><span class="line">                dev_fh.write(&quot;%s\t%s\t%s\t%s\t%s\n&quot; % (label, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line"></span><br><span class="line">                train_fh.write(&quot;%s\t%s\t%s\t%s\t%s\n&quot; % (label, id1, id2, s1, s2))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def download_diagnostic(data_dir):</span><br><span class="line"></span><br><span class="line">    print(&quot;Downloading and extracting diagnostic...&quot;)</span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(os.path.join(data_dir, &quot;diagnostic&quot;)):</span><br><span class="line"></span><br><span class="line">        os.mkdir(os.path.join(data_dir, &quot;diagnostic&quot;))</span><br><span class="line"></span><br><span class="line">    data_file = os.path.join(data_dir, &quot;diagnostic&quot;, &quot;diagnostic.tsv&quot;)</span><br><span class="line"></span><br><span class="line">    urllib.request.urlretrieve(TASK2PATH[&quot;diagnostic&quot;], data_file)</span><br><span class="line"></span><br><span class="line">    print(&quot;\tCompleted!&quot;)</span><br><span class="line"></span><br><span class="line">    return</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def get_tasks(task_names):</span><br><span class="line"></span><br><span class="line">    task_names = task_names.split(&#x27;,&#x27;)</span><br><span class="line"></span><br><span class="line">    if &quot;all&quot; in task_names:</span><br><span class="line"></span><br><span class="line">        tasks = TASKS</span><br><span class="line"></span><br><span class="line">    else:</span><br><span class="line"></span><br><span class="line">        tasks = []</span><br><span class="line"></span><br><span class="line">        for task_name in task_names:</span><br><span class="line"></span><br><span class="line">            assert task_name in TASKS, &quot;Task %s not found!&quot; % task_name</span><br><span class="line"></span><br><span class="line">            tasks.append(task_name)</span><br><span class="line"></span><br><span class="line">    return tasks</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main(arguments):</span><br><span class="line"></span><br><span class="line">    parser = argparse.ArgumentParser()</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--data_dir&#x27;, help=&#x27;directory to save data to&#x27;, type=str, default=&#x27;glue_data&#x27;)</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--tasks&#x27;, help=&#x27;tasks to download data for as a comma separated string&#x27;,</span><br><span class="line"></span><br><span class="line">                        type=str, default=&#x27;all&#x27;)</span><br><span class="line"></span><br><span class="line">    parser.add_argument(&#x27;--path_to_mrpc&#x27;,</span><br><span class="line"></span><br><span class="line">                        help=&#x27;path to directory containing extracted MRPC data, msr_paraphrase_train.txt and msr_paraphrase_text.txt&#x27;,</span><br><span class="line"></span><br><span class="line">                        type=str, default=&#x27;&#x27;)</span><br><span class="line"></span><br><span class="line">    args = parser.parse_args(arguments)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    if not os.path.isdir(args.data_dir):</span><br><span class="line"></span><br><span class="line">        os.mkdir(args.data_dir)</span><br><span class="line"></span><br><span class="line">    tasks = get_tasks(args.tasks)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    for task in tasks:</span><br><span class="line"></span><br><span class="line">        if task == &#x27;MRPC&#x27;:</span><br><span class="line"></span><br><span class="line">            format_mrpc(args.data_dir, args.path_to_mrpc)</span><br><span class="line"></span><br><span class="line">        elif task == &#x27;diagnostic&#x27;:</span><br><span class="line"></span><br><span class="line">            download_diagnostic(args.data_dir)</span><br><span class="line"></span><br><span class="line">        else:</span><br><span class="line"></span><br><span class="line">            download_and_extract(task, args.data_dir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line"></span><br><span class="line">    sys.exit(main(sys.argv[1:]))</span><br></pre></td></tr></table></figure>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>requirements内容如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">accelerate</span><br><span class="line"></span><br><span class="line">datasets &gt;= 1.8.0</span><br><span class="line"></span><br><span class="line">sentencepiece != 0.1.92</span><br><span class="line"></span><br><span class="line">scipy</span><br><span class="line"></span><br><span class="line">scikit-learn</span><br><span class="line"></span><br><span class="line">protobuf</span><br><span class="line"></span><br><span class="line">numpy==1.17.3</span><br><span class="line"></span><br><span class="line">#torch &gt;= 1.3</span><br></pre></td></tr></table></figure>
-<h2 id="代码准备"><a href="#代码准备" class="headerlink" title="代码准备"></a>代码准备</h2><p>利用huggingface的<strong>run_glue_no_trainer.py</strong>。</p>
-<p>运行脚本如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export TASK_NAME=mrpc</span><br><span class="line"></span><br><span class="line">python run_glue_no_trainer.py \</span><br><span class="line">  --model_name_or_path Pretrained_LMs/bert-base-cased \</span><br><span class="line">  --task_name $TASK_NAME \</span><br><span class="line">  --max_length 128 \</span><br><span class="line">  --per_device_train_batch_size 32 \</span><br><span class="line">  --learning_rate 2e-5 \</span><br><span class="line">  --num_train_epochs 3 \</span><br><span class="line">  --output_dir ./output/$TASK_NAME/</span><br></pre></td></tr></table></figure>
-<p>在代码中修改运行设备方式如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">    accelerator.state.device = &#x27;mps&#x27;</span><br><span class="line"></span><br><span class="line">    print(&#x27;-&#x27; * 100)</span><br><span class="line"></span><br><span class="line">    print(accelerator.state.device)</span><br><span class="line"></span><br><span class="line">    print(&#x27;-&#x27; * 100)</span><br></pre></td></tr></table></figure>
-<h2 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h2><p>CPU下运行时间约1h：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Num processes: 1</span><br><span class="line">Process index: 0</span><br><span class="line">Local process index: 0</span><br><span class="line">Device: cpu</span><br><span class="line">...</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ - ***** Running training *****</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Num examples = 3668</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Num Epochs = 3</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Instantaneous batch size per device = 32</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Total train batch size (w. parallel, distributed &amp; accumulation) = 32</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Gradient Accumulation steps = 1</span><br><span class="line">07/16/2022 17:13:00 - INFO - __main__ -   Total optimization steps = 345</span><br><span class="line">  2%|███▌                                                                                                                                                                                                       | 6/345 [01:06&lt;1:03:49, 11.30s/it]</span><br></pre></td></tr></table></figure>
-<p>硬件加速下运行时间约20min：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Num processes: 1</span><br><span class="line">Process index: 0</span><br><span class="line">Local process index: 0</span><br><span class="line">Device: mps</span><br><span class="line">...</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ - ***** Running training *****</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num examples = 3668</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Num Epochs = 3</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Instantaneous batch size per device = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total train batch size (w. parallel, distributed &amp; accumulation) = 32</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Gradient Accumulation steps = 1</span><br><span class="line">07/16/2022 17:14:29 - INFO - __main__ -   Total optimization steps = 345</span><br><span class="line">  5%|██████████▋                                                                                                                                                                                                 | 18/345 [01:03&lt;20:14,  3.71s/it]</span><br></pre></td></tr></table></figure>
-<p>观察MAC活动监视器，可以看到程序确实有用到GPU硬件加速。</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h496jqdjjbj21fu05m754.jpg" alt=""></p>
-<h2 id="bug-fix"><a href="#bug-fix" class="headerlink" title="bug fix"></a>bug fix</h2><p>在运行过程中出现如下错误：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">OMP: Error #15: Initializing libomp.dylib, but found libiomp5.dylib already initialize异常</span><br></pre></td></tr></table></figure>
-<p>参照该<a href="http://t.zoukankan.com/yxym2016-p-13900887.html">链接</a>解决了问题，<strong>如果Python是基本于Conda安装的，则Conda上的numpy包中的mkl很容易与系统内库发生冲突，可选择update numpy package in Conda或者设置为系统库。</strong></p>
-<p><strong>解决方案</strong>:降低numpy的版本，此处笔者将版本降低到1.17.3</p>
-<blockquote>
-<p>pip install numpy==1.17.3</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>深度学习</category>
-        <category>工具</category>
-      </categories>
-      <tags>
-        <tag>Pytorch</tag>
-        <tag>GPU</tag>
       </tags>
   </entry>
   <entry>
@@ -1921,6 +1921,150 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
       <tags>
         <tag>NLP</tag>
         <tag>预训练</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>进击！BERT句向量表征.md</title>
+    <url>/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7v4v30akpj30u0159782.jpg" alt=""></p>
+<p>BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。<br>Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。<br><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7v5a4dza6j30xy0h6q3u.jpg" alt=""><br><span id="more"></span><br>余弦相似度使用的前提是向量空间在标准正交基下，而BERT输出的句向量很明显 不符合该条件，因此直接使用BERT输出的句向量计算余弦相似度，效果表现很差。</p>
+<p>针对该问题，BERT-flow、BERT-Whitening模型将输出的句向量映射到标准正交的高斯空间。SimCSE引入对比学习的方式， 在保证向量空间的uniformity情况下，也提高alignment。此后，多种对比学习方式层出不穷，其核心改进点在于正负例的生成方式，提高正负样本的难度，本文主要介绍ConSERT、SimCSE、ESimCSE、DiffCSE、PromptBert、SNCSE、EASE。</p>
+<h1 id="Sentence-Bert（EMNLP-2019）"><a href="#Sentence-Bert（EMNLP-2019）" class="headerlink" title="Sentence-Bert（EMNLP 2019）"></a>Sentence-Bert（EMNLP 2019）</h1><p><strong>题目</strong>：Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/1908.10084">https://arxiv.org/abs/1908.10084</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/UKPLab/sentence-transformers">https://github.com/UKPLab/sentence-transformers</a></p>
+<h2 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决文本匹配推理次数过多的问题，BERT的传统文本匹配任务是输入sentence1与sentence2 作一个分类任务，给定一个语料库查找最相似句子的时间复杂度高达O(n^2)。<br>直接使用BERT的embdeeing向量，存在各向异性问题，相似度计算效果甚至低于Glove词向量。</p>
+<p><strong>解决方式</strong>：</p>
+<p>采用孪生网络的双塔结构，这样推理的次数降低到了O(n)，计算相似度的点积复杂度还是O(n^2)</p>
+<p><strong>其他</strong>：</p>
+<p>论文比较了三种pooling方式：CLS、AVG、MAX。也设计了分类任务、回归任务、Triplet形式的任务。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7umug8po5j31ie0pijv6.jpg" alt=""></p>
+<p>SBERT通过图1的方式进行训练，微调学习BERT句向量的embedding，通过图2的方式完成推理，计算文本相似度。</p>
+<h1 id="BERT-flow（EMNLP-2020）"><a href="#BERT-flow（EMNLP-2020）" class="headerlink" title="BERT-flow（EMNLP 2020）"></a>BERT-flow（EMNLP 2020）</h1><p><strong>题目</strong>：On the Sentence Embeddings from Pre-trained Language Models</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2011.05864.pdf">https://arxiv.org/pdf/2011.05864.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/bohanli/BERT-flow">https://github.com/bohanli/BERT-flow</a></p>
+<h2 id="核心思路-1"><a href="#核心思路-1" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>指出BERT句向量存在的问题：各向异性，高频词汇分布集中</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入flow流式模型，映射为同向性，将BERT句向量映射到标准高斯空间.</p>
+<p><strong>计算公式</strong>如下：<br><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7umxwob8ij30o604gq30.jpg" alt=""></p>
+<h1 id="BERT-whitening"><a href="#BERT-whitening" class="headerlink" title="BERT-whitening"></a>BERT-whitening</h1><p><strong>题目</strong>：Whitening Sentence Representations for Better Semantics and Faster Retrieval</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2103.15316">https://arxiv.org/abs/2103.15316</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/bojone/BERT-whitening">https://github.com/bojone/BERT-whitening</a></p>
+<h2 id="核心思路-2"><a href="#核心思路-2" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：在句向量维度，通过一个白化的操作直接校正局向量的协方差矩阵。</p>
+<p><strong>解决方式</strong>：</p>
+<p>PCA白化，并且可以降维实现更好的效果。<br>将句向量进行标准化映射，即白化操作：</p>
+<script type="math/tex; mode=display">\tilde{\boldsymbol{x}}_i=\left(\boldsymbol{x}_i-\boldsymbol{\mu}\right) W</script><p>均值与协方差矩阵计算方式如下：</p>
+<script type="math/tex; mode=display">\boldsymbol{\mu}=\frac{1}{N} \sum_{i=1}^N \boldsymbol{x}_i</script><script type="math/tex; mode=display">\boldsymbol{\Sigma}=\boldsymbol{U} \boldsymbol{\Lambda} \boldsymbol{U}^{\top},即原向量矩阵的协方差矩阵SVD分解</script><script type="math/tex; mode=display">\boldsymbol{W}=\boldsymbol{U} \sqrt{\boldsymbol{\Lambda}^{-1}}</script><p><strong>代码如下</strong>：<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def compute_kernel_bias(vecs):</span><br><span class="line">    &quot;&quot;&quot;计算kernel和bias</span><br><span class="line">    vecs.shape = [num_samples, embedding_size]，</span><br><span class="line">    最后的变换：y = (x + bias).dot(kernel)</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    mu = vecs.mean(axis=0, keepdims=True)</span><br><span class="line">    cov = np.cov(vecs.T)</span><br><span class="line">    u, s, vh = np.linalg.svd(cov)</span><br><span class="line">    W = np.dot(u, np.diag(1 / np.sqrt(s)))</span><br><span class="line">    return W, -mu</span><br></pre></td></tr></table></figure></p>
+<h1 id="ConSERT（ACL-2021）"><a href="#ConSERT（ACL-2021）" class="headerlink" title="ConSERT（ACL 2021）"></a>ConSERT（ACL 2021）</h1><p><strong>题目</strong>：ConSERT: A Contrastive Framework for Self-Supervised Sentence Representation Transfer</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2105.11741">https://arxiv.org/abs/2105.11741</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/yym6472/ConSERT">https://github.com/yym6472/ConSERT</a></p>
+<h2 id="核心思路-3"><a href="#核心思路-3" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决BERT本身表征的语义塌缩问题。再来看对比学习，它是通过拉近相同样本的距离、拉远不同样本的距离，来刻画样本本身的表示，正好可以解决BERT表示的塌缩问题。</p>
+<p><strong>解决方式</strong>：</p>
+<p>NLP的数据增强方式很重要，使用了5种数据增强方式进行对比：Adversarial attack、shuffle、token cutoff、feature cutoff、dropout</p>
+<p>损失函数：对比学习损失</p>
+<script type="math/tex; mode=display">\mathcal{L}_{i, j}=-\log \frac{\exp \left(\operatorname{sim}\left(r_i, r_j\right) / \tau\right)}{\sum_{k=1}^{2 N} \mathbb{1}_{[k \neq i]} \exp \left(\operatorname{sim}\left(r_i, r_k\right) / \tau\right)}</script><p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7un50nh8lj31i80pu0x6.jpg" alt=""></p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7un5bpvb6j30sy0tm0wd.jpg" alt=""></p>
+<h2 id="正例构建方式"><a href="#正例构建方式" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><ul>
+<li>shuffle：更换position id的顺序</li>
+<li>token cutoff：在某个token维度把embedding置为0</li>
+<li>feature cutoff：在embedding矩阵中，有768个维度，把某个维度的feature置为0</li>
+<li>dropout：dropout</li>
+<li>Adversarial attack：对抗扰动</li>
+</ul>
+<h2 id="负例构建方式"><a href="#负例构建方式" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SimCSE（EMNLP-2021）"><a href="#SimCSE（EMNLP-2021）" class="headerlink" title="SimCSE（EMNLP 2021）"></a>SimCSE（EMNLP 2021）</h1><p><strong>题目</strong>：SimCSE: Simple Contrastive Learning of Sentence Embeddings</p>
+<p><strong>地址</strong>：<a href="https://aclanthology.org/2021.emnlp-main.552.pdf">https://aclanthology.org/2021.emnlp-main.552.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/princeton-nlp/SimCSE">https://github.com/princeton-nlp/SimCSE</a></p>
+<h2 id="核心思路-4"><a href="#核心思路-4" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>将对比学习方式引入句向量表征领域。</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入对比损失的难点在于正样本的构建，该文提出dropout的正样本构建方式。</p>
+<p><strong>无监督SimCSE</strong>：</p>
+<p>Dropout构建正例样本，batch内其他样本作为负样本</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7v5t94trnj30mi06sdfw.jpg" alt=""></p>
+<p><strong>有监督SimCSE</strong>：</p>
+<p>句子蕴含任务中同一标签的作为正样本，同一batch的其他样本的是负样本</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7v5tjpfhej30rm06qwem.jpg" alt=""></p>
+<h2 id="正例构建方式-1"><a href="#正例构建方式-1" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>Dropout两次产生的数据</p>
+<h2 id="负例构建方式-1"><a href="#负例构建方式-1" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7un814nrdj31te0mmtda.jpg" alt=""></p>
+<h1 id="ESimCSE（COLING-2022）"><a href="#ESimCSE（COLING-2022）" class="headerlink" title="ESimCSE（COLING 2022）"></a>ESimCSE（COLING 2022）</h1><p><strong>题目</strong>：ESimCSE: Enhanced Sample Building Method for Contrastive Learning of Unsupervised Sentence Embedding</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2109.04380.pdf">https://arxiv.org/pdf/2109.04380.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/caskcsg/sentemb/tree/main/ESimCSE">https://github.com/caskcsg/sentemb/tree/main/ESimCSE</a></p>
+<h2 id="核心思路-5"><a href="#核心思路-5" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决SimCSE的两个问题：</p>
+<ul>
+<li>Dropout构建的正例均是相同长度的，会导致模型认为相同句子长度的句子更相似</li>
+<li>SimCSE增加batchsize，引入更多负例，反而引起效果下降【猜测：更多的负例中，部分与正例接近质量不高】</li>
+</ul>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7unb7gydlj318p0u0797.jpg" alt=""><br><strong>核心改动点</strong>：</p>
+<p><strong>正例生成方式</strong>：重复一定单词</p>
+<p><strong>负例生成方式</strong>：动量序列，扩展负样本数量</p>
+<h2 id="正例生成方式"><a href="#正例生成方式" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>重复单词</p>
+<h2 id="负例生成方式"><a href="#负例生成方式" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>动量序列，扩展负样本数量</p>
+<h1 id="DiffCSE（NAACL2022）"><a href="#DiffCSE（NAACL2022）" class="headerlink" title="DiffCSE（NAACL2022）"></a>DiffCSE（NAACL2022）</h1><p><strong>题目</strong>：DiffCSE: Difference-based Contrastive Learning for Sentence Embeddings</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2204.10298.pdf">https://arxiv.org/pdf/2204.10298.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/voidism/DiffCSE">https://github.com/voidism/DiffCSE</a></p>
+<h2 id="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"><a href="#核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）" class="headerlink" title="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"></a>核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）</h2><p><strong>出发点</strong>：</p>
+<p>NLP任务中，词语EDA的数据增强方式是敏感变化，dropout方式是 不敏感变化。SimCSE的成功也说明了dropout masks机制来构建正样本，比基于同义词或掩码语言模型的删除或替换等更复杂的增强效果要好得多。“。这一现象也说明，<strong>「直接增强（删除或替换）往往改变句子本身语义」。</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7undvt32pj31bo0ngwgp.jpg" alt=""><br><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7une5kgyzj31ie0scn6r.jpg" alt=""></p>
+<h2 id="正例生成方式-1"><a href="#正例生成方式-1" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-1"><a href="#负例生成方式-1" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>通过ELECTRA模型，完成句子改写任务</p>
+<h1 id="PromptBert（EMNLP-2022）"><a href="#PromptBert（EMNLP-2022）" class="headerlink" title="PromptBert（EMNLP 2022）"></a>PromptBert（EMNLP 2022）</h1><p><strong>题目</strong>：PromptBERT: Improving BERT Sentence Embeddings with Prompts</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.04337.pdf">https://arxiv.org/pdf/2201.04337.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/kongds/Prompt-BERT">https://github.com/kongds/Prompt-BERT</a></p>
+<h2 id="核心思路-6"><a href="#核心思路-6" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>BERT句向量存在各向异性，并受到词频、字母大小写、子词等影响。</p>
+<p><strong>解决方式</strong>：</p>
+<p>通过Prompt模版，得到句子的表征向量，与CLS、AVG、MAX取表征向量不同，没有用到具体某个词语的信息。</p>
+<p><strong>模版去噪对比学习</strong>：</p>
+<p>通过不同模版产生句子表征向量，构建正样本。为了剔除不同模版的影响，减去纯模版得到的句子表征向量。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7ungeh73nj31fe0q87ce.jpg" alt=""></p>
+<h2 id="正例构建方式-2"><a href="#正例构建方式-2" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>通过不同模版产生的句子表征向量</p>
+<h2 id="负例构建方式-2"><a href="#负例构建方式-2" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SNCSE"><a href="#SNCSE" class="headerlink" title="SNCSE"></a>SNCSE</h1><p><strong>题目</strong>：SNCSE: Contrastive Learning for Unsupervised Sentence Embedding with Soft Negative Samples</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.05979.pdf">https://arxiv.org/pdf/2201.05979.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/Sense-GVT/SNCSE">https://github.com/Sense-GVT/SNCSE</a></p>
+<h2 id="核心思路-7"><a href="#核心思路-7" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>目前的数据增强方法，获取的正样本均极为相似，导致模型存在特征抑制，即<strong>「模型不能区分文本相似度和语义相似度，并更偏向具有相似文本，而不考虑它们之间的实际语义差异」。</strong> 导致模型更多关注的是字面匹配，而非语义匹配。</p>
+<p><strong>解决方式</strong>：</p>
+<p>新增软负例以及双向边际损失，限制样本与软负例相似度到一定范围内。 并利用PromptBert方式获取词向量。</p>
+<p><strong>计算公式</strong>如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7v5zdv6sxj30kg0a6gmc.jpg" alt=""></p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGly1h7unjil2goj314o0l245f.jpg" alt=""></p>
+<h2 id="正例生成方式-2"><a href="#正例生成方式-2" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-2"><a href="#负例生成方式-2" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>纯负例：batch内其他数据</li>
+<li>软负例：通过spacy进行语法解析，为动词添加否定词前缀。</li>
+</ul>
+<h1 id="EASE（NAACL2022）"><a href="#EASE（NAACL2022）" class="headerlink" title="EASE（NAACL2022）"></a>EASE（NAACL2022）</h1><p><strong>题目</strong>：EASE: Entity-Aware Contrastive Learning of Sentence Embedding</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2205.04260.pdf">https://arxiv.org/pdf/2205.04260.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/studio-ousia/ease">https://github.com/studio-ousia/ease</a></p>
+<h2 id="核心思路-8"><a href="#核心思路-8" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：实体是一个句子的重要部分，可以作为一个句子的指示器，通过学习实体与句子之间的差异，可以为句子向量的学习提供额外信息。</p>
+<p><strong>解决方式</strong>：通过维基百科的实体超链接引入实体信息。</p>
+<p><strong>损失函数</strong>：实体句子对比损失+自监督对比损失</p>
+<h2 id="正例生成方式-3"><a href="#正例生成方式-3" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><ul>
+<li><strong>实体正例</strong>：维基百科超链接实体。(为了提高实体质量，仅保留超链接实体出现次数超过10次的实体。)</li>
+<li><strong>样本正例</strong>：与SimCSE相同，Dropout产生正例</li>
+</ul>
+<h2 id="负例生成方式-3"><a href="#负例生成方式-3" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>实体负例：<br>负例实体需要与正例实体具有相同的类型；<br>负例实体不能与正例实体出现在同一维基百科页面中。<br>随机在满足上诉条件的候选实体中选择一个实体作为硬负例数据，构建（句子，正例实体，负例实体）的triple数据。</li>
+<li>样本负例：batch内其他数据</li>
+</ul>
+<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><ul>
+<li>在中文数据集上，验证各方法效果</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>句向量</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>句向量</tag>
       </tags>
   </entry>
   <entry>

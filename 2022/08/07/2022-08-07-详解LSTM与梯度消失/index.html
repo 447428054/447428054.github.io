@@ -27,17 +27,17 @@
 <meta property="og:site_name" content="JMX Blog">
 <meta property="og:description" content="前言首先抛出关键性结论：  RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g&#x3D;\sum{g_t}$。  RNN中总的梯度不会消失，只是远距离梯度消失，梯度被近距离梯度主导，无法捕获远距离特征。  梯度消失的本质：由于RNN模型在时间维度共享参数矩阵，导致针对隐藏状态h求导时，循环计算矩阵乘法，最终梯度上出现了参数矩阵的累乘。  LSTM缓解梯度消失的本质：引入门控">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5efsnq04aj20uw0s8q3v.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eifszm1pj20rg0rwt9h.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eoc8r5nyj20vi0r6gmm.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eqltmndlj20tc0r2dgx.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-a2898c8e0c7c45f763256ec8f60b8844_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-29885f66462e4f48db0aba5722798aa5_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-62d798b3d85004c5ea63b44dbf9312d5_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-74080caa295667886f47324200e7bc39_1440w.webp">
 <meta property="article:published_time" content="2022-08-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-08-28T07:12:41.354Z">
+<meta property="article:modified_time" content="2023-02-12T11:51:24.644Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="预训练">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24ely1h5efsnq04aj20uw0s8q3v.jpg">
+<meta name="twitter:image" content="https://pic1.zhimg.com/80/v2-a2898c8e0c7c45f763256ec8f60b8844_1440w.webp">
 
 <link rel="canonical" href="https://447428054.github.io/2022/08/07/2022-08-07-%E8%AF%A6%E8%A7%A3LSTM%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%B6%88%E5%A4%B1/">
 
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-08-28 15:12:41" itemprop="dateModified" datetime="2022-08-28T15:12:41+08:00">2022-08-28</time>
+                <time title="修改时间：2023-02-12 19:51:24" itemprop="dateModified" datetime="2023-02-12T19:51:24+08:00">2023-02-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -379,19 +379,19 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <p>我们可以通过门机制实现选择性，但要如何将这三个机制结合起来呢？</p>
 <h2 id="LSTM原型"><a href="#LSTM原型" class="headerlink" title="LSTM原型"></a>LSTM原型</h2><p>首先，提出一个LSTM原型，本着先读取状态，再写入的原则，每一次更新状态的增量$\tilde{s}_{t}$，由$o_t$选择性读取上一个状态的内容，$i_t$为选择写入，$f_t$选择性遗忘上一状态的内容：</p>
 <script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i} s_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} s_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} s_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(o_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \end{aligned} \tag{17}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5efsnq04aj20uw0s8q3v.jpg" alt=""></p>
+\begin{aligned} i_{t} &=\sigma\left(W_{i} s_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} s_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} s_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(o_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \end{aligned} \tag{17}</script><p><img src="https://pic1.zhimg.com/80/v2-a2898c8e0c7c45f763256ec8f60b8844_1440w.webp" alt=""></p>
 <h2 id="三个起效果的改进版本"><a href="#三个起效果的改进版本" class="headerlink" title="三个起效果的改进版本"></a>三个起效果的改进版本</h2><p>按理说上述LSTM原型能够起效果，但事与愿违，<strong>选择性读取与选择性写入未能很好的协调，导致状态值非常大，紧接着门机制变得饱和。</strong>这种情况源于的$s_t$是无界的，会变得非常大从而导致门机制饱和，因此接下来的三个改进的生效版本均是约束$s_t$的大小，将其约束成有界。</p>
 <h3 id="归一化LSTM原型"><a href="#归一化LSTM原型" class="headerlink" title="归一化LSTM原型"></a>归一化LSTM原型</h3><p>针对$s_t$进行正态归一化，$s_t = \frac{s_t-mean(s_t)}{\sqrt{Var(s_t) + 1}}$，也可以类似于层归一化等方式添加缩放与平移分量。</p>
 <p>归一化后的$s_t$从无界成为有界。</p>
 <h3 id="GRU：将写入与遗忘强绑定"><a href="#GRU：将写入与遗忘强绑定" class="headerlink" title="GRU：将写入与遗忘强绑定"></a>GRU：将写入与遗忘强绑定</h3><script type="math/tex; mode=display">s_{t}=\left(1-i_{t}\right) \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \tag{18}</script><p>GRU将写入门与遗忘门绑定起来，使之加和为1。将$s_t$变成$s_{t-1}$与$\tilde{s}_{t}$的element-wise加权平均，当两者均有界时，$s_t$也有界。</p>
 <p>以下给出GRU的计算公式，与原理图：</p>
 <script type="math/tex; mode=display">
-\begin{aligned} r_{t} &=\sigma\left(W_{r} s_{t-1}+U_{r} x_{t}+b_{r}\right) \\ z_{t} &=\sigma\left(W_{z} s_{t-1}+U_{z} x_{t}+b_{z}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(r_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=z_{t} \odot s_{t-1}+\left(1-z_{t}\right) \odot \tilde{s}_{t} \end{aligned} \tag{19}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eifszm1pj20rg0rwt9h.jpg" alt=""></p>
+\begin{aligned} r_{t} &=\sigma\left(W_{r} s_{t-1}+U_{r} x_{t}+b_{r}\right) \\ z_{t} &=\sigma\left(W_{z} s_{t-1}+U_{z} x_{t}+b_{z}\right) \\ \tilde{s_{t}} &=\phi\left(W\left(r_{t} \odot s_{t-1}\right)+U x_{t}+b\right) \\ s_{t} &=z_{t} \odot s_{t-1}+\left(1-z_{t}\right) \odot \tilde{s}_{t} \end{aligned} \tag{19}</script><p><img src="https://pic2.zhimg.com/80/v2-29885f66462e4f48db0aba5722798aa5_1440w.webp" alt=""></p>
 <h3 id="伪LSTM：通过激活函数约束"><a href="#伪LSTM：通过激活函数约束" class="headerlink" title="伪LSTM：通过激活函数约束"></a>伪LSTM：通过激活函数约束</h3><p>通过激活函数，将$s_t$限制到激活函数的上界内。</p>
 <p>只有在更新写入时，为了避免信息的变化，未使用激活函数约束。</p>
 <p>以下给出伪LSTM的计算公式，与原理图：</p>
 <script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i}\left(\phi\left(s_{t-1}\right)\right)+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o}\left(\phi\left(s_{t-1}\right)\right)+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f}\left(\phi\left(s_{t-1}\right)\right)+U_{f} x_{t}+b_{f}\right) \\ \tilde{s}_{t} &=\phi\left(W\left(o_{t} \odot \phi\left(s_{t-1}\right)\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \\ \mathbf{r n n}_{\text {out }} &=\phi\left(s_{t}\right) \end{aligned} \tag{20}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eoc8r5nyj20vi0r6gmm.jpg" alt=""></p>
+\begin{aligned} i_{t} &=\sigma\left(W_{i}\left(\phi\left(s_{t-1}\right)\right)+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o}\left(\phi\left(s_{t-1}\right)\right)+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f}\left(\phi\left(s_{t-1}\right)\right)+U_{f} x_{t}+b_{f}\right) \\ \tilde{s}_{t} &=\phi\left(W\left(o_{t} \odot \phi\left(s_{t-1}\right)\right)+U x_{t}+b\right) \\ s_{t} &=f_{t} \odot s_{t-1}+i_{t} \odot \tilde{s}_{t} \\ \mathbf{r n n}_{\text {out }} &=\phi\left(s_{t}\right) \end{aligned} \tag{20}</script><p><img src="https://pic2.zhimg.com/80/v2-62d798b3d85004c5ea63b44dbf9312d5_1440w.webp" alt=""></p>
 <h2 id="LSTM提出-1"><a href="#LSTM提出-1" class="headerlink" title="LSTM提出"></a>LSTM提出</h2><p>LSTM与伪LSTM的几点关键区别如下：</p>
 <ol>
 <li><p>LSTM是先写后读，因此添加了一个“影子”状态，Hochreiter and Schmidhuber等人认为状态s与剩余的RNN cell是独立的。</p>
@@ -404,7 +404,7 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <p>这样一来，LSTM的输入就是上一时刻的$c_{t-1},h_{t-1}$，输出为$c_t,h_t$。</p>
 <h3 id="基础LSTM"><a href="#基础LSTM" class="headerlink" title="基础LSTM"></a>基础LSTM</h3><p>基础LSTM单元的公式与原理图如下：</p>
 <script type="math/tex; mode=display">
-\begin{aligned} i_{t} &=\sigma\left(W_{i} h_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} h_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} h_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{c}_{t} &=\phi\left(W h_{t-1}+U x_{t}+b\right) \\ c_{t} &=f_{t} \odot c_{t-1}+i_{t} \odot \tilde{c}_{t} \\ h_{t} &=o_{t} \odot \phi\left(c_{t}\right) \\ \mathrm{rnn}_{\text {out }} &=h_{t} \end{aligned} \tag{21}</script><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1h5eqltmndlj20tc0r2dgx.jpg" alt=""></p>
+\begin{aligned} i_{t} &=\sigma\left(W_{i} h_{t-1}+U_{i} x_{t}+b_{i}\right) \\ o_{t} &=\sigma\left(W_{o} h_{t-1}+U_{o} x_{t}+b_{o}\right) \\ f_{t} &=\sigma\left(W_{f} h_{t-1}+U_{f} x_{t}+b_{f}\right) \\ \tilde{c}_{t} &=\phi\left(W h_{t-1}+U x_{t}+b\right) \\ c_{t} &=f_{t} \odot c_{t-1}+i_{t} \odot \tilde{c}_{t} \\ h_{t} &=o_{t} \odot \phi\left(c_{t}\right) \\ \mathrm{rnn}_{\text {out }} &=h_{t} \end{aligned} \tag{21}</script><p><img src="https://pic2.zhimg.com/80/v2-74080caa295667886f47324200e7bc39_1440w.webp" alt=""></p>
 <h3 id="The-LSTM-with-peepholes"><a href="#The-LSTM-with-peepholes" class="headerlink" title="The LSTM with peepholes"></a>The LSTM with peepholes</h3><p>利用前一状态$c_{t-1}$来进行门控机制的计算，但输出利用实时信息$c_t$。</p>
 <p>计算公式如下：</p>
 <script type="math/tex; mode=display">

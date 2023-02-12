@@ -28,13 +28,13 @@
 <meta property="og:description" content="前言看到有些论文插图十分简洁美观，于是便摸索一下如何美化一下折线图绘图。本文将在前文Python数据分析-数据可视化的基础上，介绍折线图格式的调整。 本文使用的画图工具为matplotlib，相关API可访问python matplotlib文档。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy7pemcxsnj30m80ecdh1.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy79jv3dhtj30hs0dc3yn.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m0t136fj30hs0dc74x.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m774jovj30hs0dct9g.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy7mdyz2wcj30hs0dc3z9.jpg">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m9a8dwij30hs0dcq38.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-b76ae257686d07ce9c469d0053286e92_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-a1256f476d9e062a706f81f2f38dd67e_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-ea4768baded601f29bd81d25a6220e72_1440w.webp">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-00fdeaa9405065aa4cd35ff740b99754_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-b17579efda53b64ef09cc794ea0fdc27_1440w.webp">
 <meta property="article:published_time" content="2022-01-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-01-20T02:39:53.992Z">
+<meta property="article:modified_time" content="2023-02-12T12:24:26.573Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="数据分析">
 <meta property="article:tag" content="python">
@@ -238,7 +238,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-20 10:39:53" itemprop="dateModified" datetime="2022-01-20T10:39:53+08:00">2022-01-20</time>
+                <time title="修改时间：2023-02-12 20:24:26" itemprop="dateModified" datetime="2023-02-12T20:24:26+08:00">2023-02-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -492,7 +492,7 @@
 <li>使用方式：plt.plot(x,y,label=’example’)</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import random</span><br><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">x = range(10)</span><br><span class="line">y = [random.random() for _ in range(10)]</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, y, label=&#x27;example&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gy79jv3dhtj30hs0dc3yn.jpg" alt=""></p>
+<p><img src="https://pic3.zhimg.com/80/v2-b76ae257686d07ce9c469d0053286e92_1440w.webp" alt=""></p>
 <h2 id="线条颜色"><a href="#线条颜色" class="headerlink" title="线条颜色"></a>线条颜色</h2><ol>
 <li>附加参数名：color</li>
 <li>功能：选择绘制线条的颜色</li>
@@ -505,7 +505,7 @@
 <li>(r, g, b) 或 (r, g, b, a)，如（1,0,1,1） ，其中 r g b a 取均为[0, 1]之间，[0, 1]之间的浮点数的字符串形式，表示灰度值。0表示黑色，1表示白色</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import random</span><br><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">x = range(10)</span><br><span class="line">y = [random.random() for _ in range(10)]</span><br><span class="line">y2 = [random.random() for _ in range(10)]</span><br><span class="line">y3 = [random.random() for _ in range(10)]</span><br><span class="line">y4 = [random.random() for _ in range(10)]</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, y, label=&#x27;example1&#x27;, color=&#x27;blue&#x27;)</span><br><span class="line">plt.plot(x, y2, label=&#x27;example2&#x27;, color=&#x27;r&#x27;)</span><br><span class="line">plt.plot(x, y3, label=&#x27;example3&#x27;, color=&#x27;#00FFFF&#x27;)</span><br><span class="line">plt.plot(x, y4, label=&#x27;example4&#x27;, color=(0.4, 0.5, 0.6))</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m0t136fj30hs0dc74x.jpg" alt=""></p>
+<p><img src="https://pic3.zhimg.com/80/v2-a1256f476d9e062a706f81f2f38dd67e_1440w.webp" alt=""></p>
 <h2 id="线条形状"><a href="#线条形状" class="headerlink" title="线条形状"></a>线条形状</h2><ol>
 <li>附加参数名：linestyle(或ls)</li>
 <li>功能：选择绘制线条的形状</li>
@@ -520,7 +520,7 @@
 <li>‘’, ‘ ‘, None</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import random</span><br><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">x = range(10)</span><br><span class="line">y = [random.random() for _ in range(10)]</span><br><span class="line">y2 = [random.random() for _ in range(10)]</span><br><span class="line">y3 = [random.random() for _ in range(10)]</span><br><span class="line">y4 = [random.random() for _ in range(10)]</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, y, label=&#x27;example1&#x27;, color=&#x27;blue&#x27;, linestyle=&#x27;-&#x27;)</span><br><span class="line">plt.plot(x, y2, label=&#x27;example2&#x27;, color=&#x27;r&#x27;, ls=&#x27;--&#x27;)</span><br><span class="line">plt.plot(x, y3, label=&#x27;example3&#x27;, color=&#x27;#00FFFF&#x27;, ls=&#x27;:&#x27;)</span><br><span class="line">plt.plot(x, y4, label=&#x27;example4&#x27;, color=(0.4, 0.5, 0.6), ls=&#x27;&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m774jovj30hs0dct9g.jpg" alt=""></p>
+<p><img src="https://pic3.zhimg.com/80/v2-ea4768baded601f29bd81d25a6220e72_1440w.webp" alt=""></p>
 <h2 id="折点样式"><a href="#折点样式" class="headerlink" title="折点样式"></a>折点样式</h2><ol>
 <li>附加参数名：<br>(1)marker — 折点形状</li>
 </ol>
@@ -648,14 +648,14 @@
 </table>
 </div>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import random</span><br><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">x = range(10)</span><br><span class="line">y = [random.random() for _ in range(10)]</span><br><span class="line">y2 = [random.random() for _ in range(10)]</span><br><span class="line">y3 = [random.random() for _ in range(10)]</span><br><span class="line">y4 = [random.random() for _ in range(10)]</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, y, label=&#x27;example1&#x27;, color=&#x27;blue&#x27;, linestyle=&#x27;-&#x27;, marker=&#x27;o&#x27;)</span><br><span class="line">plt.plot(x, y2, label=&#x27;example2&#x27;, color=&#x27;r&#x27;, ls=&#x27;--&#x27;, marker=&#x27;1&#x27;)</span><br><span class="line">plt.plot(x, y3, label=&#x27;example3&#x27;, color=&#x27;#00FFFF&#x27;, ls=&#x27;:&#x27;, marker=&#x27;2&#x27;)</span><br><span class="line">plt.plot(x, y4, label=&#x27;example4&#x27;, color=(0.4, 0.5, 0.6), marker=&#x27;3&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gy7mdyz2wcj30hs0dc3z9.jpg" alt=""></p>
+<p><img src="https://pic1.zhimg.com/80/v2-00fdeaa9405065aa4cd35ff740b99754_1440w.webp" alt=""></p>
 <h2 id="线条透明度"><a href="#线条透明度" class="headerlink" title="线条透明度"></a>线条透明度</h2><ol>
 <li>附加参数名：alpha,值在[0,1]之间</li>
 <li>功能：选择绘制线条的透明度</li>
 <li>使用方式：plt.plot(x,y,alpha=’0.9’)</li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import random</span><br><span class="line"></span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">x = range(10)</span><br><span class="line">y = [random.random() for _ in range(10)]</span><br><span class="line">y2 = [random.random() for _ in range(10)]</span><br><span class="line">y3 = [random.random() for _ in range(10)]</span><br><span class="line">y4 = [random.random() for _ in range(10)]</span><br><span class="line"></span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, y, label=&#x27;example1&#x27;, color=&#x27;blue&#x27;, linestyle=&#x27;-&#x27;, alpha=0.3)</span><br><span class="line">plt.plot(x, y2, label=&#x27;example2&#x27;, color=&#x27;r&#x27;, ls=&#x27;--&#x27;, alpha=0.1)</span><br><span class="line">plt.plot(x, y3, label=&#x27;example3&#x27;, color=&#x27;#00FFFF&#x27;, ls=&#x27;:&#x27;, alpha=0.5)</span><br><span class="line">plt.plot(x, y4, label=&#x27;example4&#x27;, color=(0.4, 0.5, 0.6), ls=&#x27;&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gy7m9a8dwij30hs0dcq38.jpg" alt=""></p>
+<p><img src="https://pic4.zhimg.com/80/v2-b17579efda53b64ef09cc794ea0fdc27_1440w.webp" alt=""></p>
 
     </div>
 

@@ -2436,9 +2436,8 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/mjQ3eG.png" alt="mjQ3eG"></p>
 <p>大模型有一个很重要的涌现能力（Emergent ability）就是<strong>In-Context Learning（ICL），也是一种新的范式，指在不进行参数更新的情况下，只在输入中加入几个示例就能让模型进行学习</strong>。下面给出ICL的公式定义：</p>
 <script type="math/tex; mode=display">
-C = {I,s(x_1,y_1),...,s(x_k,y_k)} \quad or \quad C = {s(x_1, y_1, I), . . . , s(x_k, y_k, I)}
-$$</script><p>P\left(y_j \mid x\right) \triangleq f_{\mathcal{M}}\left(y_j, C, x\right)</p>
-<script type="math/tex; mode=display">$$
+C = {I,s(x_1,y_1),...,s(x_k,y_k)} \quad or \quad C = {s(x_1, y_1, I), . . . , s(x_k, y_k, I)}</script><script type="math/tex; mode=display">
+P\left(y_j \mid x\right) \triangleq f_{\mathcal{M}}\left(y_j, C, x\right)</script><script type="math/tex; mode=display">
 \hat{y}=\arg \max _{y_j \in Y} P\left(y_j \mid x\right) .</script><p>其中，符号含义如下，从这些符号中也能看出影响ICL的因素：</p>
 <ul>
 <li><p>I：具体任务的描述信息</p>

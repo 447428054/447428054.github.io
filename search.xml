@@ -3346,9 +3346,11 @@ K \\
 <p><strong>论文地址</strong>：<a href="https://arxiv.org/pdf/2103.10360v2.pdf">https://arxiv.org/pdf/2103.10360v2.pdfhttps://arxiv.org/pdf/2103.10360v2.pdf</a></p>
 <p><strong>训练目标</strong>：</p>
 <p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/jkMmBZ.png" alt="jkMmBZ"></p>
-<p>$\max _\theta \mathbb{E}_{\boldsymbol{z} \sim Z_m}\left[\sum_{i=1}^m \log p_\theta\left(\boldsymbol{s}_{z_i} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{&lt;i}}\right)\right]$</p>
-<p>$\begin{aligned}<br>&amp; p_\theta\left(\boldsymbol{s}_i \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{&lt;i}}\right) \\<br>= &amp; \prod_{j=1}^{l_i} p\left(s_{i, j} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{&lt;i}}, \boldsymbol{s}_{i,&lt;j}\right) \end{aligned}$</p>
-<p><strong>模型结构</strong>：</p>
+<script type="math/tex; mode=display">
+\max _\theta \mathbb{E}_{\boldsymbol{z} \sim Z_m}\left[\sum_{i=1}^m \log p_\theta\left(\boldsymbol{s}_{z_i} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}\right)\right]</script><script type="math/tex; mode=display">
+\begin{aligned}
+& p_\theta\left(\boldsymbol{s}_i \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}\right) \\
+= & \prod_{j=1}^{l_i} p\left(s_{i, j} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}, \boldsymbol{s}_{i,<j}\right) \end{aligned}</script><p><strong>模型结构</strong>：</p>
 <ul>
 <li>改变层归一化、残差网络结构的顺序（避免出现数值错误）</li>
 <li>新增线性层输出结果</li>

@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM模型评估  在文本生成领域，解码是一个关键的步骤，它决定了生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="复刻ChatGPT语言模型系列-（一）基座模型选取">
+<meta property="og:url" content="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM模型评估  在文本生成领域，解码是一个关键的步骤，它决定了生成">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/DnHQwq.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/HhSR0j.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lrNIF9.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/DnHQwq.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/R2bvXA.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/f4TvkR.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/vt9hPy.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/HhSR0j.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lrNIF9.jpg">
+<meta property="article:published_time" content="2023-05-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-16T14:31:31.834Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg">
+
+<link rel="canonical" href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>复刻ChatGPT语言模型系列-（一）基座模型选取 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          复刻ChatGPT语言模型系列-（一）基座模型选取
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-08 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-08T00:00:00+08:00">2023-05-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-05-16 22:31:31" itemprop="dateModified" datetime="2023-05-16T22:31:31+08:00">2023-05-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本系列将包括以下内容：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/627832567">复刻ChatGPT语言模型系列-（一）基座模型选取</a></li>
+<li>复刻ChatGPT语言模型系列-（二）参数高效微调</li>
+<li>复刻ChatGPT语言模型系列-（三）指令学习微调</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/629909354">复刻ChatGPT语言模型系列-（四）文本生成解码</a></li>
+<li>复刻ChatGPT语言模型系列-（五）强化学习RLHF</li>
+<li>复刻ChatGPT语言模型系列-（六）LLM模型评估</li>
+</ul>
+<p>在文本生成领域，解码是一个关键的步骤，它决定了生成式模型输出的质量和多样性。在之前的几篇博文中，我们已经介绍了生成式模型的基本原理和训练过程。而在本系列的第四篇博文中，我们将深入探讨文本生成中的解码方式。</p>
+<p>一旦我们获得了一个生成式模型，我们需要对其输出进行解码，以得到最终的生成文本。然而，在解码的过程中，我们可能会面临一些问题。其中之一是生成重复的内容，这使得生成的文本缺乏多样性和创造性。为了解决这个问题，我们可以尝试开启采样机制，同时引入repetition_penalty惩罚，以减少生成重复的倾向。</p>
+<p>另一个常见的问题是生成的随机性不够高，导致生成的文本过于保守和可预测。为了增加文本生成的多样性，我们可以调整一些参数。例如，可以将top_p的值调小，这会使模型在生成词语时只考虑概率较高的选项；同时，可以将top_k的值调大，以增加模型的选择余地。此外，还可以适当降低温度系数，使模型生成的文本更加确定性。</p>
+<p>本文将详细介绍这些解码方式，帮助您在文本生成任务中获得更好的结果。文中的所有功能均可用于 <em>自回归</em> 语言生成任务。简单复习一下， <em>自回归</em> 语言生成是基于如下假设: 一个文本序列的概率分布可以分解为每个词基于其上文的条件概率的乘积。</p>
+<script type="math/tex; mode=display">
+P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\right), \text { 其中 } w_{1: 0}=\emptyset,</script><p>上式中，$W_0$ 是初始 <em>上下文</em> 单词序列。文本序列的长度 $T$ 通常时变的，并且对应于时间步 $t=T$。$P(w_{t} | w_{1: t- 1}, W_{0})$ 的词表中已包含 终止符 (End Of Sequence，EOS)。</p>
+<p>我们会介绍目前最常用的解码方法，主要有 <em>贪心搜索 (Greedy search)</em>、<em>波束搜索 (Beam search)</em>、<em>Top-K 采样 (Top-K sampling)</em> 以及 <em>Top-p 采样 (Top-p sampling)</em>。几种方式的简介如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>解码方法</th>
+<th>简介</th>
+<th>可视化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>贪心搜索</td>
+<td>从单词开始，每次都选择当前条件概率最高的词作为输出，以此往后生成单词序列。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg" alt="贪心搜索"></td>
+</tr>
+<tr>
+<td>波束搜索</td>
+<td>在每个时间步保留最可能的 num_beams 个词，最终从中选择概率最高的序列来降低丢失潜在高概率序列的风险。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/DnHQwq.jpg" alt="波束搜索"></td>
+</tr>
+<tr>
+<td>TOP-K采样</td>
+<td>选择概率最大的 K 个词，重新归一化这 K 个词的概率，选出一个词进行采样。这样，词集的大小是固定的，即 K。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/HhSR0j.jpg" alt="TOP-K采样"></td>
+</tr>
+<tr>
+<td>TOP-P采样</td>
+<td>在累积概率超过概率 p 的最小单词集中进行采样，然后在这组词中重新分配概率。这样，词集的大小是动态的，可以根据下一个词的概率分布动态增加和减少。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lrNIF9.jpg" alt="TOP-P采样"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<span id="more"></span>
+<h1 id="贪心搜索"><a href="#贪心搜索" class="headerlink" title="贪心搜索"></a>贪心搜索</h1><p>贪心搜索在每个时间步 $t$ 都简单地选择概率最高的词作为当前输出词: $w_t = argmax_{w}P(w | w_{1:t-1})$ ，如下图所示。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg" alt="贪心搜索"></p>
+<p>从单词 $\text{“The”}$ 开始，算法在第一步贪心地选择条件概率最高的词 $\text{“nice”}$ 作为输出，依此往后。最终生成的单词序列为 $(\text{“The”}, \text{“nice”}, \text{“woman”})$，其联合概率为 $0.5 \times 0.4 = 0.2$。</p>
+<p>下面，我们输入文本序列 $(\text{“I”}, \text{“enjoy”}, \text{“walking”}, \text{“with”}, \text{“my”}, \text{“cute”}, \text{“dog”})$ 给 GPT2 模型，让模型生成下文。我们以此为例看看如何在 transformers 中使用贪心搜索:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># encode context the generation is conditioned on</span></span><br><span class="line">input_ids = tokenizer.encode(<span class="string">&#x27;I enjoy walking with my cute dog&#x27;</span>, return_tensors=<span class="string">&#x27;tf&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># generate text until the output length (which includes the context length) reaches 50</span></span><br><span class="line">greedy_output = model.generate(input_ids, max_length=<span class="number">50</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(greedy_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with my dog. I&#x27;m not sure if I&#x27;ll ever be able to walk with my dog.</span><br><span class="line"></span><br><span class="line">I&#x27;m not sure if I&#x27;ll</span><br></pre></td></tr></table></figure>
+<p>好，我们已经用 GPT2 生成了第一个短文本😊。根据上文生成的单词是合理的，但模型很快开始输出重复的文本！这在语言生成中是一个非常普遍的问题，在贪心搜索和波束搜索中似乎更是如此 - 详见  <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1610.02424">Vijayakumar 等人，2016</a> 和 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1701.03185">Shao 等人，2017</a> 的论文。</p>
+<p>贪心搜索的主要缺点是它错过了隐藏在低概率词后面的高概率词，如上图所示:</p>
+<p>条件概率为 $0.9$ 的单词 $\text{“has”}$ 隐藏在单词 $\text{“dog”}$ 后面，而 $\text{“dog”}$ 因为在 t=1 时条件概率值只排第二所以未被选择，因此贪心搜索会错过序列 $\text{“The”}, \text {“dog”}, \text{“has”}$ 。</p>
+<h1 id="波束搜索"><a href="#波束搜索" class="headerlink" title="波束搜索"></a>波束搜索</h1><p>波束搜索通过在每个时间步保留最可能的 <code>num_beams</code> 个词，并从中最终选择出概率最高的序列来降低丢失潜在的高概率序列的风险。以 <code>num_beams=2</code> 为例:</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/DnHQwq.jpg" alt="波束搜索"></p>
+<p>在时间步 1，除了最有可能的假设 $(\text{“The”}, \text{“nice”})$，波束搜索还跟踪第二可能的假设 $(\text{“The”}, \text{“dog”})$。在时间步 2，波束搜索发现序列 $(\text{“The”}, \text{“dog”}, \text{“has”})$ 概率为$0.36$，比 $(\text{“The”}, \text{“nice”}, \text{“woman”})$ 的 $0.2$ 更高。太棒了，在我们的例子中它已经找到了最有可能的序列！</p>
+<p>波束搜索一般都会找到比贪心搜索概率更高的输出序列，但仍不保证找到全局最优解。</p>
+<p>让我们看看如何在 transformers 中使用波束搜索。我们设置 num_beams &gt; 1 和 early_stopping=True 以便在所有波束达到 EOS 时直接结束生成。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># activate beam search and early_stopping</span></span><br><span class="line">beam_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    num_beams=<span class="number">5</span>, </span><br><span class="line">    early_stopping=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(beam_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with him again.</span><br><span class="line"></span><br><span class="line">I&#x27;m not sure if I&#x27;ll ever be able to walk with him again. I&#x27;m not sure if I&#x27;ll</span><br></pre></td></tr></table></figure>
+<p>虽然结果比贪心搜索更流畅，但输出中仍然包含重复。一个简单的补救措施是引入 <em>n-grams</em> (即连续 n 个词的词序列) 惩罚，该方法是由 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1705.04304">Paulus 等人 (2017)</a> 和 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1701.02810">Klein 等人 (2017)</a> 引入的。最常见的 <em>n-grams</em> 惩罚是确保每个 <em>n-gram</em> 都只出现一次，方法是如果看到当前候选词与其上文所组成的 <em>n-gram</em> 已经出现过了，就将该候选词的概率设置为 0。</p>
+<p>我们可以通过设置 <code>no_repeat_ngram_size=2</code> 来试试，这样任意 <em>2-gram</em> 不会出现两次:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set no_repeat_ngram_size to 2</span></span><br><span class="line">beam_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    num_beams=<span class="number">5</span>, </span><br><span class="line">    no_repeat_ngram_size=<span class="number">2</span>, </span><br><span class="line">    early_stopping=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(beam_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with him again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to take a break</span><br></pre></td></tr></table></figure>
+<p>不错，看起来好多了！我们看到生成的文本已经没有重复了。但是，<em>n-gram</em> 惩罚使用时必须谨慎，如一篇关于 <em>纽约</em> 这个城市的文章就不应使用 <em>2-gram</em> 惩罚，否则，城市名称在整个文本中将只出现一次！</p>
+<p>波束搜索的另一个重要特性是我们能够比较概率最高的几个波束，并选择最符合我们要求的波束作为最终生成文本。</p>
+<p>在 <code>transformers</code> 中，我们只需将参数 <code>num_return_sequences</code> 设置为需返回的概率最高的波束的数量，记得确保 <code>num_return_sequences &lt;= num_beams</code>！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set return_num_sequences &gt; 1</span></span><br><span class="line">beam_outputs = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    num_beams=<span class="number">5</span>, </span><br><span class="line">    no_repeat_ngram_size=<span class="number">2</span>, </span><br><span class="line">    num_return_sequences=<span class="number">5</span>, </span><br><span class="line">    early_stopping=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># now we have 3 output sequences</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i, beam_output <span class="keyword">in</span> <span class="built_in">enumerate</span>(beam_outputs):</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(i, tokenizer.decode(beam_output, skip_special_tokens=<span class="literal">True</span>)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">0: I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with him again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to take a break</span><br><span class="line">1: I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with him again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to get back to</span><br><span class="line">2: I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with her again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to take a break</span><br><span class="line">3: I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with her again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to get back to</span><br><span class="line">4: I enjoy walking with my cute dog, but I&#x27;m not sure if I&#x27;ll ever be able to walk with him again.</span><br><span class="line"></span><br><span class="line">I&#x27;ve been thinking about this for a while now, and I think it&#x27;s time for me to take a step</span><br></pre></td></tr></table></figure>
+<p>如我们所见，五个波束彼此之间仅有少量差别 —— 这在仅使用 5 个波束时不足为奇。</p>
+<p>开放域文本生成的研究人员最近提出了几个理由来说明对该领域而言波束搜索可能不是最佳方案:</p>
+<ul>
+<li><p>在机器翻译或摘要等任务中，因为所需生成的长度或多或少都是可预测的，所以波束搜索效果比较好 - 参见 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1808.10006">Murray 等人 (2018)</a> 和 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1808.09582">Yang 等人 (2018)</a> 的工作。但开放域文本生成情况有所不同，其输出文本长度可能会有很大差异，如对话和故事生成的输出文本长度就有很大不同。</p>
+</li>
+<li><p>我们已经看到波束搜索已被证明存在重复生成的问题。在故事生成这样的场景中，很难用 <em>n-gram</em> 或其他惩罚来控制，因为在“不重复”和最大可重复 <em>n-grams</em> 之间找到一个好的折衷需要大量的微调。</p>
+</li>
+<li><p>正如 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1904.09751">Ari Holtzman 等人 (2019)</a> 所论证的那样，高质量的人类语言并不遵循最大概率法则。换句话说，作为人类，我们希望生成的文本能让我们感到惊喜，而可预测的文本使人感觉无聊。论文作者画了一个概率图，很好地展示了这一点，从图中可以看出人类文本带来的惊喜度比波束搜索好不少。</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/R2bvXA.jpg" alt="R2bvXA"></p>
+<p>因此，让我们开始玩点刺激的，引入一些随机性🤪。</p>
+<h1 id="采样"><a href="#采样" class="headerlink" title="采样"></a>采样</h1><p>在其最基本的形式中，采样意味着根据当前条件概率分布随机选择输出词 $w_t$:</p>
+<script type="math/tex; mode=display">
+w_t​∼P(w∣w_{1:t−1}​)</script><p>继续使用上文中的例子，下图可视化了使用采样生成文本的过程。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/f4TvkR.jpg" alt="f4TvkR"></p>
+<p>很明显，使用采样方法时文本生成本身不再是 <em>确定性的</em>。单词 $\text{“car”}$ 从条件概率分布 $P(w | \text{“The”})$ 中采样而得，而 $\text{“drives”}$ 则采样自 $P(w | \text{“The”}, \text{“car”})$。</p>
+<p>在 <code>transformers</code> 中，我们设置 <code>do_sample=True</code> 并通过设置 <code>top_k=0</code> 停用 <em>Top-K</em> 采样 (稍后详细介绍)。在下文中，为便于复现，我们会固定 <code>random_seed=0</code>，但你可以在自己的模型中随意更改 <code>random_seed</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set seed to reproduce results. Feel free to change the seed though to get different results</span></span><br><span class="line">tf.random.set_seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># activate sampling and deactivate top_k by setting top_k sampling to 0</span></span><br><span class="line">sample_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    do_sample=<span class="literal">True</span>, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    top_k=<span class="number">0</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(sample_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog. He just gave me a whole new hand sense.&quot;</span><br><span class="line"></span><br><span class="line">But it seems that the dogs have learned a lot from teasing at the local batte harness once they take on the outside.</span><br><span class="line"></span><br><span class="line">&quot;I take</span><br></pre></td></tr></table></figure>
+<p>有意思！生成的文本看起来不错 - 但仔细观察会发现它不是很连贯。<em>3-grams</em> <em>new hand sense</em> 和 <em>local batte harness</em> 非常奇怪，看起来不像是人写的。这就是对单词序列进行采样时的大问题: 模型通常会产生不连贯的乱码，<em>参见</em> <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1904.09751">Ari Holtzman 等人 (2019)</a> 的论文。</p>
+<p>缓解这一问题的一个技巧是通过降低所谓的 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Softmax_function#Smooth_arg_max">softmax</a> 的“温度”使分布 $P(w|w_{1:t-1})$ 更陡峭。而降低“温度”，本质上是增加高概率单词的似然并降低低概率单词的似然。</p>
+<p>将温度应用到于我们的例子中后，结果如下图所示。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/vt9hPy.jpg" alt="vt9hPy"></p>
+<p>$t=1$ 时刻单词的条件分布变得更加陡峭，几乎没有机会选择单词 $\text{“car”}$ 了。</p>
+<p>让我们看看如何通过设置 <code>temperature=0.7</code> 来冷却生成过程:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set seed to reproduce results. Feel free to change the seed though to get different results</span></span><br><span class="line">tf.random.set_seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># use temperature to decrease the sensitivity to low probability candidates</span></span><br><span class="line">sample_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    do_sample=<span class="literal">True</span>, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    top_k=<span class="number">0</span>, </span><br><span class="line">    temperature=<span class="number">0.7</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(sample_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog, but I don&#x27;t like to be at home too much. I also find it a bit weird when I&#x27;m out shopping. I am always away from my house a lot, but I do have a few friends</span><br></pre></td></tr></table></figure>
+<p>好，奇怪的 n-gram 变少了，现在输出更连贯了！虽然温度可以使分布的随机性降低，但极限条件下，当“温度”设置为 $0$ 时，温度缩放采样就退化成贪心解码了，因此会遇到与贪心解码相同的问题。</p>
+<h1 id="TOP-K采样"><a href="#TOP-K采样" class="headerlink" title="TOP-K采样"></a>TOP-K采样</h1><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1805.04833.pdf">Fan 等人 (2018)</a> 的论文介绍了一种简单但非常强大的采样方案，称为 <strong><em>Top-K</em></strong> 采样。在 <em>Top-K</em> 采样中，概率最大的 <em>K</em> 个词会被选出，然后这 <em>K</em> 个词的概率会被重新归一化，最后就在这重新被归一化概率后的 <em>K</em> 个词中采样。 GPT2 采用了这种采样方案，这也是它在故事生成这样的任务上取得成功的原因之一。</p>
+<p>我们将上文例子中的候选单词数从 3 个单词扩展到 10 个单词，以更好地说明 <em>Top-K</em> 采样。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/HhSR0j.jpg" alt="TOP-K采样"></p>
+<p>设 $K = 6$，即我们将在两个采样步的采样池大小限制为 6 个单词。我们定义 6 个最有可能的词的集合为 $V_{\text{top-K}}$。在第一步中，$V_{\text{top-K}}$ 仅占总概率的大约三分之二，但在第二步，它几乎占了全部的概率。同时，我们可以看到在第二步该方法成功地消除了那些奇怪的候选词 $(\text{“not”}, \text{“the”}, \text{“small”}, \text{“told”})$。</p>
+<p>我们以设置 <code>top_k=50</code> 为例看下如何在 <code>transformers</code> 库中使用 <em>Top-K</em>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set seed to reproduce results. Feel free to change the seed though to get different results</span></span><br><span class="line">tf.random.set_seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># set top_k to 50</span></span><br><span class="line">sample_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    do_sample=<span class="literal">True</span>, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    top_k=<span class="number">50</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(sample_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog. It&#x27;s so good to have an environment where your dog is available to share with you and we&#x27;ll be taking care of you.</span><br><span class="line"></span><br><span class="line">We hope you&#x27;ll find this story interesting!</span><br><span class="line"></span><br><span class="line">I am from</span><br></pre></td></tr></table></figure>
+<p>相当不错！该文本可以说是迄今为止生成的最 “<em>像人</em>“ 的文本。现在还有一个问题，<em>Top-K</em> 采样不会动态调整从需要概率分布 $P(w|w_{1:t-1})$ 中选出的单词数。这可能会有问题，因为某些分布可能是非常尖锐 (上图中右侧的分布)，而另一些可能更平坦 (上图中左侧的分布)，所以对不同的分布使用同一个绝对数 <em>K</em> 可能并不普适。</p>
+<p>在 $t=1$ 时，<em>Top-K</em> 将 $(\text{“people”}, \text{“big”}, \text{“house”}, \text{“cat”})$ 排出了采样池，而这些词似乎是合理的候选词。另一方面，在$t=2$ 时，该方法却又把不太合适的 $(\text{“down”}, \text{“a”})$ 纳入了采样池。因此，将采样池限制为固定大小 <em>K</em> 可能会在分布比较尖锐的时候产生胡言乱语，而在分布比较平坦的时候限制模型的创造力。这一发现促使 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1904.09751">Ari Holtzman 等人 (2019)</a> 发明了 <strong>Top-p</strong>- 或 <strong>核</strong>- 采样。</p>
+<h1 id="TOP-P-核-采样"><a href="#TOP-P-核-采样" class="headerlink" title="TOP-P(核)采样"></a>TOP-P(核)采样</h1><p>在 <em>Top-p</em> 中，采样不只是在最有可能的 <em>K</em> 个单词中进行，而是在累积概率超过概率 <em>p</em> 的最小单词集中进行。然后在这组词中重新分配概率质量。这样，词集的大小 (<em>又名</em> 集合中的词数) 可以根据下一个词的概率分布动态增加和减少。好吧，说的很啰嗦，一图胜千言。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lrNIF9.jpg" alt="TOP-P采样"></p>
+<p>假设 $p=0.92$，<em>Top-p</em> 采样对单词概率进行降序排列并累加，然后选择概率和首次超过 $p=92%$ 的单词集作为采样池，定义为 $V_{\text{top-p}}$。在 $t=1$ 时 $V_{\text{top-p}}$ 有 9 个词，而在 $t=2$ 时它只需要选择前 3 个词就超过了 92%。其实很简单吧！可以看出，在单词比较不可预测时，它保留了更多的候选词，<em>如</em> $P(w | \text{“The”})$，而当单词似乎更容易预测时，只保留了几个候选词，<em>如</em> $P(w | \text{“The”}, \text{“car”})$。</p>
+<p>好的，是时候看看它在 <code>transformers</code> 里怎么用了！我们可以通过设置 <code>0 &lt; top_p &lt; 1</code> 来激活 <em>Top-p</em> 采样:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set seed to reproduce results. Feel free to change the seed though to get different results</span></span><br><span class="line">tf.random.set_seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># deactivate top_k sampling and sample only from 92% most likely words</span></span><br><span class="line">sample_output = model.generate(</span><br><span class="line">    input_ids, </span><br><span class="line">    do_sample=<span class="literal">True</span>, </span><br><span class="line">    max_length=<span class="number">50</span>, </span><br><span class="line">    top_p=<span class="number">0.92</span>, </span><br><span class="line">    top_k=<span class="number">0</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(sample_output[<span class="number">0</span>], skip_special_tokens=<span class="literal">True</span>))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">I enjoy walking with my cute dog. He will never be the same. I watch him play.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Guys, my dog needs a name. Especially if he is found with wings.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">What was that? I had a lot o</span><br></pre></td></tr></table></figure>
+<p>太好了，这看起来跟人类写的差不多了，虽然还不算完全是。</p>
+<p>虽然从理论上讲， <em>Top-p</em> 似乎比 <em>Top-K</em> 更优雅，但这两种方法在实践中都很有效。 <em>Top-p</em> 也可以与 <em>Top-K</em> 结合使用，这样可以避免排名非常低的词，同时允许进行一些动态选择。</p>
+<p>最后，如果想要获得多个独立采样的输出，我们可以 <em>再次</em> 设置参数 <code>num_return_sequences &gt; 1</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># set seed to reproduce results. Feel free to change the seed though to get different results</span></span><br><span class="line">tf.random.set_seed(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># set top_k = 50 and set top_p = 0.95 and num_return_sequences = 3</span></span><br><span class="line">sample_outputs = model.generate(</span><br><span class="line">    input_ids,</span><br><span class="line">    do_sample=<span class="literal">True</span>,</span><br><span class="line">    max_length=<span class="number">50</span>,</span><br><span class="line">    top_k=<span class="number">50</span>,</span><br><span class="line">    top_p=<span class="number">0.95</span>,</span><br><span class="line">    num_return_sequences=<span class="number">3</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Output:\n&quot;</span> + <span class="number">100</span> * <span class="string">&#x27;-&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i, sample_output <span class="keyword">in</span> <span class="built_in">enumerate</span>(sample_outputs):</span><br><span class="line">  <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(i, tokenizer.decode(sample_output, skip_special_tokens=<span class="literal">True</span>)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Output:</span><br><span class="line">----------------------------------------------------------------------------------------------------</span><br><span class="line">0: I enjoy walking with my cute dog. It&#x27;s so good to have the chance to walk with a dog. But I have this problem with the dog and how he&#x27;s always looking at us and always trying to make me see that I can do something</span><br><span class="line">1: I enjoy walking with my cute dog, she loves taking trips to different places on the planet, even in the desert! The world isn&#x27;t big enough for us to travel by the bus with our beloved pup, but that&#x27;s where I find my love</span><br><span class="line">2: I enjoy walking with my cute dog and playing with our kids,&quot; said David J. Smith, director of the Humane Society of the US.</span><br><span class="line"></span><br><span class="line">&quot;So as a result, I&#x27;ve got more work in my time,&quot; he said.</span><br></pre></td></tr></table></figure>
+<p>很酷，现在你拥有了所有可以在 <code>transformers</code> 里用模型来帮你写故事的工具了！</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在开放域语言生成场景中，作为最新的解码方法， <em>top-p</em> 和 <em>top-K</em> 采样于传统的 <em>贪心</em> 和 <em>波束</em> 搜索相比，似乎能产生更流畅的文本。但，最近有更多的证据表明 <em>贪心</em> 和 <em>波束</em> 搜索的明显缺陷 - 主要是生成重复的单词序列 - 是由模型 (特别是模型的训练方式) 引起的，而不是解码方法， <em>参见</em><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1908.04319.pdf">Welleck 等人 (2019)</a> 的论文。此外，如 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2002.02492">Welleck 等人 (2020)</a> 的论文所述，看起来 <em>top-K</em> 和 <em>top-p</em> 采样也会产生重复的单词序列。</p>
+<p>在 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1908.04319.pdf">Welleck 等人 (2019)</a> 的论文中，作者表明，根据人类评估，在调整训练目标后，波束搜索相比 <em>Top-p</em> 采样能产生更流畅的文本。</p>
+<h1 id="Other"><a href="#Other" class="headerlink" title="Other"></a>Other</h1><p><code>generate</code> 方法还有几个正文未提及的参数，这里我们简要解释一下它们！</p>
+<ul>
+<li><p><code>min_length</code> 用于强制模型在达到 <code>min_length</code> 之前不生成 EOS。这在摘要场景中使用得比较多，但如果用户想要更长的文本输出，也会很有用。</p>
+</li>
+<li><p><code>repetition_penalty</code> 可用于对生成重复的单词这一行为进行惩罚。它首先由 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1909.05858">Keskar 等人 (2019)</a> 引入，在 <a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1908.04319.pdf">Welleck 等人 (2019)</a> 的工作中，它是训练目标的一部分。它可以非常有效地防止重复，但似乎对模型和用户场景非常敏感，其中一个例子见 Github 上的 <a target="_blank" rel="noopener" href="https://github.com/huggingface/transformers/pull/2303">讨论</a>。 </p>
+</li>
+<li><p><code>attention_mask</code> 可用于屏蔽填充符。 </p>
+</li>
+<li><p><code>pad_token_id</code>、<code>bos_token_id</code>、<code>eos_token_id</code>: 如果模型默认没有这些 token，用户可以手动选择其他 token id 来表示它们。</p>
+</li>
+</ul>
+<p>更多信息，请查阅 <code>generate</code> 函数 <a target="_blank" rel="noopener" href="https://huggingface.co/transformers/main_classes/model.html?highlight=generate#transformers.TFPreTrainedModel.generate">手册</a>。</p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://huggingface.co/blog/zh/how-to-generate">如何生成文本：通过 Transformers 用不同的解码方法生成文本</a></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/" rel="bookmark">一文梳理NLP主要模型发展脉络.md</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="复刻ChatGPT语言模型系列-（一）基座模型选取">https://447428054.github.io/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" rel="prev" title="从语言模型到ChatGPT：大型语言模型的发展和应用">
+      <i class="fa fa-chevron-left"></i> 从语言模型到ChatGPT：大型语言模型的发展和应用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" rel="next" title="复刻ChatGPT语言模型系列-（一）基座模型选取">
+      复刻ChatGPT语言模型系列-（一）基座模型选取 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%AA%E5%BF%83%E6%90%9C%E7%B4%A2"><span class="nav-number">2.</span> <span class="nav-text">贪心搜索</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A2%E6%9D%9F%E6%90%9C%E7%B4%A2"><span class="nav-number">3.</span> <span class="nav-text">波束搜索</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%87%E6%A0%B7"><span class="nav-number">4.</span> <span class="nav-text">采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TOP-K%E9%87%87%E6%A0%B7"><span class="nav-number">5.</span> <span class="nav-text">TOP-K采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TOP-P-%E6%A0%B8-%E9%87%87%E6%A0%B7"><span class="nav-number">6.</span> <span class="nav-text">TOP-P(核)采样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Other"><span class="nav-number">8.</span> <span class="nav-text">Other</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">9.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/05/2023-03-05-%E7%A9%BF%E8%B6%8A%E6%97%B6%E7%A9%BA%EF%BC%9A%E5%BD%93ChatGPT%E9%81%87%E8%A7%81stable-diffusion%EF%BC%8C%E4%BD%A0%E4%B8%8D%E6%95%A2%E7%9B%B8%E4%BF%A1%E7%9A%84%E5%88%9B%E6%84%8F%E8%89%BA%E6%9C%AF%E4%B9%8B%E6%97%85!/" title="2023&#x2F;03&#x2F;05&#x2F;2023-03-05-穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!&#x2F;">穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2022/12/07/2022-12-07-%E3%80%90%E5%BE%8B%E5%B8%88%E5%87%BD%E8%AD%A6%E5%91%8A%E3%80%91-ChatGPT%E4%BB%A5%E9%B8%A1%E4%BD%A0%E5%A4%AA%E7%BE%8E%E4%B8%BB%E9%A2%98%E5%86%99%E5%B0%8F%E8%AF%B4/" title="2022&#x2F;12&#x2F;07&#x2F;2022-12-07-【律师函警告】-ChatGPT以鸡你太美主题写小说&#x2F;">【律师函警告】-ChatGPT以鸡你太美主题写小说.md</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">174k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:38</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

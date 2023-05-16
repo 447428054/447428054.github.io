@@ -507,6 +507,174 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" class="post-title-link" itemprop="url">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-08 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-08T00:00:00+08:00">2023-05-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-05-16 22:31:31" itemprop="dateModified" datetime="2023-05-16T22:31:31+08:00">2023-05-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本系列将包括以下内容：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/627832567">复刻ChatGPT语言模型系列-（一）基座模型选取</a></li>
+<li>复刻ChatGPT语言模型系列-（二）参数高效微调</li>
+<li>复刻ChatGPT语言模型系列-（三）指令学习微调</li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/629909354">复刻ChatGPT语言模型系列-（四）文本生成解码</a></li>
+<li>复刻ChatGPT语言模型系列-（五）强化学习RLHF</li>
+<li>复刻ChatGPT语言模型系列-（六）LLM模型评估</li>
+</ul>
+<p>在文本生成领域，解码是一个关键的步骤，它决定了生成式模型输出的质量和多样性。在之前的几篇博文中，我们已经介绍了生成式模型的基本原理和训练过程。而在本系列的第四篇博文中，我们将深入探讨文本生成中的解码方式。</p>
+<p>一旦我们获得了一个生成式模型，我们需要对其输出进行解码，以得到最终的生成文本。然而，在解码的过程中，我们可能会面临一些问题。其中之一是生成重复的内容，这使得生成的文本缺乏多样性和创造性。为了解决这个问题，我们可以尝试开启采样机制，同时引入repetition_penalty惩罚，以减少生成重复的倾向。</p>
+<p>另一个常见的问题是生成的随机性不够高，导致生成的文本过于保守和可预测。为了增加文本生成的多样性，我们可以调整一些参数。例如，可以将top_p的值调小，这会使模型在生成词语时只考虑概率较高的选项；同时，可以将top_k的值调大，以增加模型的选择余地。此外，还可以适当降低温度系数，使模型生成的文本更加确定性。</p>
+<p>本文将详细介绍这些解码方式，帮助您在文本生成任务中获得更好的结果。文中的所有功能均可用于 <em>自回归</em> 语言生成任务。简单复习一下， <em>自回归</em> 语言生成是基于如下假设: 一个文本序列的概率分布可以分解为每个词基于其上文的条件概率的乘积。</p>
+<script type="math/tex; mode=display">
+P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\right), \text { 其中 } w_{1: 0}=\emptyset,</script><p>上式中，$W_0$ 是初始 <em>上下文</em> 单词序列。文本序列的长度 $T$ 通常时变的，并且对应于时间步 $t=T$。$P(w_{t} | w_{1: t- 1}, W_{0})$ 的词表中已包含 终止符 (End Of Sequence，EOS)。</p>
+<p>我们会介绍目前最常用的解码方法，主要有 <em>贪心搜索 (Greedy search)</em>、<em>波束搜索 (Beam search)</em>、<em>Top-K 采样 (Top-K sampling)</em> 以及 <em>Top-p 采样 (Top-p sampling)</em>。几种方式的简介如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>解码方法</th>
+<th>简介</th>
+<th>可视化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>贪心搜索</td>
+<td>从单词开始，每次都选择当前条件概率最高的词作为输出，以此往后生成单词序列。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ZgkcnW.jpg" alt="贪心搜索"></td>
+</tr>
+<tr>
+<td>波束搜索</td>
+<td>在每个时间步保留最可能的 num_beams 个词，最终从中选择概率最高的序列来降低丢失潜在高概率序列的风险。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/DnHQwq.jpg" alt="波束搜索"></td>
+</tr>
+<tr>
+<td>TOP-K采样</td>
+<td>选择概率最大的 K 个词，重新归一化这 K 个词的概率，选出一个词进行采样。这样，词集的大小是固定的，即 K。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/HhSR0j.jpg" alt="TOP-K采样"></td>
+</tr>
+<tr>
+<td>TOP-P采样</td>
+<td>在累积概率超过概率 p 的最小单词集中进行采样，然后在这组词中重新分配概率。这样，词集的大小是动态的，可以根据下一个词的概率分布动态增加和减少。</td>
+<td><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lrNIF9.jpg" alt="TOP-P采样"></td>
+</tr>
+</tbody>
+</table>
+</div>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1469,128 +1637,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/jmx.png">
-      <meta itemprop="name" content="JMXGODLZZ">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="JMX Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/" class="post-title-link" itemprop="url">NLP技能树学习路线-（一）路线总览.md</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-06-25 00:00:00" itemprop="dateCreated datePublished" datetime="2022-06-25T00:00:00+08:00">2022-06-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-12 19:54:36" itemprop="dateModified" datetime="2023-02-12T19:54:36+08:00">2023-02-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF/" itemprop="url" rel="index"><span itemprop="name">学习路线</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>568</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a target="_blank" rel="noopener" href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
-<p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
-<p><img src="https://picx.zhimg.com/v2-c39bf0e8abf032430c470985e1aae7b1_1440w.jpg?source=172ae18b" alt=""></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1662,7 +1708,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1701,6 +1747,9 @@
           <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
         </li>
         <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
           <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
         </li>
         <li class="links-of-recent-posts-item">
@@ -1708,9 +1757,6 @@
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2022/12/07/2022-12-07-%E3%80%90%E5%BE%8B%E5%B8%88%E5%87%BD%E8%AD%A6%E5%91%8A%E3%80%91-ChatGPT%E4%BB%A5%E9%B8%A1%E4%BD%A0%E5%A4%AA%E7%BE%8E%E4%B8%BB%E9%A2%98%E5%86%99%E5%B0%8F%E8%AF%B4/" title="2022&#x2F;12&#x2F;07&#x2F;2022-12-07-【律师函警告】-ChatGPT以鸡你太美主题写小说&#x2F;">【律师函警告】-ChatGPT以鸡你太美主题写小说.md</a>
-        </li>
-        <li class="links-of-recent-posts-item">
-          <a href="/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/" title="2022&#x2F;11&#x2F;05&#x2F;2022-11-05-进击！BERT句向量表征&#x2F;">进击！BERT句向量表征.md</a>
         </li>
     </ul>
   </div>
@@ -2010,12 +2056,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">161k</span>
+    <span title="站点总字数">174k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:26</span>
+    <span title="站点阅读时长">2:38</span>
 </div>
   <div class="powered-by">
 

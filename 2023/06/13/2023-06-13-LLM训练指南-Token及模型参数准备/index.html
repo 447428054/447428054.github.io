@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引言在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。 本文得出的结论如下，详细过程见下文分析： 预训练模型表现影响因素：  模型表现强依赖于模型规模(模型参数量N(Em">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM训练指南-Token及模型参数准备">
+<meta property="og:url" content="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="引言在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。 本文得出的结论如下，详细过程见下文分析： 预训练模型表现影响因素：  模型表现强依赖于模型规模(模型参数量N(Em">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6g7mxD.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/CSejJ7.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/H9U9Gz.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/EB9BUt.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/D0bDKk.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ndZKn7.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/00VDed.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/RY4Wws.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/eLoa4B.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/w0g1A2.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Zu5AZT.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lXvGL8.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ujNuPF.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rVzzEr.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QduvXB.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U9xdtj.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/nriR9E.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9re4mh.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lu4zW9.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6xUAn8.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/vpV4aH.png">
+<meta property="article:published_time" content="2023-06-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-06-17T14:36:56.676Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6g7mxD.png">
+
+<link rel="canonical" href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LLM训练指南-Token及模型参数准备 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LLM训练指南-Token及模型参数准备
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-06-13 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-13T00:00:00+08:00">2023-06-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-17 22:36:56" itemprop="dateModified" datetime="2023-06-17T22:36:56+08:00">2023-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。</p>
+<p>本文得出的结论如下，详细过程见下文分析：</p>
+<p><strong>预训练模型表现影响因素：</strong></p>
+<ul>
+<li>模型表现强依赖于模型规模(模型参数量N(Embedding除外)、训练Token数D、训练总计算量C)；</li>
+<li>平滑幂定律：模型表现与三个因子均遵循幂定律，不受另外两个因子限制；</li>
+<li>在给定计算量预算下，模型参数量以及训练Token数应该同比提升，对应模型参数量需要的训练Token数如下：</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Parameters</th>
+<th style="text-align:right">FLOPs</th>
+<th style="text-align:right">FLOPs (in Gopher unit)</th>
+<th style="text-align:right">Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">400 Million</td>
+<td style="text-align:right">1.92e+19</td>
+<td style="text-align:right">1//29,968</td>
+<td style="text-align:right">8.0 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">1 Billion</td>
+<td style="text-align:right">1.21e+20</td>
+<td style="text-align:right">1//4,761</td>
+<td style="text-align:right">20.2 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">10 Billion</td>
+<td style="text-align:right">1.23e+22</td>
+<td style="text-align:right">1//46</td>
+<td style="text-align:right">205.1 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">67 Billion</td>
+<td style="text-align:right">5.76e+23</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1.5 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">175 Billion</td>
+<td style="text-align:right">3.85e+24</td>
+<td style="text-align:right">6.7</td>
+<td style="text-align:right">3.7 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">280 Billion</td>
+<td style="text-align:right">9.90e+24</td>
+<td style="text-align:right">17.2</td>
+<td style="text-align:right">5.9 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">520 Billion</td>
+<td style="text-align:right">3.43e+25</td>
+<td style="text-align:right">59.5</td>
+<td style="text-align:right">11.0 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">1 Trillion</td>
+<td style="text-align:right">1.27e+26</td>
+<td style="text-align:right">221.3</td>
+<td style="text-align:right">21.2 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">10 Trillion</td>
+<td style="text-align:right">1.30e+28</td>
+<td style="text-align:right">22515.9</td>
+<td style="text-align:right">216.2 Trillion</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>预训练数据Token重复的影响：</strong></p>
+<ul>
+<li>多轮epoch的训练会降低模型性能；</li>
+<li>更大规模的数据集会缓解重复epochs对模型性能下降的影响；</li>
+<li>提高数据集的质量也无法挽救重复训练带来的过拟合；</li>
+<li>小计算量模型的过拟合趋势与大计算量的差不多；</li>
+<li>多样的训练目标不一定减轻多Epoch的性能下降；</li>
+<li>Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响；</li>
+<li>在训练过程中逐渐使用dropout是有效的策略；</li>
+</ul>
+<p><strong>SFT需要训练Token数：</strong></p>
+<ul>
+<li>少量高质量、多样性的数据，也可以训练出效果优秀的SFT模型</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6g7mxD.png" alt="6g7mxD"><br><span id="more"></span></p>
+<h1 id="预训练模型表现的影响因素"><a href="#预训练模型表现的影响因素" class="headerlink" title="预训练模型表现的影响因素"></a>预训练模型表现的影响因素</h1><p>该部分将通过OpenAI和DeepMind的两篇文章介绍影响模型性能的因素，以及在给定预算下如何准备模型、训练数据。有意思的是OpenAI先提出的观念在后来被DeepMind证伪，二者的观念对比如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>OpenAI</th>
+<th>DeepMind</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结论(假设计算预算增加10倍)</td>
+<td>$N \propto C_{\min }^{0.73}, B \propto C_{\min }^{0.24}, \text { and } S \propto C_{\min }^{0.03}$，根据该公式,模型大小增加$10^{0.73}=5.5$倍，训练Token增加$10^{0.24}=1.8$倍</td>
+<td>模型大小及训练Token同比增加$10^{0.5}=3.16$倍</td>
+</tr>
+<tr>
+<td>参数设置</td>
+<td>模型大小768~1.5B；Token数22M~23B；大部分参数量在100M</td>
+<td>模型大小70M-10B；Token数1B～100B；大部分参数量超过500M</td>
+</tr>
+<tr>
+<td>实验设置</td>
+<td>固定学习率设置方法</td>
+<td>cosine余弦学习率循环长度与Token一致</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>原文对应如下：</p>
+<blockquote>
+<p>Specifically, given a 10× increase computational budget, they suggests that the size of the model should increase 5.5× while the number of training tokens should only increase 1.8×. Instead, we find that model size and the number of training tokens should be scaled in equal proportions.</p>
+</blockquote>
+<p><strong>DeepMind指出OpenAI得出错误结论的原因可能源于以下几点：</strong></p>
+<ol>
+<li>对于不同训练Token数，OpenAI采用了同样的学习率调度策略；</li>
+<li>OpenAI实验的模型参数量普遍较小；</li>
+</ol>
+<p>原文对应如下：</p>
+<blockquote>
+<p>For a fixed learning rate cosine schedule to 130B tokens, the intermediate loss estimates (for 0 &lt;&lt; 130B) are therefore overestimates of the loss of a model trained with a schedule length matching 0 . Using these intermediate losses results in underestimating the effectiveness of training models on less data than 130B tokens, and eventually contributes to the conclusion that model size should increase faster than training data size as compute budget increases. In contrast, our analysis predicts that both quantities should scale at roughly the same rate. Secondly, we include models with up to 16B parameters, as we observe that there is slight curvature in the FLOP-loss frontier (see Appendix E)—in fact, the majority of the models used in our analysis have more than 500 million parameters, in contrast the majority of runs in Kaplan et al. (2020) are significantly smaller—many being less than 100M parameters.</p>
+</blockquote>
+<h2 id="OpenAI-语言模型缩放法则"><a href="#OpenAI-语言模型缩放法则" class="headerlink" title="OpenAI:语言模型缩放法则"></a>OpenAI:语言模型缩放法则</h2><p><strong>论文标题</strong>：Scaling Laws for Neural Language Models</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2001.08361v1.pdf">https://arxiv.org/pdf/2001.08361v1.pdf</a></p>
+<p><strong>研究背景</strong>：论文将从模型架构、模型大小、训练时所用的计算能力和可用于训练的数据等方面，以Transformer架构为重点，实证研究语言模型损失与这些因素之间的关系。</p>
+<p>首先，让我们来介绍文章中展示的三张图，随后将概述文章的核心观点：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/CSejJ7.png" alt="CSejJ7"></p>
+<p>图1表明，语言模型表现与模型参数量N(Embedding除外)、训练Token数D、训练总计算量C都呈现幂定律。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/H9U9Gz.png" alt="H9U9Gz"></p>
+<p>图2表明，模型大小从768~1.5B在不同Token数(22M-23B)上训练的过程。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/EB9BUt.png" alt="EB9BUt"></p>
+<p>图3表明，随着计算量增加需要了解计算资源如何高效的分配。论文中以计算能力增加10亿倍为例，对于最优效率训练，大部分计算资源用于增加模型大小，小部分用于数据增加，同时数据增加大部分用于增加batch大小，很少用于增加模型串行训练的step数。</p>
+<p><strong>关键结论：</strong></p>
+<ul>
+<li>模型表现强依赖于模型规模(模型参数量N(Embedding除外)、训练Token数D、训练总计算量C)；</li>
+<li>平滑幂定律：模型表现与三个因子均遵循幂定律，不受另外两个因子限制；</li>
+<li>过拟合的通用性：当同时提升N/D时，模型性能提升；但如果固定其中一个，模型表现取决于比例N^{0.74}/D.(与下文DeepMind工作冲突)</li>
+<li>训练的通用性：训练曲线遵循可预测的幂律，其参数独立于模型大小。通过推断训练曲线的早期部分，可以大致预测如果训练更长时间会达到的损失。</li>
+<li>迁移学习表现与测试性能相关：当在不同于训练分布的文本上评估模型时，结果与训练验证集上的结果强相关，并且损失大致上存在一个恒定的偏差。换句话说，将模型迁移到不同的分布会产生一个恒定的偏差，模型在训练集上的表现越好，迁移学习的效果也越好。</li>
+<li>样本效率：大模型比小模型更具样本效率，可以通过更少的优化步骤和更少的数据达到相同的性能水平。</li>
+<li>收敛效率低：在固定的计算预算C下，但没有其他限制的情况下，通过训练非常大的模型并在收敛之前显著停止，可以获得最佳性能。因此，最大计算效率的训练将比基于更多样本训练小型模型收敛的效率高得多，随着训练计算的增加，数据需求增长非常缓慢，即 D C ^{0.27}。</li>
+<li>最佳的batchsize：这些模型的理想batchsize仅与损失的幂指数相关，并且可以通过测量梯度噪声尺度[MKAT18]来确定；对于可以训练的最大模型，在收敛时Token数大约为1-2百万。</li>
+</ul>
+<p>总体来说，这些结果表明，随着适当地提高模型大小、数据和计算能力，语言建模性能会平稳、可预测地提高。更大的语言模型将比其他模型表现更好，并且更具样本效率。</p>
+<p><strong>论文中缩放定律总结如下：</strong></p>
+<ol>
+<li>当训练Token数足够，模型参数量有限情况下，模型性能与模型参数的关系如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+L(N)=\left(N_{\mathrm{c}} / N\right)^{\alpha_N} ; \alpha_N \sim 0.076, \quad N_{\mathrm{c}} \sim 8.8 \times 10^{13} \text { (non-embedding parameters) }</script><ol>
+<li>当模型参数量足够，训练Token数有限情况下，模型性能与模型参数的关系如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+L(D)=\left(D_{\mathrm{c}} / D\right)^{\alpha_D} ; \alpha_D \sim 0.095, \quad D_{\mathrm{c}} \sim 5.4 \times 10^{13} \text { (tokens) }</script><ol>
+<li>当模型参数量、训练Token足够，计算量预算有限的情况下，模型性能与模型参数关系如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+L\left(C_{\min }\right)=\left(C_{\mathrm{c}}^{\min } / C_{\min }\right)^{\alpha_C^{\min }} ; \alpha_C^{\min } \sim 0.050, \quad C_{\mathrm{c}}^{\min } \sim 3.1 \times 10^8 \text { (PF-days) }</script><p>文中表明上述三个关系在多个数量级上均成立，他们的幂指数含义代表当对应参数成倍增加时，loss性能变化的幅度。比如当模型参数量提高两倍对应Loss缩放到：</p>
+<script type="math/tex; mode=display">
+L(2N)/L(N)=(N_ / (2N)^{\alpha_N})/(N_ / N^{\alpha_N})=2^{-\alpha_N}=2^{-0.076}=0.9486,分母的常数依赖于词表大小和分词方式，因此无实际含义。</script><ol>
+<li>模型训练的batch_size与模型性能也呈现如下幂律关系：</li>
+</ol>
+<script type="math/tex; mode=display">
+B_{\mathrm{crit}}(L)=\frac{B_*}{L^{1 / \alpha_B}}, \quad B_* \sim 2 \cdot 10^8 \text { tokens, } \alpha_B \sim 0.21</script><p>比如当L变一半的时候，batch_size变化如下：</p>
+<script type="math/tex; mode=display">
+B_{crit}(L/2) / B_{crit}(L)=(\frac{B_*}{（L/2）^{1 / \alpha_B}})/(\frac{B_*}{L^{1 / \alpha_B}})=2^{-\alpha_B}=2^{-0.21}=0.8645</script><ol>
+<li>当提升模型大小后，为保证模型性能，需要提升训练Token数：</li>
+</ol>
+<script type="math/tex; mode=display">
+D \propto N^{\frac{\alpha_N}{\alpha_D}} \sim N^{0.74}</script><p>根据模型性能与模型参数量N、训练Token数D的关系，可以得到模型性能与二者的联合关系：</p>
+<script type="math/tex; mode=display">
+L(N, D)=\left[\left(\frac{N_c}{N}\right)^{\frac{\alpha_N}{\alpha_D}}+\frac{D_c}{D}\right]^{\alpha_D}</script><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/D0bDKk.png" alt="D0bDKk"></p>
+<p>图4中左边小图对应模型性能与模型参数量N、训练Token数D的关系，右边小图对应模型性能与给定模型、训练步数的关系，对应公式见上下文。</p>
+<ol>
+<li>模型性能与给定模型、训练步数的关系如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+L(N, S)=\left(\frac{N_c}{N}\right)^{\alpha_N}+\left(\frac{S_c}{S_{\min }(S)}\right)^{\alpha_S}
+
+where S_c \approx 2.1 \times 10^3 and \alpha_S \approx 0.76</script><p>$S_{\min }(S) $is the minimum possible number of optimization steps (parameter updates)</p>
+<ol>
+<li>给定固定的计算量预算C，根据上述计算等式，模型参数量N、训练batch_size B、训练步数S、训练Token数D的增长关系如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+N \propto C^{\alpha_C^{\min } / \alpha_N}, \quad B \propto C^{\alpha_C^{\min } / \alpha_B}, \quad S \propto C_C^{\alpha_C^{\min } / \alpha_S}, \quad D=B \cdot S</script><script type="math/tex; mode=display">
+\alpha_C^{\min }=1 /\left(1 / \alpha_S+1 / \alpha_B+1 / \alpha_N\right)</script><p>其中，经过拟合之后，各参数值如下：</p>
+<script type="math/tex; mode=display">
+N \propto C_{\min }^{0.73}, B \propto C_{\min }^{0.24}, \text { and } S \propto C_{\min }^{0.03}</script><p>这也意味着，当计算预算增加时，模型参数增加带来收益最大。</p>
+<h2 id="DeepMind-大模型训练计算优化实证分析"><a href="#DeepMind-大模型训练计算优化实证分析" class="headerlink" title="DeepMind:大模型训练计算优化实证分析"></a>DeepMind:大模型训练计算优化实证分析</h2><p><strong>论文标题</strong>：Training Compute-Optimal Large Language Models</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2203.15556.pdf">https://arxiv.org/pdf/2203.15556.pdf</a></p>
+<p><strong>核心问题</strong>：给定训练参数量的情况下，如何配置模型参数量以及训练Token数。</p>
+<blockquote>
+<p>Given a fixed FLOPs budget, how should one trade-off model size and the number of training tokens?</p>
+</blockquote>
+<p>在文中，作者探讨了三种不同的策略来评估和确定在给定训练参数量的情况下，最佳的模型参数量与训练 Token 数的配比：</p>
+<ul>
+<li><p>方法一：固定模型大小，改变训练Token数；</p>
+</li>
+<li><p>方法二：等值浮点运算能力剖析(IsoFLOP profiles)；</p>
+</li>
+<li><p>方法三：拟合参数损失函数；</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ndZKn7.png" alt="ndZKn7"></p>
+<p>图1的含义介绍如下：</p>
+<ul>
+<li>横坐标代表训练的总计算量；</li>
+<li>纵坐标代表模型的参数量；</li>
+<li>黑色虚线代表Kaplan等人提出的缩放法则；</li>
+<li>3条Approach方法代表本文预测的三条线；</li>
+<li>Chinchiilla和Gopher是有着相同的横坐标，即拥有相同的训练计算量，而Chinchiilla在模型参数上是Gopher参数的1/4，在训练Token数是Gopher的4倍；</li>
+</ul>
+<p>这三种方法都得出了一致的结论，但这个结论与 OpenAI 提供的观点有所不同。</p>
+<p><strong>下面同样通过几幅图介绍三种方式的结论：</strong></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/00VDed.png" alt="00VDed"></p>
+<p>图2的含义介绍如下：</p>
+<ul>
+<li>实验方式：固定模型大小(模型大小70M到10B)，改变训练Token数；</li>
+<li>第一个图横坐标代表训练的总计算量，纵坐标代表训练的Loss，曲线表示不同模型参数；</li>
+<li>第二个图横坐标代表训练的总计算量，纵坐标代表训练Loss最低的模型参数量；</li>
+<li>第三个图横坐标代表训练的总计算量，纵坐标代表训练Loss最低的训练Token数；</li>
+<li>绿色的线表示在给定训练总计算量(5.76x10^23)情况下，最优的模型参数量及训练Token数；</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/RY4Wws.png" alt="RY4Wws"></p>
+<p>图3的含义如下：</p>
+<ul>
+<li>实验方式：固定训练总计算量，改变模型大小；</li>
+<li>第一个图横坐标代表模型参数量，纵坐标代表训练的Loss，曲线表示不同训练总计算量；</li>
+<li>第二个图横坐标代表训练的总计算量，纵坐标代表训练Loss最低的模型参数量；</li>
+<li>第三个图横坐标代表训练的总计算量，纵坐标代表训练Loss最低的训练Token数；</li>
+<li>绿色的线表示在给定训练总计算量(5.76x10^23)情况下，最优的模型参数量及训练Token数；</li>
+</ul>
+<p>方案三：根据上述两个实验结果进行数学建模，拟合LOSS与模型参数量和训练Token数的关系</p>
+<script type="math/tex; mode=display">
+\hat{L}(N, D) \triangleq E+\frac{A}{N^\alpha}+\frac{B}{D^\beta} .</script><p>公式介绍：</p>
+<ul>
+<li>E为数据分布上的理想Loss，对应自然文本的熵；</li>
+<li>N对应模型参数量，第二项表示模型参数量N低于理想loss，参数量越大该项损失越小；</li>
+<li>D对应数据集Token数，第三项表示模型未被训练收敛，Token数越多该项损失越小；</li>
+</ul>
+<script type="math/tex; mode=display">
+\min _{A, B, E, \alpha, \beta} \sum_{\text {Runs } i} \operatorname{Huber}_\delta\left(\log \hat{L}\left(N_i, D_i\right)-\log L_i\right)</script><p>损失函数如上，通过L-BFGS算法优化，Hubert损失具有良好的外推性。</p>
+<p>为了估计模型参数量与训练Token数的关系，假设约束条件为FLOPs(N,D)=6ND</p>
+<script type="math/tex; mode=display">
+N_{o p t}(C)=G\left(\frac{C}{6}\right)^a, \quad D_{o p t}(C)=G^{-1}\left(\frac{C}{6}\right)^b, \quad \text { where } \quad G=\left(\frac{\alpha A}{\beta B}\right)^{\frac{1}{\alpha+\beta}}, \quad a=\frac{\beta}{\alpha+\beta}, \text { and } b=\frac{\alpha}{\alpha+\beta}</script><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/eLoa4B.png" alt="eLoa4B"></p>
+<p>图4的含义如下：</p>
+<ul>
+<li>第一个图横坐标代表不同训练总计算量，纵坐标代表模型参数量，曲线表示拟合的Loss曲线，每一个点是前两个数据中的L(N,D)，蓝色的线是拟合的参数量与训练Token函数；</li>
+<li>第二个图横坐标代表模型参数量不同，纵坐标代表训练的Loss，曲线表示训练总计算量，每一个点是前两个数据中的L(N,D)；</li>
+</ul>
+<p>模型参数估计</p>
+<p>这三个实验得到了相同的结论：计算量增加后，模型参数量大小与训练Token数应该同比增加。根据方法1，预测的模型大小需要的训练Token数如下表：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Parameters</th>
+<th>FLOPs</th>
+<th>FLOPs (in Gopher unit)</th>
+<th>Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>400 Million</td>
+<td>1.92e+19</td>
+<td>1//29,968</td>
+<td>8.0 Billion</td>
+</tr>
+<tr>
+<td>1 Billion</td>
+<td>1.21e+20</td>
+<td>1//4,761</td>
+<td>20.2 Billion</td>
+</tr>
+<tr>
+<td>10 Billion</td>
+<td>1.23e+22</td>
+<td>1//46</td>
+<td>205.1 Billion</td>
+</tr>
+<tr>
+<td>67 Billion</td>
+<td>5.76e+23</td>
+<td>1</td>
+<td>1.5 Trillion</td>
+</tr>
+<tr>
+<td>175 Billion</td>
+<td>3.85e+24</td>
+<td>6.7</td>
+<td>3.7 Trillion</td>
+</tr>
+<tr>
+<td>280 Billion</td>
+<td>9.90e+24</td>
+<td>17.2</td>
+<td>5.9 Trillion</td>
+</tr>
+<tr>
+<td>520 Billion</td>
+<td>3.43e+25</td>
+<td>59.5</td>
+<td>11.0 Trillion</td>
+</tr>
+<tr>
+<td>1 Trillion</td>
+<td>1.27e+26</td>
+<td>221.3</td>
+<td>21.2 Trillion</td>
+</tr>
+<tr>
+<td>10 Trillion</td>
+<td>1.30e+28</td>
+<td>22515.9</td>
+<td>216.2 Trillion</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>局限性：</strong></p>
+<ul>
+<li>由于资源有限，只对比了两个模型(Chinchilla VS Gopher)，没有在中间规模进行测试；</li>
+<li>假设的是在计算预算、模型大小和训练 token 数之间的有效计算边界可以用幂律关系来描述。然而，在高计算预算下，观察到log(N_{opt})的凹性，这表明仍有可能高估大型模型的最优规模；</li>
+<li>训练运行均在少于一个epoch的数据上进行，未来可以考虑多个epoch数据。</li>
+</ul>
+<p><strong>疑问点：</strong></p>
+<ol>
+<li><p>所得到的拟合公式，在更大规模的数据及模型上，是否有效？即公式的泛化性是否足够；</p>
+</li>
+<li><p>模型Loss能否很好的反馈模型性能，在下文也提及PPL无法正确反应模型生成质量。</p>
+</li>
+</ol>
+<h1 id="重复Token对模型性能的影响"><a href="#重复Token对模型性能的影响" class="headerlink" title="重复Token对模型性能的影响"></a>重复Token对模型性能的影响</h1><p><strong>参考链接</strong>：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DBP_eafGeKMEuSIma9Z9Tg">https://mp.weixin.qq.com/s/DBP_eafGeKMEuSIma9Z9Tg</a></p>
+<p><strong>论文名称</strong>：To Repeat or Not To Repeat: Insights from Scaling LLM under Token-Crisis</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2305.13230.pdf">https://arxiv.org/pdf/2305.13230.pdf</a></p>
+<p>在传统的深度学习模型训练中，epoch的设置可以类似于传统机器学习模型训练的迭代次数，一般认为越多的epoch会让模型拟合得越好。</p>
+<p>然而，在LLM时代，很多模型的epoch只有1次或者几次。例如，2022年谷歌的PaLM模型，其训练的epoch数量只有1。而MetaAI训练的LLaMA模型，在不同数据集上训练的epoch设置都是1-2。这似乎与我们之前理解的模型训练充分有不一致。那么，为什么这些大语言模型的epoch次数都很少。如果我们自己训练大语言模型，那么epoch次数设置为1是否足够，我们是否需要更多的训练？该部分介绍的大纲如下：</p>
+<ul>
+<li><p>为什么要考虑在重复的数据集上做多次训练？</p>
+<ul>
+<li>1、Token危机</li>
+</ul>
+</li>
+<li><p>预训练数据集重复的影响是什么？</p>
+<ul>
+<li><p>1、模型参数规模与tokens数量需要匹配</p>
+</li>
+<li><p>2、多轮epoch的训练会降低模型性能</p>
+</li>
+</ul>
+</li>
+<li><p>影响多次Epochs训练效果下降的原因是什么？</p>
+<ul>
+<li><p>3、更大规模的数据集会缓解重复epochs对模型性能下降的影响</p>
+</li>
+<li><p>4、提高数据集的质量也无法挽救重复训练带来的过拟合</p>
+</li>
+<li><p>5、参数数量和FLOPs在重复训练上的影响</p>
+</li>
+<li><p>6、小计算量模型的过拟合趋势与大计算量的差不多</p>
+</li>
+<li><p>7、多样的训练目标可以减轻多Epoch下降吗？</p>
+</li>
+</ul>
+</li>
+<li><p>正则化可以降低多epochs的影响吗</p>
+<ul>
+<li><p>8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响</p>
+</li>
+<li><p>9、在训练过程中逐渐使用dropout是有效的策略</p>
+</li>
+<li><p>10、dropout对不同规模模型的影响不同</p>
+</li>
+<li><p>11、通过MoE扫描确定稠密模型的最佳超参数</p>
+</li>
+</ul>
+</li>
+<li><p>多epochs训练对大语言模型性能影响的总结</p>
+</li>
+</ul>
+<h2 id="为什么要考虑在重复的数据集上做多次训练？"><a href="#为什么要考虑在重复的数据集上做多次训练？" class="headerlink" title="为什么要考虑在重复的数据集上做多次训练？"></a>为什么要考虑在重复的数据集上做多次训练？</h2><p>在此前的研究中，大家发现大语言模型的规模和训练数据集中tokens的数量对模型的性能有很大的影响。大模型缩放定律都认为模型的规模与训练数据的规模必须同时扩大才能让模型产生更好的性能。但是，tokens数量似乎并不是很足够，如下图所示是作者研究的模型参数规模增长和目前互联网是可用的数据集tokens数量增长情况：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/w0g1A2.png" alt="w0g1A2"></p>
+<p>在这幅图中，蓝色的虚线是互联网上数据集中tokens数量预估结果，高质量文本中tokens数量每年增长只有4%-5%，与世界经济增长率差不多，但是显著慢于模型规模的增长。例如，MetaAI训练的LLaMA-65B模型用了1.4万亿tokens，而2023年全球的tokens估计只有9万亿！按照目前模型规模的发展情况，在2023年-2027年几年的时间里，我们的模型将把全球所有数据集的tokens都训练完成，此后，我们很可能陷入缺少tokens训练的地步，这被作者称为tokens危机。</p>
+<p>这就很自然的让大家想到，我们是否可以通过增加训练的epochs来做重复的训练，以提高模型的效果？在如Vision Transformers这样的模型中，模型训练的epochs高达300次，而大语言模型的训练epochs通常都是1-2次，多的也都是个位数。2022年，Hoffmann的论文中提出用重复的tokens训练大语言模型会让模型降低性能，而Taylor在训练Galactica模型时候发现epochs次数达到4次也可以提升模型效果。显然，在重复数据集上训练多次对模型的影响目前还没有一个相对完善的研究。但是这个问题很重要！</p>
+<p>因此，新加坡国立大学的研究人员做了这项研究，系统性分析了大语言模型epochs的设置影响，从3个方面得出了11个结论！本文将主要总结一下这些结论。</p>
+<h2 id="预训练数据集重复的影响是什么？"><a href="#预训练数据集重复的影响是什么？" class="headerlink" title="预训练数据集重复的影响是什么？"></a>预训练数据集重复的影响是什么？</h2><h3 id="1-模型参数规模与tokens数量需要匹配"><a href="#1-模型参数规模与tokens数量需要匹配" class="headerlink" title="1. 模型参数规模与tokens数量需要匹配"></a>1. 模型参数规模与tokens数量需要匹配</h3><p>首先是模型参数规模的增长与模型需要的tokens数量基本是呈线性的。可以参见第一部分：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Zu5AZT.png" alt="Zu5AZT"> </p>
+<p>这意味如果你要充分训练一个LLM，需要根据它的参数数量来收集足够的tokens。</p>
+<h3 id="2-多轮epoch的训练会降低模型性能"><a href="#2-多轮epoch的训练会降低模型性能" class="headerlink" title="2. 多轮epoch的训练会降低模型性能"></a>2. 多轮epoch的训练会降低模型性能</h3><p>作者分别使用C4数据集的子集，然后只是用了其中一部分数据集，并通过设置多次epochs来让模型总的训练过的tokens差不多水平，观察模型的性能。</p>
+<p>如下图所示，可以看到，数据集重复的次数越多，模型的性能越差：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lXvGL8.png" alt="lXvGL8"></p>
+<p>此外，如果tokens数量不够，模型参数规模越大，越容易出现过拟合的现象！</p>
+<h2 id="影响多次Epochs训练效果下降的原因是什么？"><a href="#影响多次Epochs训练效果下降的原因是什么？" class="headerlink" title="影响多次Epochs训练效果下降的原因是什么？"></a>影响多次Epochs训练效果下降的原因是什么？</h2><h3 id="3、更大规模的数据集会缓解重复epochs对模型性能下降的影响"><a href="#3、更大规模的数据集会缓解重复epochs对模型性能下降的影响" class="headerlink" title="3、更大规模的数据集会缓解重复epochs对模型性能下降的影响"></a>3、更大规模的数据集会缓解重复epochs对模型性能下降的影响</h3><p>在这个实验中，作者将重复的次数固定，然后看模型在不同规模数据集上重复训练的性能影响。如下图所示：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ujNuPF.png" alt="ujNuPF"></p>
+<p>可以看到，当在$2^{27}$个tokens和$2^{29}$个tokens上重复训练$2^8$次之后发现，前者更容易出现过拟合，而$2^{29}$tokens的数据集上重复训练，模型性能下降不明显。</p>
+<h3 id="4、提高数据集的质量也无法挽救重复训练带来的过拟合"><a href="#4、提高数据集的质量也无法挽救重复训练带来的过拟合" class="headerlink" title="4、提高数据集的质量也无法挽救重复训练带来的过拟合"></a>4、提高数据集的质量也无法挽救重复训练带来的过拟合</h3><p>Taylor在训练Galactica模型时候认为他之所以用4epochs能提高训练效果可能是因为他的数据集质量更好。然而，本文的作者发现，相对更高质量的数据集并不能降低重复训练带来的影响。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rVzzEr.png" alt="rVzzEr"></p>
+<p>作者用相同的重复策略在C4数据集和Wikipedia数据集上分别训练模型，发现二者都会因为重复训练带来模型性能的下降。这里的Wikipedia数据集质量相对C4更好一点。说明相对提高数据集质量可能不会影响重复训练的负面效应。</p>
+<h3 id="5、参数数量和FLOPs在重复训练上的影响"><a href="#5、参数数量和FLOPs在重复训练上的影响" class="headerlink" title="5、参数数量和FLOPs在重复训练上的影响"></a>5、参数数量和FLOPs在重复训练上的影响</h3><p>模型规模的增长其实表现在2个方面，一个是模型参数，一个是模型所需要的计算量。模型参数相同的情况下，采用不同的模型架构所需要的FLOPs是不同的。作者对比了MoE架构，并采用ParamShare方法降低相同参数模型的FLOPs。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QduvXB.png" alt="QduvXB"></p>
+<p>经过测试发现，FLOPs较大的模型性能会更好一点，但是依然无法有效降低重复训练带来的模型损失。</p>
+<h3 id="6、小计算量模型的过拟合趋势与大计算量的差不多"><a href="#6、小计算量模型的过拟合趋势与大计算量的差不多" class="headerlink" title="6、小计算量模型的过拟合趋势与大计算量的差不多"></a>6、小计算量模型的过拟合趋势与大计算量的差不多</h3><p>这是一个有趣的发现，尽管在前面的实验中，相同参数规模不同计算量的模型都会受到重复数据集训练的影响。但是二者在模型性能表现的趋势上类似。</p>
+<h3 id="7、多样的训练目标可以减轻多Epoch下降吗？"><a href="#7、多样的训练目标可以减轻多Epoch下降吗？" class="headerlink" title="7、多样的训练目标可以减轻多Epoch下降吗？"></a>7、多样的训练目标可以减轻多Epoch下降吗？</h3><p>目前大语言模型的训练目标有很多，例如预测下一个单词是什么的生成式目标，也有把单词masked之后用来判断是什么单词的判别式目标。如果语言模型的训练目标多样化，那么实际上更加可能受到多epoch带来的性能损失。</p>
+<p>例如，UL2这种模型就不适合多Epoch的训练，MLM这种模型受到的影响反而更小。</p>
+<h2 id="正则化可以降低多epochs的影响吗"><a href="#正则化可以降低多epochs的影响吗" class="headerlink" title="正则化可以降低多epochs的影响吗"></a>正则化可以降低多epochs的影响吗</h2><p>正则技术，如dropout、droppath、weight decay等都是常用的防止过拟合的技术。而多Epochs的负面影响也都是过拟合。因此，作者研究了这些正则技术是否可以降低多epochs的影响。</p>
+<h3 id="8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响"><a href="#8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响" class="headerlink" title="8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响"></a>8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响</h3><p>在目前超过100亿参数规模的大语言模型中，如GPT-3、PaLM、LLaMA等，都没有使用dropout（可能是因为太慢了）。而前面说的Galactica训练使用了，这是Galactica能够训练4Epochs提升性能的最重要的原因。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U9xdtj.png" alt="U9xdtj"></p>
+<h3 id="9、在训练过程中逐渐使用dropout是有效的策略"><a href="#9、在训练过程中逐渐使用dropout是有效的策略" class="headerlink" title="9、在训练过程中逐渐使用dropout是有效的策略"></a>9、在训练过程中逐渐使用dropout是有效的策略</h3><p>在前面的讨论中，作者已经发现dropout可以降低多epochs的影响，但是dropout会降低模型的性能。因此，作者考虑不在全部训练中使用dropout，而是逐渐引入。</p>
+<p>最终发现，如果前期训练不用dropout，在后续的迭代中使用dropout也是有效的！</p>
+<h3 id="10、dropout对不同规模模型的影响不同"><a href="#10、dropout对不同规模模型的影响不同" class="headerlink" title="10、dropout对不同规模模型的影响不同"></a>10、dropout对不同规模模型的影响不同</h3><p>尽管前面已经证明dropout使用可以降低多epochs的影响，但是在不同规模模型下是不同的。对于规模较大的模型，dropout不能有效降低多epochs带来的坏处！</p>
+<h3 id="11、通过MoE扫描确定稠密模型的最佳超参数"><a href="#11、通过MoE扫描确定稠密模型的最佳超参数" class="headerlink" title="11、通过MoE扫描确定稠密模型的最佳超参数"></a>11、通过MoE扫描确定稠密模型的最佳超参数</h3><p>最后一个结论其实与epoch关系不大，作者强调的是MoE的模型表现与大模型真正的训练有类似的趋势，因此用MoE去提前预估大模型的性能，做参数调优是一个非常好的思路。</p>
+<h2 id="多epochs训练对大语言模型性能影响的总结"><a href="#多epochs训练对大语言模型性能影响的总结" class="headerlink" title="多epochs训练对大语言模型性能影响的总结"></a>多epochs训练对大语言模型性能影响的总结</h2><p>根据前面的实验我们知道，如果在tokens数量一定的数据集上做多epochs的模型训练，会影响模型的性能，降低模型的效果。这在预训练和下游任务都会产生影响。但是，随着模型的发展，高质量数据集的tokens数将很快用完。而采用正则技术虽然会影响模型训练效率，但是会降低这种影响。</p>
+<h1 id="SFT需要的数据量"><a href="#SFT需要的数据量" class="headerlink" title="SFT需要的数据量"></a>SFT需要的数据量</h1><p><strong>参考链接</strong>：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/DVH-vlOpGik8iwW4KnPlkw">https://mp.weixin.qq.com/s/DVH-vlOpGik8iwW4KnPlkw</a></p>
+<p>大型语言模型的训练分为从原始文本中进行无监督的预训练，以学习通用的表征、大规模的指令调整和强化学习，以更好地适应最终任务和用户偏好两个阶段。</p>
+<p><strong>有一种假设认为，大型语言模型中的几乎所有知识都是在预训练中学习的，只需要有限的指导微调数据就可以教会模型产生高质量的输出。</strong></p>
+<p><strong>因此， 关于微调数据使用量，具体对微调的性能有怎样的影响，这个话题十分有趣。</strong></p>
+<p>最近包括《LIMA：Less Is More for Alignment》、《MAYBE ONLY 0.5% DATA IS NEEDED》则在说明小数据量上，提出了更新颖的结论。</p>
+<p>《LIMa：Less Is More for Alignment》一文的消融实验显示，<strong>当扩大数据量而不同时扩大提示多样性时，收益会大大减少，而在优化数据质量时，收益会大大增加。</strong></p>
+<p>《MAYBE ONLY 0.5% DATA IS NEEDED》一文的实验表明，<strong>特定任务的模型可能从固定的任务类型中获益，以获得更高的性能；指令格式的多样性可能对特定任务模型的性能影响很小；即使是少量的数据（1.9M tokens）也能为特定任务模型的指令调整带来可喜的结果。</strong></p>
+<h2 id="LIMa：Less-Is-More-for-Alignment"><a href="#LIMa：Less-Is-More-for-Alignment" class="headerlink" title="LIMa：Less Is More for Alignment"></a>LIMa：Less Is More for Alignment</h2><p><strong>论文标题</strong>：LIMa：Less Is More for Alignment</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2305.11206.pdf">https://arxiv.org/pdf/2305.11206.pdf</a></p>
+<p>论文提出浅层对齐假说，即<strong>一个模型的知识和能力几乎完全是在预训练中学习的，而对齐则是教它在与用户交互时应该使用哪种子分布的格式。如果这个假说是正确的，而对齐主要是关于学习风格的</strong>，那么浅层对齐假说的一个推论是，人们可以用一组相当小的例子充分调整预训练的语言模型。</p>
+<p>因此，<strong>该工作假设，对齐可以是一个简单的过程，模型学习与用户互动的风格或格式，以揭示在预训练中已经获得的知识和能力。</strong></p>
+<p><strong>LIMa采用精心筛选的1000条样本训练，接下来将介绍关键的数据筛选过程：</strong></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/nriR9E.png" alt="nriR9E"></p>
+<p>论文从三个社区问答网站收集数据：Stack Exchange、wikiHow和Pushshift Reddit数据集。</p>
+<p><strong>1）Stack Exchange</strong></p>
+<p>Stack Exchange包含179个在线社区（交流），每个社区都致力于一个特定的主题，其中最受欢迎的是编程（Stack Overflow）。用户可以发布问题、答案和评论，并对上述所有内容进行加注（或减注）。</p>
+<p>在从Stack Exchange采样时，同时采用了质量和多样性控制。首先，<strong>将交流分成75个STEM交流（包括编程、数学、物理等）和99个其他（英语、烹饪、旅游等），并放弃了5个小众交流。然后，从每组中抽出200个问题和答案，使用=3的温度来获得不同领域的更均匀的样本。</strong></p>
+<p>在每个交流，选择得分最高的问题，然后选择每个问题的最高答案，并保证它有很强的正面得分（至少10分）。<strong>为了符合一个有帮助的人工智能助手的风格，自动过滤那些太短（少于1200个字符）、太长（超过4096个字符）、以第一人称书写（”我”、”我的”）或引用其他答案（”如提到”、”Stack exchange “等）的答案；并从回答中删除链接、图片和其他HTML标签，只保留代码块和列表。</strong></p>
+<p>由于Stack Exchange问题同时包含标题和描述，随机选择一些例子的标题作为提示，而其他例子则选择描述。</p>
+<p><strong>2）wikiHow</strong></p>
+<p>wikiHow是一个在线的维基式出版物，有超过24万篇关于各种主题的方法文章。从wikiHow中抽取了200篇文章，首先抽取一个类别（19个），然后抽取其中的一篇文章，以确保多样性。</p>
+<p>使用标题作为提示（例如 “如何做煎蛋？”），并将文章的内容作为回应。</p>
+<p><strong>在处理上，用 “下面的答案…… “取代典型的 “这篇文章…… “开头，并采用一些启发式的预处理方法来修剪链接、图片和文本中的某些部分。</strong></p>
+<p><strong>3）Pushshift Reddit数据集</strong></p>
+<p>Reddit是世界上最受欢迎的网站之一，允许用户在用户创建的subreddits中分享、讨论和加注内容。</p>
+<p>在处理上，将样本限制在两个子集，即r/AskReddit和r/WritingPrompts，并从每个社区的最高票数的帖子中手动选择例子。</p>
+<p>并从r/AskReddit中找到了70个自成一体的提示（只有标题，没有正文），并将其用作测试集。</p>
+<p>WritingPrompts子版块包含虚构故事的前提，然后鼓励其他用户创造性地完成这些故事，共找到150个提示和高质量的回应，包括情诗和短篇科幻小说等主题，并将其加入训练集。</p>
+<p><strong>4）人工撰写例子</strong></p>
+<p>为了使数据进一步多样化，除了在线社区中用户提出的问题之外，还收集了来自我们自己（这项工作的作者）的提示信息。</p>
+<p>指定了两组作者，A组和B组，各创作250个提示，灵感来自他们自己或他们朋友的兴趣。</p>
+<p>在过滤了一些有问题的提示后，B组剩下的230条提示被用于测试。</p>
+<p>此外，还包括13个具有一定程度毒性或恶意的训练提示。</p>
+<p>此外，该工作还选择了50个自然语言生成任务，如总结、转述和风格转换，并从每个任务中随机挑选一个例子，并对其中的一些例子稍作编辑。</p>
+<p><strong>3、对比模型与实验效果</strong></p>
+<p>为了将LIMA与其他模型进行比较，我们为每个测试提示生成一个单一的反应。然后，我们要求人群工作者将LIMA的输出与每个基线进行比较，并标注他们更喜欢哪一个，该工作将LIMA与五个基线进行比较：</p>
+<p>Alpaca 65B ，在Alpaca训练集[Taori et al., 2023]中的52,000个例子上对LLaMa 65B进行了微调；</p>
+<p>OpenAI-DaVinci003，一个用人类反馈的强化学习（RLHF）调整的大型语言模型；</p>
+<p>谷歌的Bard，基于PaLM；</p>
+<p>Anthropic的Claude4，一个用人工智能反馈强化学习（Constitutional AI）训练的52B参数模型</p>
+<p>OpenAI的GPT-4，一个用RLHF训练的大型语言模型，目前被认为是最先进的。在整个2023年4月，对所有基线的反应进行了采样。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9re4mh.png" alt="9re4mh"></p>
+<p>实验效果如上，图1显示了人类偏好研究的结果，图2显示了GPT-4偏好的结果。结果表明：<strong>尽管在52倍的数据上进行训练，Alpaca 65B倾向于产生比LIMA更少的偏好输出。DaVinci003的情况也是如此，尽管优势微弱；</strong></p>
+<p><strong>4、讨论与分析</strong></p>
+<p>通过消融实验研究训练数据的多样性、质量和数量的影响，对于对齐的目的，扩大输入多样性和输出质量有可衡量的积极影响，而仅仅扩大数量可能没有。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/lu4zW9.png" alt="lu4zW9"></p>
+<p>首先，在数量上，从Stack Exchange中抽取指数级增加的训练集。图6显示，有趣的是，<strong>训练集的翻倍并没有改善响应质量。模型表现的缩放规律不一定只受制于数量，而是在保持高质量响应的同时，提示多样性的功能。</strong></p>
+<p>其次，在多样性上，<strong>为了测试提示多样性的影响，同时控制质量和数量，比较了训练对经过质量过滤的Stack Exchange数据和wikiHow数据的影响，前者有异质的提示和优秀的回答，后者有同质的提示和优秀的回答。</strong></p>
+<p>虽然在将Stack Exchange和wikiHow作为多样性的代表进行比较时，在从两个不同来源的数据中取样（每个来源中抽出2000个训练例子）可能会有其他混淆因素，但图5显示，更多样化的Stack Exchange数据产生了明显更高的性能。</p>
+<p>最后，在质量上，为从Stack Exchange中抽取了2000个例子，没有经过任何质量或风格的过滤，并将在这个数据集上训练的模型与在过滤过的数据集上训练的模型进行比较。图5显示，在经过过滤和未经过过滤的数据源上训练的模型之间有0.5分的显著差异。</p>
+<p>因此，总结上来说，在<strong>1000个精心策划的例子上对一个强大的预训练语言模型进行微调，可以在广泛的提示中产生显著的、有竞争力的结果。</strong></p>
+<p>然而，这种方法也有局限性，正如文中阐述的那样：</p>
+<p>首先，构建这样的例子所付出的努力是巨大的，而且很难扩大规模。</p>
+<p>其次，<strong>LIMA并不像产品级模型那样稳健</strong>；</p>
+<p>尽管如此，这项工作中提出的证据表明，<strong>用一种简单的方法来解决复杂的对齐问题是有潜力的。</strong></p>
+<p><strong>同时，该论文也指出，PPL并不能有效的反馈模型的表现。</strong></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6xUAn8.png" alt="6xUAn8"></p>
+<p>在不同模型大小(7B/30B/65B)，不同训练数据训练下，均表明验证集的PPL不能反馈模型生成的质量。</p>
+<h2 id="MAYBE-ONLY-0-5-DATA-IS-NEEDED"><a href="#MAYBE-ONLY-0-5-DATA-IS-NEEDED" class="headerlink" title="MAYBE ONLY 0.5% DATA IS NEEDED"></a>MAYBE ONLY 0.5% DATA IS NEEDED</h2><p><strong>论文标题</strong>：MAYBE ONLY 0.5% DATA IS NEEDED</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2305.09246.pdf">https://arxiv.org/pdf/2305.09246.pdf</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/vpV4aH.png" alt="vpV4aH"></p>
+<p>该工作利用聚类的思想筛选样本进行实验，以说明微调数据规模并不需要难么多，就可以达到一个不错的效果。其实际上走的是多样性的路子。</p>
+<p><strong>1）向量化</strong></p>
+<p>将数据重新格式化为指令调优训练阶段使用的训练输入格式，即带有描述指令的数据，在最后加入答案，以格式化一个完整的训练数据。</p>
+<p>然后，使用预先训练好的语言模型（如Galactica或Bert）对所有样本进行编码。</p>
+<p>具体地，将模型作为单词嵌入或每个句子的输入后，提取每个样本的last_hidden_state。对每个样本的词嵌入进行均值集合，得到一个一维向量作为该样本的句子嵌入。</p>
+<p>为了加快计算速度，方便向量相似性的计算，将所有句子嵌入归一为长度1，即对嵌入维度进行L2归一。</p>
+<p><strong>2）聚类</strong></p>
+<p>考虑到NLP任务边界的模糊性可能导致不同任务的样本之间的差异很小。</p>
+<p>因此，通过关注数据表征来进行无监督聚类，而不是依靠标签信息来将数据点基于相同的类别或任务归类。</p>
+<p>具体来说，在获得第一步的句子嵌入后，使用K-Means在嵌入空间中进行无监督聚类，以获得每个样本和其对应的聚类标签的映射。</p>
+<p>然后，根据一个下游任务的样本出现在几个聚类中的频率，选择频率最高的聚类的中心点作为该下游任务的分布中心点。</p>
+<p>接下来，对于任务中的所有样本，计算与分布中心点的余弦相似度（距离函数的选择对结果影响不大，按照OpenAI的方法选择余弦相似度），并从任务数据中找出与该中心点最接近的样本作为任务中心点，任务中心点是这个任务数据中与分布中心点余弦相似度最大的一个确切样本。</p>
+<p><strong>3）核心样本采样</strong></p>
+<p>在获得下游任务对应的分布中心点后，根据余弦相似度选择最相似的样本作为代表性的任务样本，使用了一种核心集算法KCentergreedy，该算法旨在选择k个中心点，使随机数据点与其最近的中心点之间的最大距离最小。</p>
+<p><strong>4、实验数据、模型与结论</strong></p>
+<p><strong>1）实验数据</strong></p>
+<p>在总共11个数据集上进行了实验，这些数据集横跨4个NLP任务，即自然语言推理（NLI，1.9M tokens）、句子补充（SC，660.6K tokens）、词义歧义（WSD，25.5K tokens）和核心推理（CR，185.1K tokens）；</p>
+<p><strong>2）实验模型</strong></p>
+<p>采用Galactica-1.3b。Galactica模型是在一个庞大的科学语料库中训练出来的，并被定制用于处理科学任务，如引文预测、科学问题回答、数学推理、总结、文档生成、分子特性预测和实体提取；</p>
+<p><strong>3）实验结论</strong></p>
+<p>当考虑到一个特定的任务（本例中为NLI）时，该方法在NLI任务上实现了比基线（表中P3）平均2%的性能改进，只使用了P3中0.5%的可用数据。</p>
+<p>与使用P3的所有10条指令相比，只选择一条指令就能达到与使用P3的整个数据集相媲美的结果，而且只用了10%的数据。</p>
+<p>通过在P3数据集上调优NLI任务的Galactica-1.3b模型，最终得出了几个结论：</p>
+<p>首先，特定任务的模型可能从固定的任务类型中获益，以获得更高的性能；</p>
+<p>其次，指令格式的多样性可能对特定任务模型的性能影响很小【这块有问题，格式的多样并不能通过聚类方法实现】；</p>
+<p>最后，即使是少量的数据（1.9M tokens）也能为特定任务模型的指令调整带来不错的结果。</p>
+<p>不过，由于计算资源的限制，该工作有一些局限性，比如只在Galactica-1.3b上进行实验，只利用P3数据集中的NLI任务数据。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我们将主要探讨如何在计算资源有限的情况下为预训练模型准备参数和训练数据，同时也会关注预训练数据中重复Token的影响以及SFT的训练数据量。这些内容旨在为模型训练前期提供有价值的理论参考。</p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="LLM训练指南-Token及模型参数准备">https://447428054.github.io/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" rel="prev" title="复刻ChatGPT语言模型系列-（四）文本生成解码">
+      <i class="fa fa-chevron-left"></i> 复刻ChatGPT语言模型系列-（四）文本生成解码
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%BD%B1%E5%93%8D%E5%9B%A0%E7%B4%A0"><span class="nav-number">2.</span> <span class="nav-text">预训练模型表现的影响因素</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OpenAI-%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%BC%A9%E6%94%BE%E6%B3%95%E5%88%99"><span class="nav-number">2.1.</span> <span class="nav-text">OpenAI:语言模型缩放法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DeepMind-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E8%AE%A1%E7%AE%97%E4%BC%98%E5%8C%96%E5%AE%9E%E8%AF%81%E5%88%86%E6%9E%90"><span class="nav-number">2.2.</span> <span class="nav-text">DeepMind:大模型训练计算优化实证分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8D%E5%A4%8DToken%E5%AF%B9%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.</span> <span class="nav-text">重复Token对模型性能的影响</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%80%83%E8%99%91%E5%9C%A8%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86%E4%B8%8A%E5%81%9A%E5%A4%9A%E6%AC%A1%E8%AE%AD%E7%BB%83%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">为什么要考虑在重复的数据集上做多次训练？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E9%9B%86%E9%87%8D%E5%A4%8D%E7%9A%84%E5%BD%B1%E5%93%8D%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">3.2.</span> <span class="nav-text">预训练数据集重复的影响是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E8%A7%84%E6%A8%A1%E4%B8%8Etokens%E6%95%B0%E9%87%8F%E9%9C%80%E8%A6%81%E5%8C%B9%E9%85%8D"><span class="nav-number">3.2.1.</span> <span class="nav-text">1. 模型参数规模与tokens数量需要匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%A4%9A%E8%BD%AEepoch%E7%9A%84%E8%AE%AD%E7%BB%83%E4%BC%9A%E9%99%8D%E4%BD%8E%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD"><span class="nav-number">3.2.2.</span> <span class="nav-text">2. 多轮epoch的训练会降低模型性能</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%B1%E5%93%8D%E5%A4%9A%E6%AC%A1Epochs%E8%AE%AD%E7%BB%83%E6%95%88%E6%9E%9C%E4%B8%8B%E9%99%8D%E7%9A%84%E5%8E%9F%E5%9B%A0%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">3.3.</span> <span class="nav-text">影响多次Epochs训练效果下降的原因是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E6%9B%B4%E5%A4%A7%E8%A7%84%E6%A8%A1%E7%9A%84%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BC%9A%E7%BC%93%E8%A7%A3%E9%87%8D%E5%A4%8Depochs%E5%AF%B9%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E4%B8%8B%E9%99%8D%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.3.1.</span> <span class="nav-text">3、更大规模的数据集会缓解重复epochs对模型性能下降的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%8F%90%E9%AB%98%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E8%B4%A8%E9%87%8F%E4%B9%9F%E6%97%A0%E6%B3%95%E6%8C%BD%E6%95%91%E9%87%8D%E5%A4%8D%E8%AE%AD%E7%BB%83%E5%B8%A6%E6%9D%A5%E7%9A%84%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-number">3.3.2.</span> <span class="nav-text">4、提高数据集的质量也无法挽救重复训练带来的过拟合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81%E5%8F%82%E6%95%B0%E6%95%B0%E9%87%8F%E5%92%8CFLOPs%E5%9C%A8%E9%87%8D%E5%A4%8D%E8%AE%AD%E7%BB%83%E4%B8%8A%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.3.3.</span> <span class="nav-text">5、参数数量和FLOPs在重复训练上的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81%E5%B0%8F%E8%AE%A1%E7%AE%97%E9%87%8F%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BF%87%E6%8B%9F%E5%90%88%E8%B6%8B%E5%8A%BF%E4%B8%8E%E5%A4%A7%E8%AE%A1%E7%AE%97%E9%87%8F%E7%9A%84%E5%B7%AE%E4%B8%8D%E5%A4%9A"><span class="nav-number">3.3.4.</span> <span class="nav-text">6、小计算量模型的过拟合趋势与大计算量的差不多</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7%E3%80%81%E5%A4%9A%E6%A0%B7%E7%9A%84%E8%AE%AD%E7%BB%83%E7%9B%AE%E6%A0%87%E5%8F%AF%E4%BB%A5%E5%87%8F%E8%BD%BB%E5%A4%9AEpoch%E4%B8%8B%E9%99%8D%E5%90%97%EF%BC%9F"><span class="nav-number">3.3.5.</span> <span class="nav-text">7、多样的训练目标可以减轻多Epoch下降吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96%E5%8F%AF%E4%BB%A5%E9%99%8D%E4%BD%8E%E5%A4%9Aepochs%E7%9A%84%E5%BD%B1%E5%93%8D%E5%90%97"><span class="nav-number">3.4.</span> <span class="nav-text">正则化可以降低多epochs的影响吗</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8%E3%80%81Dropout%E6%98%AF%E4%B8%80%E4%B8%AA%E8%A2%AB%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%BF%BD%E8%A7%86%E7%9A%84%E6%AD%A3%E5%88%99%E6%8A%80%E6%9C%AF%EF%BC%8C%E8%99%BD%E7%84%B6%E6%85%A2%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AF%E4%BB%A5%E9%99%8D%E4%BD%8E%E5%A4%9Aepochs%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-number">3.4.1.</span> <span class="nav-text">8、Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9%E3%80%81%E5%9C%A8%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%80%90%E6%B8%90%E4%BD%BF%E7%94%A8dropout%E6%98%AF%E6%9C%89%E6%95%88%E7%9A%84%E7%AD%96%E7%95%A5"><span class="nav-number">3.4.2.</span> <span class="nav-text">9、在训练过程中逐渐使用dropout是有效的策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10%E3%80%81dropout%E5%AF%B9%E4%B8%8D%E5%90%8C%E8%A7%84%E6%A8%A1%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BD%B1%E5%93%8D%E4%B8%8D%E5%90%8C"><span class="nav-number">3.4.3.</span> <span class="nav-text">10、dropout对不同规模模型的影响不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11%E3%80%81%E9%80%9A%E8%BF%87MoE%E6%89%AB%E6%8F%8F%E7%A1%AE%E5%AE%9A%E7%A8%A0%E5%AF%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%9C%80%E4%BD%B3%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">3.4.4.</span> <span class="nav-text">11、通过MoE扫描确定稠密模型的最佳超参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9Aepochs%E8%AE%AD%E7%BB%83%E5%AF%B9%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E5%BD%B1%E5%93%8D%E7%9A%84%E6%80%BB%E7%BB%93"><span class="nav-number">3.5.</span> <span class="nav-text">多epochs训练对大语言模型性能影响的总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SFT%E9%9C%80%E8%A6%81%E7%9A%84%E6%95%B0%E6%8D%AE%E9%87%8F"><span class="nav-number">4.</span> <span class="nav-text">SFT需要的数据量</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LIMa%EF%BC%9ALess-Is-More-for-Alignment"><span class="nav-number">4.1.</span> <span class="nav-text">LIMa：Less Is More for Alignment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MAYBE-ONLY-0-5-DATA-IS-NEEDED"><span class="nav-number">4.2.</span> <span class="nav-text">MAYBE ONLY 0.5% DATA IS NEEDED</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/05/2023-03-05-%E7%A9%BF%E8%B6%8A%E6%97%B6%E7%A9%BA%EF%BC%9A%E5%BD%93ChatGPT%E9%81%87%E8%A7%81stable-diffusion%EF%BC%8C%E4%BD%A0%E4%B8%8D%E6%95%A2%E7%9B%B8%E4%BF%A1%E7%9A%84%E5%88%9B%E6%84%8F%E8%89%BA%E6%9C%AF%E4%B9%8B%E6%97%85!/" title="2023&#x2F;03&#x2F;05&#x2F;2023-03-05-穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!&#x2F;">穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">190k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:53</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

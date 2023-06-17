@@ -194,6 +194,216 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" class="post-title-link" itemprop="url">LLM训练指南-Token及模型参数准备</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-06-13 00:00:00" itemprop="dateCreated datePublished" datetime="2023-06-13T00:00:00+08:00">2023-06-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-17 22:36:56" itemprop="dateModified" datetime="2023-06-17T22:36:56+08:00">2023-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。</p>
+<p>本文得出的结论如下，详细过程见下文分析：</p>
+<p><strong>预训练模型表现影响因素：</strong></p>
+<ul>
+<li>模型表现强依赖于模型规模(模型参数量N(Embedding除外)、训练Token数D、训练总计算量C)；</li>
+<li>平滑幂定律：模型表现与三个因子均遵循幂定律，不受另外两个因子限制；</li>
+<li>在给定计算量预算下，模型参数量以及训练Token数应该同比提升，对应模型参数量需要的训练Token数如下：</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Parameters</th>
+<th style="text-align:right">FLOPs</th>
+<th style="text-align:right">FLOPs (in Gopher unit)</th>
+<th style="text-align:right">Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">400 Million</td>
+<td style="text-align:right">1.92e+19</td>
+<td style="text-align:right">1//29,968</td>
+<td style="text-align:right">8.0 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">1 Billion</td>
+<td style="text-align:right">1.21e+20</td>
+<td style="text-align:right">1//4,761</td>
+<td style="text-align:right">20.2 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">10 Billion</td>
+<td style="text-align:right">1.23e+22</td>
+<td style="text-align:right">1//46</td>
+<td style="text-align:right">205.1 Billion</td>
+</tr>
+<tr>
+<td style="text-align:right">67 Billion</td>
+<td style="text-align:right">5.76e+23</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">1.5 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">175 Billion</td>
+<td style="text-align:right">3.85e+24</td>
+<td style="text-align:right">6.7</td>
+<td style="text-align:right">3.7 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">280 Billion</td>
+<td style="text-align:right">9.90e+24</td>
+<td style="text-align:right">17.2</td>
+<td style="text-align:right">5.9 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">520 Billion</td>
+<td style="text-align:right">3.43e+25</td>
+<td style="text-align:right">59.5</td>
+<td style="text-align:right">11.0 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">1 Trillion</td>
+<td style="text-align:right">1.27e+26</td>
+<td style="text-align:right">221.3</td>
+<td style="text-align:right">21.2 Trillion</td>
+</tr>
+<tr>
+<td style="text-align:right">10 Trillion</td>
+<td style="text-align:right">1.30e+28</td>
+<td style="text-align:right">22515.9</td>
+<td style="text-align:right">216.2 Trillion</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>预训练数据Token重复的影响：</strong></p>
+<ul>
+<li>多轮epoch的训练会降低模型性能；</li>
+<li>更大规模的数据集会缓解重复epochs对模型性能下降的影响；</li>
+<li>提高数据集的质量也无法挽救重复训练带来的过拟合；</li>
+<li>小计算量模型的过拟合趋势与大计算量的差不多；</li>
+<li>多样的训练目标不一定减轻多Epoch的性能下降；</li>
+<li>Dropout是一个被大语言模型忽视的正则技术，虽然慢，但是可以降低多epochs的影响；</li>
+<li>在训练过程中逐渐使用dropout是有效的策略；</li>
+</ul>
+<p><strong>SFT需要训练Token数：</strong></p>
+<ul>
+<li>少量高质量、多样性的数据，也可以训练出效果优秀的SFT模型</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6g7mxD.png" alt="6g7mxD"><br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+    <div>
+    
+    </div>
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1508,129 +1718,6 @@ P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\ri
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/jmx.png">
-      <meta itemprop="name" content="JMXGODLZZ">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="JMX Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/" class="post-title-link" itemprop="url">真香～BERT在MAC Pytorch的使用.md</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2022-07-16 00:00:00" itemprop="dateCreated datePublished" datetime="2022-07-16T00:00:00+08:00">2022-07-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-02-12 19:53:15" itemprop="dateModified" datetime="2023-02-12T19:53:15+08:00">2023-02-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>终于，Pytorch也支持MAC的硬件加速，两个字评价一下感受：真香～</p>
-<p>周末笔者在自己机器上完成环境安装，笔者机器环境如下：</p>
-<p><img src="https://pic1.zhimg.com/80/v2-6ac54749fc06a77883b3095e62d36a60_1440w.jpg" alt=""></p>
-<p>接着，笔者在该文用卷积、BERT模型对比了有无MAC硬件加速的模型运行时间</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-    <div>
-    
-    </div>
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1702,7 +1789,7 @@ P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\ri
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1738,6 +1825,9 @@ P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\ri
     </div>
     <ul class="links-of-recent-posts-list">
         <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
           <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
         </li>
         <li class="links-of-recent-posts-item">
@@ -1748,9 +1838,6 @@ P\left(w_{1: T} \mid W_0\right)=\prod_{t=1}^T P\left(w_t \mid w_{1: t-1}, W_0\ri
         </li>
         <li class="links-of-recent-posts-item">
           <a href="/2023/03/05/2023-03-05-%E7%A9%BF%E8%B6%8A%E6%97%B6%E7%A9%BA%EF%BC%9A%E5%BD%93ChatGPT%E9%81%87%E8%A7%81stable-diffusion%EF%BC%8C%E4%BD%A0%E4%B8%8D%E6%95%A2%E7%9B%B8%E4%BF%A1%E7%9A%84%E5%88%9B%E6%84%8F%E8%89%BA%E6%9C%AF%E4%B9%8B%E6%97%85!/" title="2023&#x2F;03&#x2F;05&#x2F;2023-03-05-穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!&#x2F;">穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!</a>
-        </li>
-        <li class="links-of-recent-posts-item">
-          <a href="/2022/12/07/2022-12-07-%E3%80%90%E5%BE%8B%E5%B8%88%E5%87%BD%E8%AD%A6%E5%91%8A%E3%80%91-ChatGPT%E4%BB%A5%E9%B8%A1%E4%BD%A0%E5%A4%AA%E7%BE%8E%E4%B8%BB%E9%A2%98%E5%86%99%E5%B0%8F%E8%AF%B4/" title="2022&#x2F;12&#x2F;07&#x2F;2022-12-07-【律师函警告】-ChatGPT以鸡你太美主题写小说&#x2F;">【律师函警告】-ChatGPT以鸡你太美主题写小说.md</a>
         </li>
     </ul>
   </div>
@@ -2050,12 +2137,12 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">174k</span>
+    <span title="站点总字数">190k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2:38</span>
+    <span title="站点阅读时长">2:53</span>
 </div>
   <div class="powered-by">
 

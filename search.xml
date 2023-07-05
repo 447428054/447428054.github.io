@@ -41,65 +41,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
-    <title>Coursera Machine Learning 学习笔记（一）Introduction</title>
-    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/</url>
-    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（一）Introduction</p>
-<span id="more"></span>
-<blockquote>
-<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
-</blockquote>
-<h1 id="01-Introduction"><a href="#01-Introduction" class="headerlink" title="01:Introduction"></a>01:Introduction</h1><h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><ul>
-<li><p>Arthur Samuel(1959)<br>  <strong>Machine Learning:</strong>“Field of study that gives computers the ability to learn without being explicitly programmed”</p>
-</li>
-<li><p>Tom Michel(1999)<br>  <strong>Well posed learning problem:</strong>“A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”<br>  在下棋的例子中：</p>
-</li>
-</ul>
-<ol>
-<li>E经验为1000场下棋游戏</li>
-<li>T任务为下棋</li>
-<li>P评价准则为是否获胜</li>
-</ol>
-<ul>
-<li><p>学习算法的类型<br>  。 有监督学习（Supervised learning）</p>
-<pre><code>      Teach the computer how to do something, then let it use it;s new found knowledge to do it
-
-      注：一般是有标注的训练集
-</code></pre><p>  。无监督学习（Unsupervised learning）<br>  Let the computer learn how to do something, and use this to determine structure and patterns in data</p>
-<pre><code>      注：一般是无标注训练集，使机器从中提取特征，常见算法为聚类
-</code></pre><p>  。强化学习（Reinforcement learning）</p>
-<p>  。推荐系统（Recommender systems）</p>
-</li>
-</ul>
-<h3 id="有监督学习介绍"><a href="#有监督学习介绍" class="headerlink" title="有监督学习介绍"></a>有监督学习介绍</h3><h5 id="问题分类："><a href="#问题分类：" class="headerlink" title="问题分类："></a>问题分类：</h5><ul>
-<li>预测问题<br>课程内拿房价预测作为示例：具体可以看课程内容<br>预测问题也叫回归问题，具有以下特征：</li>
-</ul>
-<ol>
-<li>预测连续的输出</li>
-<li>没有明显得离散划分</li>
-</ol>
-<ul>
-<li>分类问题<br>课程内以肿瘤划分作为示例</li>
-</ul>
-<h3 id="无监督学习介绍"><a href="#无监督学习介绍" class="headerlink" title="无监督学习介绍"></a>无监督学习介绍</h3><p>在无监督学习里我们获得的是没有标注的数据，将这些数据划分成不同的数据簇</p>
-<h5 id="聚类算法"><a href="#聚类算法" class="headerlink" title="聚类算法"></a>聚类算法</h5><p>具体应用示例：</p>
-<ol>
-<li>新闻划分</li>
-<li>基因组排序</li>
-<li>分布式计算机集群划分</li>
-<li>社交网络划分</li>
-<li>天文数据分析</li>
-</ol>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-        <tag>Introduction</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Coursera Machine Learning 学习笔记（二）Linear Regression</title>
     <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89Linear%20Regression/</url>
     <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（二）Linear Regression</p>
@@ -166,6 +107,65 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       <tags>
         <tag>机器学习</tag>
         <tag>Linear Regression</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Coursera Machine Learning 学习笔记（一）Introduction</title>
+    <url>/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/</url>
+    <content><![CDATA[<p>文章为博主学习Coursera上的Machine Learning课程的笔记，Coursera Machine Learning 学习笔记（一）Introduction</p>
+<span id="more"></span>
+<blockquote>
+<p>文章为博主学习Coursera上的Machine Learning课程的笔记，来记录自己的学习过程，欢迎大家一起学习交流</p>
+</blockquote>
+<h1 id="01-Introduction"><a href="#01-Introduction" class="headerlink" title="01:Introduction"></a>01:Introduction</h1><h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><ul>
+<li><p>Arthur Samuel(1959)<br>  <strong>Machine Learning:</strong>“Field of study that gives computers the ability to learn without being explicitly programmed”</p>
+</li>
+<li><p>Tom Michel(1999)<br>  <strong>Well posed learning problem:</strong>“A computer program is said to learn from experience E with respect to some class of tasks T and performance measure P, if its performance at tasks in T, as measured by P, improves with experience E.”<br>  在下棋的例子中：</p>
+</li>
+</ul>
+<ol>
+<li>E经验为1000场下棋游戏</li>
+<li>T任务为下棋</li>
+<li>P评价准则为是否获胜</li>
+</ol>
+<ul>
+<li><p>学习算法的类型<br>  。 有监督学习（Supervised learning）</p>
+<pre><code>      Teach the computer how to do something, then let it use it;s new found knowledge to do it
+
+      注：一般是有标注的训练集
+</code></pre><p>  。无监督学习（Unsupervised learning）<br>  Let the computer learn how to do something, and use this to determine structure and patterns in data</p>
+<pre><code>      注：一般是无标注训练集，使机器从中提取特征，常见算法为聚类
+</code></pre><p>  。强化学习（Reinforcement learning）</p>
+<p>  。推荐系统（Recommender systems）</p>
+</li>
+</ul>
+<h3 id="有监督学习介绍"><a href="#有监督学习介绍" class="headerlink" title="有监督学习介绍"></a>有监督学习介绍</h3><h5 id="问题分类："><a href="#问题分类：" class="headerlink" title="问题分类："></a>问题分类：</h5><ul>
+<li>预测问题<br>课程内拿房价预测作为示例：具体可以看课程内容<br>预测问题也叫回归问题，具有以下特征：</li>
+</ul>
+<ol>
+<li>预测连续的输出</li>
+<li>没有明显得离散划分</li>
+</ol>
+<ul>
+<li>分类问题<br>课程内以肿瘤划分作为示例</li>
+</ul>
+<h3 id="无监督学习介绍"><a href="#无监督学习介绍" class="headerlink" title="无监督学习介绍"></a>无监督学习介绍</h3><p>在无监督学习里我们获得的是没有标注的数据，将这些数据划分成不同的数据簇</p>
+<h5 id="聚类算法"><a href="#聚类算法" class="headerlink" title="聚类算法"></a>聚类算法</h5><p>具体应用示例：</p>
+<ol>
+<li>新闻划分</li>
+<li>基因组排序</li>
+<li>分布式计算机集群划分</li>
+<li>社交网络划分</li>
+<li>天文数据分析</li>
+</ol>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+        <tag>Introduction</tag>
       </tags>
   </entry>
   <entry>
@@ -1001,6 +1001,102 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
       </tags>
   </entry>
   <entry>
+    <title>神经网络调参-warmup and decay</title>
+    <url>/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t=\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg" alt=""><br><span id="more"></span></p>
+<h1 id="warmup-and-decay"><a href="#warmup-and-decay" class="headerlink" title="warmup and decay"></a>warmup and decay</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Warmup and Decay是模型训练过程中，一种学习率（learning rate）的调整策略。</p>
+<p>Warmup是在ResNet论文中提到的一种学习率预热的方法，它在训练开始的时候先选择使用一个较小的学习率，训练了一些epoches或者steps(比如4个epoches,10000steps),再修改为预先设置的学习来进行训练。</p>
+<p>同理，Decay是学习率衰减方法，它指定在训练到一定epoches或者steps后，按照线性或者余弦函数等方式，将学习率降低至指定值。一般，使用Warmup and Decay，学习率会遵循从小到大，再减小的规律。</p>
+<h2 id="为什么要warmup"><a href="#为什么要warmup" class="headerlink" title="为什么要warmup"></a>为什么要warmup</h2><p>这里引用知乎：<a href="https://www.zhihu.com/question/338066667/answer/771252708的讨论：">https://www.zhihu.com/question/338066667/answer/771252708的讨论：</a><br><strong>SGD训练中常见的方式是初始较大的学习率，然后衰减为小的学习率，而warmup是先以较小的学习率上升到初始学习率，然后再衰减到小的学习率上，那么为什么warmup有效。</strong></p>
+<h3 id="直观上解释"><a href="#直观上解释" class="headerlink" title="直观上解释"></a>直观上解释</h3><p>深层网络随机初始化差异较大，如果一开始以较大的学习率，初始学习带来的偏差在后续学习过程中难以纠正。</p>
+<p>训练刚开始时梯度更新较大，若学习率设置较大则更新的幅度较大，该类型与传统学习率先大后小方式不同的原因在于起初浅层网络幅度大的更新并不会导致方向错误。</p>
+<h3 id="理论上解释"><a href="#理论上解释" class="headerlink" title="理论上解释"></a>理论上解释</h3><p><strong>warmup带来的优点包含：</strong></p>
+<ul>
+<li>缓解模型在初期对mini-batch过拟合的现象</li>
+<li>保持模型深层的稳定性</li>
+</ul>
+<p><strong>给出三个论文中的结论：</strong></p>
+<ol>
+<li>当batch大小增加时，学习率也可以成倍增加</li>
+<li>限制大batch训练的是高学习率带来的训练不稳定性</li>
+<li>warmup主要限制深层的权重变化，并且冻结深层权重的变化可以取得相似的效果</li>
+</ol>
+<h4 id="batch与学习率大小的关系"><a href="#batch与学习率大小的关系" class="headerlink" title="batch与学习率大小的关系"></a>batch与学习率大小的关系</h4><p>假设现在模型已经train到第t步，权重为$w_t$，我们有k个mini-batch，每个mini-batch大小为n，记为$\mathcal{B}_{1:k}$ 。下面我们来看，以学习率 $\eta$训k次 $\mathcal{B}_{1:k}$ 和以学习率 $\hat{\eta}$ 一次训练$\mathcal{B}$时学习率的关系。</p>
+<p>假设我们用的是SGD，那么训k次后我们可以得到：</p>
+<script type="math/tex; mode=display">
+w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t+j}\right)</script><p>如果我们一次训练就可以得到：</p>
+<script type="math/tex; mode=display">
+\hat{w}_{t+1}=w_{t}-\hat{\eta} \frac{1}{k n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t}\right)</script><p>其中$w_{t+k}$与$\hat{w}_{t+1}$代表按上述方式训练k次与1次，完成参数更新后的参数。显然，这两个是不一样的。但如果我们假设$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$，那么令$\hat{\eta}=k\eta $就可以保证 <script type="math/tex">\hat{w}_{t+1} \approx w_{t+k}</script> 。那么，在什么时候 $\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$ 可能不成立呢？[1]告诉我们有两种情况：</p>
+<ul>
+<li>在训练的开始阶段，模型权重迅速改变</li>
+<li>Mini-batch 大小较小，样本方差较大</li>
+</ul>
+<p>第一种情况，模型初始参数分布取决于初始化方式，初始数据对于模型都是初次修正，所以梯度更新较大，若一开始以较大的学习率学习，易对数据造成过拟合，需要经过之后更多轮的训练进行修正。</p>
+<p>第二种情况，在训练的过程中，如果有mini-batch内的数据分布方差特别大，这会导致模型学习剧烈波动，使其学得的权重很不稳定，这在训练初期最为明显，最后期较为缓解。</p>
+<p>针对上述两种情况，并不能简单的成倍增长学习率$\hat{\eta}=k\eta$,因为此时不符合$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$假设。此时要么更改学习率增长方式[warmup]，要么解决这两种情况[数据预处理以减小样本方差]。</p>
+<h4 id="warmup与模型学习的稳定性"><a href="#warmup与模型学习的稳定性" class="headerlink" title="warmup与模型学习的稳定性"></a>warmup与模型学习的稳定性</h4><p>该部分通过一些论文实验结果，推断有了warmup之后模型能够学习的更稳定。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-5d6ffb22059ddf3da93bac83c02482a6_1440w.webp" alt=""></p>
+<p><strong>上图表示有了warmup之后，模型能够学习的更加稳定。</strong></p>
+<p><img src="https://pic3.zhimg.com/80/v2-9440892a277639a91c2468e66ad65072_1440w.webp" alt=""></p>
+<p><strong>上图b，c表示有了warmup之后，模型最后几层的相似性增加，避免模型不稳定的改变。</strong></p>
+<h1 id="学习率衰减策略"><a href="#学习率衰减策略" class="headerlink" title="学习率衰减策略"></a>学习率衰减策略</h1><h2 id="可视化代码"><a href="#可视化代码" class="headerlink" title="可视化代码"></a>可视化代码</h2><p><strong>下列各种学习率衰减策略均采用warmup，为了图片反应的更加直观：起始学习率设置为1，warmup 步数为20，总步数为100。通常warmup步数可以设置为总步数的10%，参照BERT的经验策略。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"># author： JMXGODLZZ</span><br><span class="line"># datetime： 2022/1/23 下午7:10 </span><br><span class="line"># ide： PyCharm</span><br><span class="line">import keras</span><br><span class="line">import tensorflow as tf</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">from learningrateSchedules import get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_cosine_with_hard_restarts_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_polynomial_decay_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_step_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_exp_schedule_with_warmup</span><br><span class="line">init_lr = 1</span><br><span class="line">warmupsteps = 20</span><br><span class="line">totalsteps = 100</span><br><span class="line"></span><br><span class="line">lrs = get_linear_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_warm_lrs = get_cosine_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_hard_warm_lrs = get_cosine_with_hard_restarts_schedule_with_warmup(1, warmupsteps, totalsteps, 2)</span><br><span class="line">poly_warm_lrs = get_polynomial_decay_schedule_with_warmup(1, warmupsteps, totalsteps, 0, 5)</span><br><span class="line">step_warm_lrs = get_step_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">exp_warm_lrs = get_exp_schedule_with_warmup(1, warmupsteps, totalsteps, 0.9)</span><br><span class="line">x = list(range(totalsteps))</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, lrs, label=&#x27;linear_warmup&#x27;, color=&#x27;k&#x27;)</span><br><span class="line">plt.plot(x, cos_warm_lrs, label=&#x27;cosine_warmup&#x27;, color=&#x27;b&#x27;)</span><br><span class="line">plt.plot(x, cos_hard_warm_lrs, label=&#x27;cosine_cy2_warmup&#x27;, color=&#x27;g&#x27;)</span><br><span class="line">plt.plot(x, poly_warm_lrs, label=&#x27;polynomial_warmup_pw5&#x27;, color=&#x27;r&#x27;)</span><br><span class="line">plt.plot(x, step_warm_lrs, label=&#x27;step_warmup&#x27;, color=&#x27;purple&#x27;)</span><br><span class="line">plt.plot(x, exp_warm_lrs, label=&#x27;exp_warmup&#x27;, color=&#x27;orange&#x27;)</span><br><span class="line">plt.xlabel(&#x27;steps&#x27;)</span><br><span class="line">plt.ylabel(&#x27;learning rate&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.webp" alt=""></p>
+<h2 id="指数衰减学习率"><a href="#指数衰减学习率" class="headerlink" title="指数衰减学习率"></a>指数衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_exp_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, gamma, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps)</span><br><span class="line">        return pow(gamma, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="余弦衰减学习率"><a href="#余弦衰减学习率" class="headerlink" title="余弦衰减学习率"></a>余弦衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_cosine_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: float = 0.5, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, after a warmup period during which it increases linearly between 0 and the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`float`, `optional`, defaults to 0.5):</span><br><span class="line">            The number of waves in the cosine schedule (the defaults is to just decrease from the max value to 0</span><br><span class="line">            following a half-cosine).</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * float(num_cycles) * 2.0 * progress)))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="线性衰减学习率"><a href="#线性衰减学习率" class="headerlink" title="线性衰减学习率"></a>线性衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_linear_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        return max(</span><br><span class="line">            0.0, float(num_training_steps - current_step) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        )</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="阶梯衰减学习率"><a href="#阶梯衰减学习率" class="headerlink" title="阶梯衰减学习率"></a>阶梯衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_step_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps) // 20 + 1</span><br><span class="line">        return pow(0.5, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="多项式衰减学习率"><a href="#多项式衰减学习率" class="headerlink" title="多项式衰减学习率"></a>多项式衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps, num_training_steps, lr_end=1e-7, power=1.0, last_epoch=-1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases as a polynomial decay from the initial lr set in the</span><br><span class="line">    optimizer to end lr defined by `lr_end`, after a warmup period during which it increases linearly from 0 to the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        lr_end (:obj:`float`, `optional`, defaults to 1e-7):</span><br><span class="line">            The end LR.</span><br><span class="line">        power (:obj:`float`, `optional`, defaults to 1.0):</span><br><span class="line">            Power factor.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Note: `power` defaults to 1.0 as in the fairseq implementation, which in turn is based on the original BERT</span><br><span class="line">    implementation at</span><br><span class="line">    https://github.com/google-research/bert/blob/f39e881b169b9d53bea03d2d341b31707a6c052b/optimization.py#L37</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    lr_init = learning_rate</span><br><span class="line">    if not (lr_init &gt; lr_end):</span><br><span class="line">        raise ValueError(f&quot;lr_end (&#123;lr_end&#125;) must be be smaller than initial lr (&#123;lr_init&#125;)&quot;)</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        elif current_step &gt; num_training_steps:</span><br><span class="line">            return lr_end / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line">        else:</span><br><span class="line">            lr_range = lr_init - lr_end</span><br><span class="line">            decay_steps = num_training_steps - num_warmup_steps</span><br><span class="line">            pct_remaining = 1 - (current_step - num_warmup_steps) / decay_steps</span><br><span class="line">            decay = lr_range * pct_remaining ** power + lr_end</span><br><span class="line">            return decay / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="余弦循环衰减学习率"><a href="#余弦循环衰减学习率" class="headerlink" title="余弦循环衰减学习率"></a>余弦循环衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: int = 1, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, with several hard restarts, after a warmup period during which it increases</span><br><span class="line">    linearly between 0 and the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`int`, `optional`, defaults to 1):</span><br><span class="line">            The number of hard restarts to use.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        if progress &gt;= 1.0:</span><br><span class="line">            return 0.0</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * ((float(num_cycles) * progress) % 1.0))))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h1 id="学习率衰减实现"><a href="#学习率衰减实现" class="headerlink" title="学习率衰减实现"></a>学习率衰减实现</h1><h2 id="Pytorch学习率策略"><a href="#Pytorch学习率策略" class="headerlink" title="Pytorch学习率策略"></a>Pytorch学习率策略</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if args.scheduler == &quot;constant_schedule&quot;:</span><br><span class="line">    scheduler = get_constant_schedule(optimizer)</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;constant_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_constant_schedule_with_warmup(</span><br><span class="line">        optimizer, num_warmup_steps=args.warmup_steps</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;linear_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_linear_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_with_hard_restarts_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;polynomial_decay_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        lr_end=args.polynomial_decay_schedule_lr_end,</span><br><span class="line">        power=args.polynomial_decay_schedule_power,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">else:</span><br><span class="line">    raise ValueError(&quot;&#123;&#125; is not a valid scheduler.&quot;.format(args.scheduler))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="keras学习率策略"><a href="#keras学习率策略" class="headerlink" title="keras学习率策略"></a>keras学习率策略</h2><ul>
+<li>Keras提供了四种衰减策略分别是ExponentialDecay(指数衰减)、 PiecewiseConstantDecay(分段常数衰减) 、 PolynomialDecay(多项式衰减)和InverseTimeDecay(逆时间衰减)。只要在Optimizer中指定衰减策略，一行代码就能实现，在以下方法一中详细介绍。</li>
+<li>如果想要自定义学习率的衰减，有第二种方法，更加灵活，需要使用callbacks来实现动态、自定义学习率衰减策略，方法二中将详细介绍。</li>
+<li>如果两种方法同时使用，默认优先使用第二种，第一种方法将被忽略。</li>
+</ul>
+<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><h4 id="指数衰减"><a href="#指数衰减" class="headerlink" title="指数衰减"></a>指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lr_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(</span><br><span class="line">    initial_learning_rate=1e-2,</span><br><span class="line">    decay_steps=10000,</span><br><span class="line">    decay_rate=0.96)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="分段衰减"><a href="#分段衰减" class="headerlink" title="分段衰减"></a>分段衰减</h4><p>[0~1000]的steps，学习率为1.0,[10001～9000]的steps，学习率为0.5，其他steps，学习率为0.1</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">step = tf.Variable(0, trainable=False)</span><br><span class="line">boundaries = [1000, 10000]</span><br><span class="line">values = [1.0, 0.5, 0.1]</span><br><span class="line">learning_rate_fn = tf.keras.optimizers.schedules.PiecewiseConstantDecay(boundaries, values)</span><br><span class="line">lr_scheduler = learning_rate_fn(step)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="多项式衰减"><a href="#多项式衰减" class="headerlink" title="多项式衰减"></a>多项式衰减</h4><p>在10000步中从0.1衰减到0.001，使用开根式( power=0.5)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">start_lr = 0.1</span><br><span class="line">end_lr = 0.001</span><br><span class="line">decay_steps = 10000</span><br><span class="line">lr_scheduler = tf.keras.optimizers.schedules.PolynomialDecay(</span><br><span class="line">    start_lr,</span><br><span class="line">    decay_steps,</span><br><span class="line">    end_lr,</span><br><span class="line">    power=0.5)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="逆时间衰减"><a href="#逆时间衰减" class="headerlink" title="逆时间衰减"></a>逆时间衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">initial_lr = 0.1</span><br><span class="line">decay_steps = 1.0</span><br><span class="line">decay_rate = 0.5</span><br><span class="line">lr_scheduler = keras.optimizers.schedules.InverseTimeDecay(</span><br><span class="line">  initial_lr, decay_steps, decay_rate)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><h4 id="自定义指数衰减"><a href="#自定义指数衰减" class="headerlink" title="自定义指数衰减"></a>自定义指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一步：自定义指数衰减策略</span><br><span class="line">def step_decay(epoch):</span><br><span class="line">    init_lr = 0.1</span><br><span class="line">    drop=0.5</span><br><span class="line">    epochs_drop=10</span><br><span class="line">    if epoch&lt;100:</span><br><span class="line">        return init_lr</span><br><span class="line">    else:</span><br><span class="line">        return init_lr*pow(drop,floor(1+epoch)/epochs_drop)</span><br><span class="line">        </span><br><span class="line"># ……</span><br><span class="line"># 第二步：用LearningRateScheduler封装学习率衰减策略</span><br><span class="line">lr_callback = LearningRateScheduler(step_decay)</span><br><span class="line"># 第三步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
+<h4 id="动态修改学习率"><a href="#动态修改学习率" class="headerlink" title="动态修改学习率"></a>动态修改学习率</h4><p>ReduceLROnPlateau(monitor=’val_acc’, mode=’max’,min_delta=0.1,factor=0.2,patience=5, min_lr=0.001)</p>
+<p>训练集连续patience个epochs的val_acc小于min_delta时，学习率将会乘以factor。mode可以选择max或者min，根据monitor的选择而灵活设定。min_lr是学习率的最低值。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一步：ReduceLROnPlateau定义学习动态变化策略</span><br><span class="line">reduce_lr_callback = ReduceLROnPlateau(monitor=&#x27;val_acc&#x27;, factor=0.2,patience=5, min_lr=0.001)</span><br><span class="line"># 第二步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,reduce_lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
+<h3 id="Keras学习率回显代码"><a href="#Keras学习率回显代码" class="headerlink" title="Keras学习率回显代码"></a>Keras学习率回显代码</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_lr_metric(optimizer):</span><br><span class="line">    def lr(y_true, y_pred):</span><br><span class="line">        return optimizer.lr</span><br><span class="line">    return lr</span><br><span class="line"> </span><br><span class="line">x = Input((50,))</span><br><span class="line">out = Dense(1, activation=&#x27;sigmoid&#x27;)(x)</span><br><span class="line">model = Model(x, out)</span><br><span class="line"> </span><br><span class="line">optimizer = Adam(lr=0.001)</span><br><span class="line">lr_metric = get_lr_metric(optimizer)</span><br><span class="line">model.compile(loss=&#x27;binary_crossentropy&#x27;, optimizer=optimizer, metrics=[&#x27;acc&#x27;, lr_metric])</span><br><span class="line"> </span><br><span class="line"># reducing the learning rate by half every 2 epochs</span><br><span class="line">cbks = [LerningRateScheduler(lambda epoch: 0.001 * 0.5 ** (epoch // 2)),</span><br><span class="line">        TensorBoard(write_graph=False)]</span><br><span class="line">X = np.random.rand(1000, 50)</span><br><span class="line">Y = np.random.randint(2, size=1000)</span><br><span class="line">model.fit(X, Y, epochs=10, callbacks=cbks)</span><br></pre></td></tr></table></figure>
+<h1 id="分层学习率设置"><a href="#分层学习率设置" class="headerlink" title="分层学习率设置"></a>分层学习率设置</h1><p>有时候我们需要为模型中不同层设置不同学习率大小，比如微调预训练模型时，预训练层数设置较小的学习率进行学习，而其他层以正常大小进行学习。这里给出苏神给出的keras实现，其通过参数变换实现调整学习率的目的：</p>
+<p>梯度下降公式如下：</p>
+<script type="math/tex; mode=display">
+\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-1}</script><p>考虑变换$\boldsymbol{\theta}=\lambda \boldsymbol{\phi}$,其中λ是一个固定的标量，<strong>ϕ</strong>也是参数。现在来优化<strong>ϕ</strong>，相应的更新公式为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}\boldsymbol{\phi}_{n+1}=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\lambda\boldsymbol{\phi}_{n})}{\partial \boldsymbol{\phi}_n}\\ 
+=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\frac{\partial \boldsymbol{\theta}_{n}}{\partial \boldsymbol{\phi}_n}\\ 
+=&\boldsymbol{\phi}_{n}-\lambda\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\end{aligned}</script><p>然后通过链式求导法则，再上述等式两边同时乘以λ：</p>
+<script type="math/tex; mode=display">
+\lambda\boldsymbol{\phi}_{n+1}=\lambda\boldsymbol{\phi}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\quad\Rightarrow\quad\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-2}</script><blockquote>
+<p>在SGD优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了$\lambda^2\alpha$。</p>
+<p>不过，在自适应学习率优化器（比如RMSprop、Adam等），情况有点不一样，因为自适应学习率使用梯度（作为分母）来调整了学习率，抵消了一个λ</p>
+<p>在RMSprop、Adam等自适应学习率优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了λα。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import keras.backend as K</span><br><span class="line"></span><br><span class="line">class SetLearningRate:</span><br><span class="line">    &quot;&quot;&quot;层的一个包装，用来设置当前层的学习率</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def __init__(self, layer, lamb, is_ada=False):</span><br><span class="line">        self.layer = layer</span><br><span class="line">        self.lamb = lamb # 学习率比例</span><br><span class="line">        self.is_ada = is_ada # 是否自适应学习率优化器</span><br><span class="line"></span><br><span class="line">    def __call__(self, inputs):</span><br><span class="line">        with K.name_scope(self.layer.name):</span><br><span class="line">            if not self.layer.built:</span><br><span class="line">                input_shape = K.int_shape(inputs)</span><br><span class="line">                self.layer.build(input_shape)</span><br><span class="line">                self.layer.built = True</span><br><span class="line">                if self.layer._initial_weights is not None:</span><br><span class="line">                    self.layer.set_weights(self.layer._initial_weights)</span><br><span class="line">        for key in [&#x27;kernel&#x27;, &#x27;bias&#x27;, &#x27;embeddings&#x27;, &#x27;depthwise_kernel&#x27;, &#x27;pointwise_kernel&#x27;, &#x27;recurrent_kernel&#x27;, &#x27;gamma&#x27;, &#x27;beta&#x27;]:</span><br><span class="line">            if hasattr(self.layer, key):</span><br><span class="line">                weight = getattr(self.layer, key)</span><br><span class="line">                if self.is_ada:</span><br><span class="line">                    lamb = self.lamb # 自适应学习率优化器直接保持lamb比例</span><br><span class="line">                else:</span><br><span class="line">                    lamb = self.lamb**0.5 # SGD（包括动量加速），lamb要开平方</span><br><span class="line">                K.set_value(weight, K.eval(weight) / lamb) # 更改初始化</span><br><span class="line">                setattr(self.layer, key, weight * lamb) # 按比例替换</span><br><span class="line">        return self.layer(inputs)</span><br><span class="line"> </span><br><span class="line">x_in = Input(shape=(None,))</span><br><span class="line">x = x_in</span><br><span class="line"></span><br><span class="line"># 默认情况下是x = Embedding(100, 1000, weights=[word_vecs])(x)</span><br><span class="line"># 下面这一句表示：后面将会用自适应学习率优化器，并且Embedding层以总体的十分之一的学习率更新。</span><br><span class="line"># word_vecs是预训练好的词向量</span><br><span class="line">x = SetLearningRate(Embedding(100, 1000, weights=[word_vecs]), 0.1, True)(x)</span><br><span class="line"></span><br><span class="line"># 后面部分自己想象了～</span><br><span class="line">x = LSTM(100)(x)</span><br><span class="line"></span><br><span class="line">model = Model(x_in, x)</span><br><span class="line">model.compile(loss=&#x27;mse&#x27;, optimizer=&#x27;adam&#x27;) # 用自适应学习率优化器优化</span><br></pre></td></tr></table></figure>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://jishuin.proginn.com/p/763bfbd51f6b">https://jishuin.proginn.com/p/763bfbd51f6b</a></p>
+<p><a href="https://www.zhihu.com/question/338066667/answer/771252708">https://www.zhihu.com/question/338066667/answer/771252708</a></p>
+<p><a href="https://kexue.fm/archives/6418">https://kexue.fm/archives/6418</a></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>深度学习</category>
+        <category>基础</category>
+      </categories>
+      <tags>
+        <tag>warmup</tag>
+        <tag>decay</tag>
+        <tag>学习率</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>解析NLP竞赛中的提分点-对抗训练</title>
     <url>/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。</p>
@@ -1173,125 +1269,135 @@ min_{\theta} E(Z,y) - D(max_{||r|| \le\epsilon} L(f_{\theta}(X+r_t),y))</script>
       </tags>
   </entry>
   <entry>
-    <title>神经网络调参-warmup and decay</title>
-    <url>/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t=\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：</p>
-<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg" alt=""><br><span id="more"></span></p>
-<h1 id="warmup-and-decay"><a href="#warmup-and-decay" class="headerlink" title="warmup and decay"></a>warmup and decay</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Warmup and Decay是模型训练过程中，一种学习率（learning rate）的调整策略。</p>
-<p>Warmup是在ResNet论文中提到的一种学习率预热的方法，它在训练开始的时候先选择使用一个较小的学习率，训练了一些epoches或者steps(比如4个epoches,10000steps),再修改为预先设置的学习来进行训练。</p>
-<p>同理，Decay是学习率衰减方法，它指定在训练到一定epoches或者steps后，按照线性或者余弦函数等方式，将学习率降低至指定值。一般，使用Warmup and Decay，学习率会遵循从小到大，再减小的规律。</p>
-<h2 id="为什么要warmup"><a href="#为什么要warmup" class="headerlink" title="为什么要warmup"></a>为什么要warmup</h2><p>这里引用知乎：<a href="https://www.zhihu.com/question/338066667/answer/771252708的讨论：">https://www.zhihu.com/question/338066667/answer/771252708的讨论：</a><br><strong>SGD训练中常见的方式是初始较大的学习率，然后衰减为小的学习率，而warmup是先以较小的学习率上升到初始学习率，然后再衰减到小的学习率上，那么为什么warmup有效。</strong></p>
-<h3 id="直观上解释"><a href="#直观上解释" class="headerlink" title="直观上解释"></a>直观上解释</h3><p>深层网络随机初始化差异较大，如果一开始以较大的学习率，初始学习带来的偏差在后续学习过程中难以纠正。</p>
-<p>训练刚开始时梯度更新较大，若学习率设置较大则更新的幅度较大，该类型与传统学习率先大后小方式不同的原因在于起初浅层网络幅度大的更新并不会导致方向错误。</p>
-<h3 id="理论上解释"><a href="#理论上解释" class="headerlink" title="理论上解释"></a>理论上解释</h3><p><strong>warmup带来的优点包含：</strong></p>
+    <title>不要停止预训练实战(二)-一日看尽MLM</title>
+    <url>/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://picx.zhimg.com/v2-79c0d08709031f923a7fb3305ae8ff59_1440w.jpg?source=172ae18b" alt=""></p>
+<p>本文在上文<a href="https://jmxgodlz.xyz/2022/03/20/2022-03-20-预训练实战/#more">不要停止预训练实战-Roberta与Albert</a>的基础上，进一步完成以下内容：</p>
 <ul>
-<li>缓解模型在初期对mini-batch过拟合的现象</li>
-<li>保持模型深层的稳定性</li>
+<li>keras预训练</li>
+<li>N-gram掩码任务 </li>
+<li>Span掩码任务 </li>
 </ul>
-<p><strong>给出三个论文中的结论：</strong></p>
-<ol>
-<li>当batch大小增加时，学习率也可以成倍增加</li>
-<li>限制大batch训练的是高学习率带来的训练不稳定性</li>
-<li>warmup主要限制深层的权重变化，并且冻结深层权重的变化可以取得相似的效果</li>
-</ol>
-<h4 id="batch与学习率大小的关系"><a href="#batch与学习率大小的关系" class="headerlink" title="batch与学习率大小的关系"></a>batch与学习率大小的关系</h4><p>假设现在模型已经train到第t步，权重为$w_t$，我们有k个mini-batch，每个mini-batch大小为n，记为$\mathcal{B}_{1:k}$ 。下面我们来看，以学习率 $\eta$训k次 $\mathcal{B}_{1:k}$ 和以学习率 $\hat{\eta}$ 一次训练$\mathcal{B}$时学习率的关系。</p>
-<p>假设我们用的是SGD，那么训k次后我们可以得到：</p>
-<script type="math/tex; mode=display">
-w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t+j}\right)</script><p>如果我们一次训练就可以得到：</p>
-<script type="math/tex; mode=display">
-\hat{w}_{t+1}=w_{t}-\hat{\eta} \frac{1}{k n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t}\right)</script><p>其中$w_{t+k}$与$\hat{w}_{t+1}$代表按上述方式训练k次与1次，完成参数更新后的参数。显然，这两个是不一样的。但如果我们假设$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$，那么令$\hat{\eta}=k\eta $就可以保证 <script type="math/tex">\hat{w}_{t+1} \approx w_{t+k}</script> 。那么，在什么时候 $\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$ 可能不成立呢？[1]告诉我们有两种情况：</p>
-<ul>
-<li>在训练的开始阶段，模型权重迅速改变</li>
-<li>Mini-batch 大小较小，样本方差较大</li>
-</ul>
-<p>第一种情况，模型初始参数分布取决于初始化方式，初始数据对于模型都是初次修正，所以梯度更新较大，若一开始以较大的学习率学习，易对数据造成过拟合，需要经过之后更多轮的训练进行修正。</p>
-<p>第二种情况，在训练的过程中，如果有mini-batch内的数据分布方差特别大，这会导致模型学习剧烈波动，使其学得的权重很不稳定，这在训练初期最为明显，最后期较为缓解。</p>
-<p>针对上述两种情况，并不能简单的成倍增长学习率$\hat{\eta}=k\eta$,因为此时不符合$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$假设。此时要么更改学习率增长方式[warmup]，要么解决这两种情况[数据预处理以减小样本方差]。</p>
-<h4 id="warmup与模型学习的稳定性"><a href="#warmup与模型学习的稳定性" class="headerlink" title="warmup与模型学习的稳定性"></a>warmup与模型学习的稳定性</h4><p>该部分通过一些论文实验结果，推断有了warmup之后模型能够学习的更稳定。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-5d6ffb22059ddf3da93bac83c02482a6_1440w.webp" alt=""></p>
-<p><strong>上图表示有了warmup之后，模型能够学习的更加稳定。</strong></p>
-<p><img src="https://pic3.zhimg.com/80/v2-9440892a277639a91c2468e66ad65072_1440w.webp" alt=""></p>
-<p><strong>上图b，c表示有了warmup之后，模型最后几层的相似性增加，避免模型不稳定的改变。</strong></p>
-<h1 id="学习率衰减策略"><a href="#学习率衰减策略" class="headerlink" title="学习率衰减策略"></a>学习率衰减策略</h1><h2 id="可视化代码"><a href="#可视化代码" class="headerlink" title="可视化代码"></a>可视化代码</h2><p><strong>下列各种学习率衰减策略均采用warmup，为了图片反应的更加直观：起始学习率设置为1，warmup 步数为20，总步数为100。通常warmup步数可以设置为总步数的10%，参照BERT的经验策略。</strong></p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"># author： JMXGODLZZ</span><br><span class="line"># datetime： 2022/1/23 下午7:10 </span><br><span class="line"># ide： PyCharm</span><br><span class="line">import keras</span><br><span class="line">import tensorflow as tf</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">from learningrateSchedules import get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_cosine_with_hard_restarts_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_polynomial_decay_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_step_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_exp_schedule_with_warmup</span><br><span class="line">init_lr = 1</span><br><span class="line">warmupsteps = 20</span><br><span class="line">totalsteps = 100</span><br><span class="line"></span><br><span class="line">lrs = get_linear_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_warm_lrs = get_cosine_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_hard_warm_lrs = get_cosine_with_hard_restarts_schedule_with_warmup(1, warmupsteps, totalsteps, 2)</span><br><span class="line">poly_warm_lrs = get_polynomial_decay_schedule_with_warmup(1, warmupsteps, totalsteps, 0, 5)</span><br><span class="line">step_warm_lrs = get_step_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">exp_warm_lrs = get_exp_schedule_with_warmup(1, warmupsteps, totalsteps, 0.9)</span><br><span class="line">x = list(range(totalsteps))</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, lrs, label=&#x27;linear_warmup&#x27;, color=&#x27;k&#x27;)</span><br><span class="line">plt.plot(x, cos_warm_lrs, label=&#x27;cosine_warmup&#x27;, color=&#x27;b&#x27;)</span><br><span class="line">plt.plot(x, cos_hard_warm_lrs, label=&#x27;cosine_cy2_warmup&#x27;, color=&#x27;g&#x27;)</span><br><span class="line">plt.plot(x, poly_warm_lrs, label=&#x27;polynomial_warmup_pw5&#x27;, color=&#x27;r&#x27;)</span><br><span class="line">plt.plot(x, step_warm_lrs, label=&#x27;step_warmup&#x27;, color=&#x27;purple&#x27;)</span><br><span class="line">plt.plot(x, exp_warm_lrs, label=&#x27;exp_warmup&#x27;, color=&#x27;orange&#x27;)</span><br><span class="line">plt.xlabel(&#x27;steps&#x27;)</span><br><span class="line">plt.ylabel(&#x27;learning rate&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.webp" alt=""></p>
-<h2 id="指数衰减学习率"><a href="#指数衰减学习率" class="headerlink" title="指数衰减学习率"></a>指数衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_exp_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, gamma, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps)</span><br><span class="line">        return pow(gamma, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
-<h2 id="余弦衰减学习率"><a href="#余弦衰减学习率" class="headerlink" title="余弦衰减学习率"></a>余弦衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_cosine_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: float = 0.5, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, after a warmup period during which it increases linearly between 0 and the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`float`, `optional`, defaults to 0.5):</span><br><span class="line">            The number of waves in the cosine schedule (the defaults is to just decrease from the max value to 0</span><br><span class="line">            following a half-cosine).</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * float(num_cycles) * 2.0 * progress)))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="线性衰减学习率"><a href="#线性衰减学习率" class="headerlink" title="线性衰减学习率"></a>线性衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_linear_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        return max(</span><br><span class="line">            0.0, float(num_training_steps - current_step) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        )</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
-<h2 id="阶梯衰减学习率"><a href="#阶梯衰减学习率" class="headerlink" title="阶梯衰减学习率"></a>阶梯衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_step_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps) // 20 + 1</span><br><span class="line">        return pow(0.5, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
-<h2 id="多项式衰减学习率"><a href="#多项式衰减学习率" class="headerlink" title="多项式衰减学习率"></a>多项式衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps, num_training_steps, lr_end=1e-7, power=1.0, last_epoch=-1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases as a polynomial decay from the initial lr set in the</span><br><span class="line">    optimizer to end lr defined by `lr_end`, after a warmup period during which it increases linearly from 0 to the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        lr_end (:obj:`float`, `optional`, defaults to 1e-7):</span><br><span class="line">            The end LR.</span><br><span class="line">        power (:obj:`float`, `optional`, defaults to 1.0):</span><br><span class="line">            Power factor.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Note: `power` defaults to 1.0 as in the fairseq implementation, which in turn is based on the original BERT</span><br><span class="line">    implementation at</span><br><span class="line">    https://github.com/google-research/bert/blob/f39e881b169b9d53bea03d2d341b31707a6c052b/optimization.py#L37</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    lr_init = learning_rate</span><br><span class="line">    if not (lr_init &gt; lr_end):</span><br><span class="line">        raise ValueError(f&quot;lr_end (&#123;lr_end&#125;) must be be smaller than initial lr (&#123;lr_init&#125;)&quot;)</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        elif current_step &gt; num_training_steps:</span><br><span class="line">            return lr_end / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line">        else:</span><br><span class="line">            lr_range = lr_init - lr_end</span><br><span class="line">            decay_steps = num_training_steps - num_warmup_steps</span><br><span class="line">            pct_remaining = 1 - (current_step - num_warmup_steps) / decay_steps</span><br><span class="line">            decay = lr_range * pct_remaining ** power + lr_end</span><br><span class="line">            return decay / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
-<h2 id="余弦循环衰减学习率"><a href="#余弦循环衰减学习率" class="headerlink" title="余弦循环衰减学习率"></a>余弦循环衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: int = 1, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, with several hard restarts, after a warmup period during which it increases</span><br><span class="line">    linearly between 0 and the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`int`, `optional`, defaults to 1):</span><br><span class="line">            The number of hard restarts to use.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        if progress &gt;= 1.0:</span><br><span class="line">            return 0.0</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * ((float(num_cycles) * progress) % 1.0))))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
-<h1 id="学习率衰减实现"><a href="#学习率衰减实现" class="headerlink" title="学习率衰减实现"></a>学习率衰减实现</h1><h2 id="Pytorch学习率策略"><a href="#Pytorch学习率策略" class="headerlink" title="Pytorch学习率策略"></a>Pytorch学习率策略</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if args.scheduler == &quot;constant_schedule&quot;:</span><br><span class="line">    scheduler = get_constant_schedule(optimizer)</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;constant_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_constant_schedule_with_warmup(</span><br><span class="line">        optimizer, num_warmup_steps=args.warmup_steps</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;linear_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_linear_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_with_hard_restarts_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;polynomial_decay_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        lr_end=args.polynomial_decay_schedule_lr_end,</span><br><span class="line">        power=args.polynomial_decay_schedule_power,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">else:</span><br><span class="line">    raise ValueError(&quot;&#123;&#125; is not a valid scheduler.&quot;.format(args.scheduler))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="keras学习率策略"><a href="#keras学习率策略" class="headerlink" title="keras学习率策略"></a>keras学习率策略</h2><ul>
-<li>Keras提供了四种衰减策略分别是ExponentialDecay(指数衰减)、 PiecewiseConstantDecay(分段常数衰减) 、 PolynomialDecay(多项式衰减)和InverseTimeDecay(逆时间衰减)。只要在Optimizer中指定衰减策略，一行代码就能实现，在以下方法一中详细介绍。</li>
-<li>如果想要自定义学习率的衰减，有第二种方法，更加灵活，需要使用callbacks来实现动态、自定义学习率衰减策略，方法二中将详细介绍。</li>
-<li>如果两种方法同时使用，默认优先使用第二种，第一种方法将被忽略。</li>
-</ul>
-<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><h4 id="指数衰减"><a href="#指数衰减" class="headerlink" title="指数衰减"></a>指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lr_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(</span><br><span class="line">    initial_learning_rate=1e-2,</span><br><span class="line">    decay_steps=10000,</span><br><span class="line">    decay_rate=0.96)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
-<h4 id="分段衰减"><a href="#分段衰减" class="headerlink" title="分段衰减"></a>分段衰减</h4><p>[0~1000]的steps，学习率为1.0,[10001～9000]的steps，学习率为0.5，其他steps，学习率为0.1</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">step = tf.Variable(0, trainable=False)</span><br><span class="line">boundaries = [1000, 10000]</span><br><span class="line">values = [1.0, 0.5, 0.1]</span><br><span class="line">learning_rate_fn = tf.keras.optimizers.schedules.PiecewiseConstantDecay(boundaries, values)</span><br><span class="line">lr_scheduler = learning_rate_fn(step)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
-<h4 id="多项式衰减"><a href="#多项式衰减" class="headerlink" title="多项式衰减"></a>多项式衰减</h4><p>在10000步中从0.1衰减到0.001，使用开根式( power=0.5)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">start_lr = 0.1</span><br><span class="line">end_lr = 0.001</span><br><span class="line">decay_steps = 10000</span><br><span class="line">lr_scheduler = tf.keras.optimizers.schedules.PolynomialDecay(</span><br><span class="line">    start_lr,</span><br><span class="line">    decay_steps,</span><br><span class="line">    end_lr,</span><br><span class="line">    power=0.5)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
-<h4 id="逆时间衰减"><a href="#逆时间衰减" class="headerlink" title="逆时间衰减"></a>逆时间衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">initial_lr = 0.1</span><br><span class="line">decay_steps = 1.0</span><br><span class="line">decay_rate = 0.5</span><br><span class="line">lr_scheduler = keras.optimizers.schedules.InverseTimeDecay(</span><br><span class="line">  initial_lr, decay_steps, decay_rate)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
-<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><h4 id="自定义指数衰减"><a href="#自定义指数衰减" class="headerlink" title="自定义指数衰减"></a>自定义指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一步：自定义指数衰减策略</span><br><span class="line">def step_decay(epoch):</span><br><span class="line">    init_lr = 0.1</span><br><span class="line">    drop=0.5</span><br><span class="line">    epochs_drop=10</span><br><span class="line">    if epoch&lt;100:</span><br><span class="line">        return init_lr</span><br><span class="line">    else:</span><br><span class="line">        return init_lr*pow(drop,floor(1+epoch)/epochs_drop)</span><br><span class="line">        </span><br><span class="line"># ……</span><br><span class="line"># 第二步：用LearningRateScheduler封装学习率衰减策略</span><br><span class="line">lr_callback = LearningRateScheduler(step_decay)</span><br><span class="line"># 第三步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
-<h4 id="动态修改学习率"><a href="#动态修改学习率" class="headerlink" title="动态修改学习率"></a>动态修改学习率</h4><p>ReduceLROnPlateau(monitor=’val_acc’, mode=’max’,min_delta=0.1,factor=0.2,patience=5, min_lr=0.001)</p>
-<p>训练集连续patience个epochs的val_acc小于min_delta时，学习率将会乘以factor。mode可以选择max或者min，根据monitor的选择而灵活设定。min_lr是学习率的最低值。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 第一步：ReduceLROnPlateau定义学习动态变化策略</span><br><span class="line">reduce_lr_callback = ReduceLROnPlateau(monitor=&#x27;val_acc&#x27;, factor=0.2,patience=5, min_lr=0.001)</span><br><span class="line"># 第二步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,reduce_lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
-<h3 id="Keras学习率回显代码"><a href="#Keras学习率回显代码" class="headerlink" title="Keras学习率回显代码"></a>Keras学习率回显代码</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def get_lr_metric(optimizer):</span><br><span class="line">    def lr(y_true, y_pred):</span><br><span class="line">        return optimizer.lr</span><br><span class="line">    return lr</span><br><span class="line"> </span><br><span class="line">x = Input((50,))</span><br><span class="line">out = Dense(1, activation=&#x27;sigmoid&#x27;)(x)</span><br><span class="line">model = Model(x, out)</span><br><span class="line"> </span><br><span class="line">optimizer = Adam(lr=0.001)</span><br><span class="line">lr_metric = get_lr_metric(optimizer)</span><br><span class="line">model.compile(loss=&#x27;binary_crossentropy&#x27;, optimizer=optimizer, metrics=[&#x27;acc&#x27;, lr_metric])</span><br><span class="line"> </span><br><span class="line"># reducing the learning rate by half every 2 epochs</span><br><span class="line">cbks = [LerningRateScheduler(lambda epoch: 0.001 * 0.5 ** (epoch // 2)),</span><br><span class="line">        TensorBoard(write_graph=False)]</span><br><span class="line">X = np.random.rand(1000, 50)</span><br><span class="line">Y = np.random.randint(2, size=1000)</span><br><span class="line">model.fit(X, Y, epochs=10, callbacks=cbks)</span><br></pre></td></tr></table></figure>
-<h1 id="分层学习率设置"><a href="#分层学习率设置" class="headerlink" title="分层学习率设置"></a>分层学习率设置</h1><p>有时候我们需要为模型中不同层设置不同学习率大小，比如微调预训练模型时，预训练层数设置较小的学习率进行学习，而其他层以正常大小进行学习。这里给出苏神给出的keras实现，其通过参数变换实现调整学习率的目的：</p>
-<p>梯度下降公式如下：</p>
-<script type="math/tex; mode=display">
-\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-1}</script><p>考虑变换$\boldsymbol{\theta}=\lambda \boldsymbol{\phi}$,其中λ是一个固定的标量，<strong>ϕ</strong>也是参数。现在来优化<strong>ϕ</strong>，相应的更新公式为：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}\boldsymbol{\phi}_{n+1}=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\lambda\boldsymbol{\phi}_{n})}{\partial \boldsymbol{\phi}_n}\\ 
-=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\frac{\partial \boldsymbol{\theta}_{n}}{\partial \boldsymbol{\phi}_n}\\ 
-=&\boldsymbol{\phi}_{n}-\lambda\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\end{aligned}</script><p>然后通过链式求导法则，再上述等式两边同时乘以λ：</p>
-<script type="math/tex; mode=display">
-\lambda\boldsymbol{\phi}_{n+1}=\lambda\boldsymbol{\phi}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\quad\Rightarrow\quad\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-2}</script><blockquote>
-<p>在SGD优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了$\lambda^2\alpha$。</p>
-<p>不过，在自适应学习率优化器（比如RMSprop、Adam等），情况有点不一样，因为自适应学习率使用梯度（作为分母）来调整了学习率，抵消了一个λ</p>
-<p>在RMSprop、Adam等自适应学习率优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了λα。</p>
-</blockquote>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import keras.backend as K</span><br><span class="line"></span><br><span class="line">class SetLearningRate:</span><br><span class="line">    &quot;&quot;&quot;层的一个包装，用来设置当前层的学习率</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def __init__(self, layer, lamb, is_ada=False):</span><br><span class="line">        self.layer = layer</span><br><span class="line">        self.lamb = lamb # 学习率比例</span><br><span class="line">        self.is_ada = is_ada # 是否自适应学习率优化器</span><br><span class="line"></span><br><span class="line">    def __call__(self, inputs):</span><br><span class="line">        with K.name_scope(self.layer.name):</span><br><span class="line">            if not self.layer.built:</span><br><span class="line">                input_shape = K.int_shape(inputs)</span><br><span class="line">                self.layer.build(input_shape)</span><br><span class="line">                self.layer.built = True</span><br><span class="line">                if self.layer._initial_weights is not None:</span><br><span class="line">                    self.layer.set_weights(self.layer._initial_weights)</span><br><span class="line">        for key in [&#x27;kernel&#x27;, &#x27;bias&#x27;, &#x27;embeddings&#x27;, &#x27;depthwise_kernel&#x27;, &#x27;pointwise_kernel&#x27;, &#x27;recurrent_kernel&#x27;, &#x27;gamma&#x27;, &#x27;beta&#x27;]:</span><br><span class="line">            if hasattr(self.layer, key):</span><br><span class="line">                weight = getattr(self.layer, key)</span><br><span class="line">                if self.is_ada:</span><br><span class="line">                    lamb = self.lamb # 自适应学习率优化器直接保持lamb比例</span><br><span class="line">                else:</span><br><span class="line">                    lamb = self.lamb**0.5 # SGD（包括动量加速），lamb要开平方</span><br><span class="line">                K.set_value(weight, K.eval(weight) / lamb) # 更改初始化</span><br><span class="line">                setattr(self.layer, key, weight * lamb) # 按比例替换</span><br><span class="line">        return self.layer(inputs)</span><br><span class="line"> </span><br><span class="line">x_in = Input(shape=(None,))</span><br><span class="line">x = x_in</span><br><span class="line"></span><br><span class="line"># 默认情况下是x = Embedding(100, 1000, weights=[word_vecs])(x)</span><br><span class="line"># 下面这一句表示：后面将会用自适应学习率优化器，并且Embedding层以总体的十分之一的学习率更新。</span><br><span class="line"># word_vecs是预训练好的词向量</span><br><span class="line">x = SetLearningRate(Embedding(100, 1000, weights=[word_vecs]), 0.1, True)(x)</span><br><span class="line"></span><br><span class="line"># 后面部分自己想象了～</span><br><span class="line">x = LSTM(100)(x)</span><br><span class="line"></span><br><span class="line">model = Model(x_in, x)</span><br><span class="line">model.compile(loss=&#x27;mse&#x27;, optimizer=&#x27;adam&#x27;) # 用自适应学习率优化器优化</span><br></pre></td></tr></table></figure>
-<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a href="https://jishuin.proginn.com/p/763bfbd51f6b">https://jishuin.proginn.com/p/763bfbd51f6b</a></p>
-<p><a href="https://www.zhihu.com/question/338066667/answer/771252708">https://www.zhihu.com/question/338066667/answer/771252708</a></p>
-<p><a href="https://kexue.fm/archives/6418">https://kexue.fm/archives/6418</a></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>深度学习</category>
-        <category>基础</category>
-      </categories>
-      <tags>
-        <tag>warmup</tag>
-        <tag>decay</tag>
-        <tag>学习率</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>NLP技能树学习路线-（一）路线总览.md</title>
-    <url>/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
-<p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
-<p><img src="https://picx.zhimg.com/v2-c39bf0e8abf032430c470985e1aae7b1_1440w.jpg?source=172ae18b" alt=""></p>
 <span id="more"></span>
-<h1 id="概率统计"><a href="#概率统计" class="headerlink" title="概率统计"></a>概率统计</h1><p><img src="https://pic4.zhimg.com/80/v2-a20a27c1c86bbe6d940e95d4e636a6bf_1440w.jpg" alt=""></p>
-<p>概率统计是人工智能算法的基础，图中分为贝叶斯、信息理论、模型、采样、基础五部分。笔者知识体系在“基础、采样、贝叶斯部分”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="机器学习"><a href="#机器学习" class="headerlink" title="机器学习"></a>机器学习</h1><p><img src="https://pic3.zhimg.com/80/v2-76d9137fd2807eef14d1da51242719b2_1440w.webp" alt=""></p>
-<p>机器学习算法也是NLP的基石，含有许多基础概念，图中分为训练、降维、聚类、非概率、线性回归、逻辑回归、正则化七部分。笔者知识体系在“降维、聚类”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="NLP下的数据挖掘"><a href="#NLP下的数据挖掘" class="headerlink" title="NLP下的数据挖掘"></a>NLP下的数据挖掘</h1><p><img src="https://pic4.zhimg.com/80/v2-38e9b7bb97abc054eb3275ef1cf43c5b_1440w.webp" alt=""></p>
-<p>NLP下的数据挖掘包含常见NLP数据处理操作，图中分为基础流程、序列标注、词嵌入、NLP基本假设、图、文档六部分。笔者知识体系在“主题模型、NLP基本假设、图”存在缺漏，将在后面对该部分内容展开学习。</p>
-<h1 id="NLP"><a href="#NLP" class="headerlink" title="NLP"></a>NLP</h1><p><img src="https://pic4.zhimg.com/80/v2-8ca2aec0135b78a750a6fef2f2858683_1440w.webp" alt=""></p>
-<p>该部分正式介绍NLP的学习路线，分为基础学习、分布式特征、具体任务、语言模型四部分。笔者知识体系在一些具体模型存在缺漏，将在后面对该部分内容展开学习。</p>
-<p>若大家需要思维导图源文件可以私我，有兴趣一起学习也可以私我加好友～</p>
+<h1 id="掩码任务"><a href="#掩码任务" class="headerlink" title="掩码任务"></a>掩码任务</h1><p>BERT等预训练模型中掩码任务主要涉及下列要素：</p>
+<ul>
+<li>掩码比例</li>
+<li>替换策略</li>
+<li>掩码方式</li>
+</ul>
+<h2 id="掩码比例"><a href="#掩码比例" class="headerlink" title="掩码比例"></a>掩码比例</h2><p>常用掩码比例设置为15%，该比例经过许多研究，已证明该比例能够取得很好的效果。</p>
+<p>从理论上来说，笔者从网上找到的说法为：“当取15%时，恰好大概7个词mask一个，正好就是CBOW中，长度为7的滑动窗口的中心词，因此会有比较好的效果”</p>
+<p>而近日丹琦大佬等人的论文<a href="https://arxiv.org/abs/2202.08005">Should You Mask 15% in Masked Language Modeling?</a>表明掩码40%能够取得与15%差不多的效果。</p>
+<p>该论文表明<strong>“所谓的optimal masking rate并不是一个一成不变的神奇数字，而是一个随着模型大小、mask策略、训练recipe、下游任务变化的函数。”</strong></p>
+<h2 id="替换策略"><a href="#替换策略" class="headerlink" title="替换策略"></a>替换策略</h2><p>常用的替换策略如下：</p>
+<ul>
+<li>80%词语替换为[MASK]</li>
+<li>10%词语保持不变</li>
+<li>10%词语随机替换为其他词语</li>
+</ul>
+<p>这样做的目的在于强迫模型学习词语上下文的语义信息。任何一个词语都有可能被替换，不仅靠当前词语，还需要利用上下文的信息预测当前词语。</p>
+<p>但是[MASK]标签并未出现在下游任务中，因此<strong>存在预训练与微调的不一致问题。</strong></p>
+<p>MacBERT提出<strong>MLM as correction</strong>的方法，替换策略如下：</p>
+<ul>
+<li>80%词语替换为同义词</li>
+<li>10%词语保持不变</li>
+<li>10%词语随机替换为其他词语</li>
+</ul>
+<p>MacBERT论文中与下列替换策略进行对比，对比结果如图所示：</p>
+<ul>
+<li>MacBERT：80%替换为同义词，10%替换为随机词语，10%保持不变；</li>
+<li>Random Replace：90%替换为随机词语，10%保持不变；</li>
+<li>Partial Mask：同原生的BERT一样，80%替换为[MASK]，10%替换为随机词语，10%保持不变；</li>
+<li>ALL Mask：90%替换为[MASK]，10%保持不变。</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-11ceecc7dceba69da862e6bebac0f4c1_1440w.webp" alt="ss"></p>
+<p>图中横坐标代表训练步数，纵坐标代表EM值。第一幅图是CMRC数据集结果，第二幅图是DRCD数据集结果。</p>
+<h2 id="掩码方式"><a href="#掩码方式" class="headerlink" title="掩码方式"></a>掩码方式</h2><p>目前的掩码方式主要分为以下几种：</p>
+<ul>
+<li>单词掩码</li>
+<li>全词掩码</li>
+<li>实体掩码</li>
+<li>N-gram掩码</li>
+<li>Span掩码</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">中文</th>
+<th style="text-align:center">英文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">原句</td>
+<td style="text-align:center">使用语言模型来预测下一个词的概率。</td>
+<td style="text-align:center">we use a language model to predict the probability of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">分词</td>
+<td style="text-align:center">使用 语言 模型 来 预测 下 一个 词 的 概率 。</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">BERT Tokenizer</td>
+<td style="text-align:center">使 用 语 言 模 型 来 预 测 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>model</strong> to <strong>pre ##di ##ct</strong> the <strong>pro ##ba ##bility</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">单词掩码</td>
+<td style="text-align:center">使 用 语 言 <strong>[M]</strong> 型 来 <strong>[M]</strong> 测 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] ##di ##ct</strong> the <strong>pro [M] ##bility</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">全词掩码</td>
+<td style="text-align:center">使 用 语 言 <strong>[M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">实体掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">N-gram掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">Span掩码</td>
+<td style="text-align:center">使 用 <strong>[M] [M] [M] [M] [M] [M] [M]</strong> 下 一 个 词 的 概 率 。</td>
+<td style="text-align:center">we use a <strong>[M] [M] [M] [M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
+</tr>
+<tr>
+<td style="text-align:center">MAC掩码</td>
+<td style="text-align:center">使 用 语 法 建 模 来 预 见 下 一 个 词 的 几 率 。</td>
+<td style="text-align:center">we use a <strong>text system</strong> to <strong>ca ##lc ##ulate</strong> the <strong>po ##si ##bility</strong> of the next word.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="全词掩码"><a href="#全词掩码" class="headerlink" title="全词掩码"></a>全词掩码</h3><p>以分词结果为最小粒度，完成掩码任务。</p>
+<h3 id="N-gram掩码"><a href="#N-gram掩码" class="headerlink" title="N-gram掩码"></a>N-gram掩码</h3><p>同样以分词结果为最小粒度，以n-gram取词语进行掩码。</p>
+<p>例如MacBERT采用基于分词的n-gram masking，1-gram~4gram Masking的概率分别是40%、30%、20%、10%。</p>
+<h3 id="实体掩码"><a href="#实体掩码" class="headerlink" title="实体掩码"></a>实体掩码</h3><p>代表模型为：<strong>ERNIE</strong></p>
+<p>引入命名实体信息，将实体作为最小粒度，进行掩码。</p>
+<h3 id="Span掩码"><a href="#Span掩码" class="headerlink" title="Span掩码"></a>Span掩码</h3><p>代表模型为：<strong>SpanBERT</strong></p>
+<p>以上做法让人认为，或许必须得引入类似词边界信息才能帮助训练。但前不久的 MASS 模型，却表明可能并不需要，随机遮盖可能效果也很好，于是就有SpanBERT的 idea：</p>
+<p>根据<strong>几何分布</strong>，先随机选择一段（span）的<strong>长度</strong>，之后再根据均匀分布随机选择这一段的<strong>起始位置</strong>，最后按照长度遮盖。文中使用几何分布取 <em>p=0.2</em>，最大长度只能是 10，利用此方案获得平均采样长度分布。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>相关代码实现可见：</p>
+<p><a href="https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining">https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining</a></p>
+<p>Span掩码核心代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def __init__(</span><br><span class="line">    self, tokenizer, word_segment, lower=1, upper=10, p=0.3, mask_rate=0.15, sequence_length=512</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;参数说明：</span><br><span class="line">        tokenizer必须是bert4keras自带的tokenizer类；</span><br><span class="line">        word_segment是任意分词函数。</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    super(TrainingDatasetRoBERTa, self).__init__(tokenizer, sequence_length)</span><br><span class="line">    self.word_segment = word_segment</span><br><span class="line">    self.mask_rate = mask_rate</span><br><span class="line"></span><br><span class="line">    self.lower = lower</span><br><span class="line">    self.upper = upper</span><br><span class="line">    self.p = p</span><br><span class="line"></span><br><span class="line">    self.lens = list(range(self.lower, self.upper + 1))</span><br><span class="line">    self.len_distrib = [self.p * (1-self.p)**(i - self.lower) for i in range(self.lower, self.upper + 1)] if self.p &gt;= 0 else None</span><br><span class="line">    self.len_distrib = [x / (sum(self.len_distrib)) for x in self.len_distrib]</span><br><span class="line">    print(self.len_distrib, self.lens)</span><br><span class="line"></span><br><span class="line">def sentence_process(self, text):</span><br><span class="line">    &quot;&quot;&quot;单个文本的处理函数</span><br><span class="line">    流程：分词，然后转id，按照mask_rate构建全词mask的序列</span><br><span class="line">          来指定哪些token是否要被mask</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    word_tokens = self.tokenizer.tokenize(text=text)[1:-1]</span><br><span class="line">    word_token_ids = self.tokenizer.tokens_to_ids(word_tokens)</span><br><span class="line"></span><br><span class="line">    sent_length = len(word_tokens)</span><br><span class="line">    mask_num = math.ceil(sent_length * self.mask_rate)</span><br><span class="line">    mask = set()</span><br><span class="line">    spans = []</span><br><span class="line"></span><br><span class="line">    while len(mask) &lt; mask_num:</span><br><span class="line">        span_len = np.random.choice(self.lens, p=self.len_distrib) # 随机选择span长度</span><br><span class="line"></span><br><span class="line">        anchor = np.random.choice(sent_length)</span><br><span class="line">        if anchor in mask: # 随机生成起点</span><br><span class="line">            continue</span><br><span class="line">        left1 = anchor</span><br><span class="line">        spans.append([left1, left1])</span><br><span class="line">        right1 = min(anchor + span_len, sent_length)</span><br><span class="line">        for i in range(left1, right1):</span><br><span class="line">            if len(mask) &gt;= mask_num:</span><br><span class="line">                break</span><br><span class="line">            mask.add(i)</span><br><span class="line">            spans[-1][-1] = i</span><br><span class="line"></span><br><span class="line">    spans = merge_intervals(spans)</span><br><span class="line">    word_mask_ids = [0] * len(word_tokens)</span><br><span class="line">    for (st, ed) in spans:</span><br><span class="line">        for idx in range(st, ed + 1):</span><br><span class="line">            wid = word_token_ids[idx]</span><br><span class="line">            word_mask_ids[idx] = self.token_process(wid) + 1</span><br><span class="line"></span><br><span class="line">    return [word_token_ids, word_mask_ids]</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>学习</category>
         <category>NLP</category>
-        <category>学习路线</category>
+        <category>预训练</category>
       </categories>
       <tags>
-        <tag>NLP</tag>
+        <tag>预训练</tag>
       </tags>
   </entry>
   <entry>
@@ -1509,6 +1615,32 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
       </tags>
   </entry>
   <entry>
+    <title>NLP技能树学习路线-（一）路线总览.md</title>
+    <url>/2022/06/25/2022-06-25-NLP%E6%8A%80%E8%83%BD%E6%A0%91%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%EF%BC%88%E4%B8%80%EF%BC%89%E8%B7%AF%E7%BA%BF%E6%80%BB%E8%A7%88/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>偶然发现一位韩国小哥整理了NLP的学习路线：<a href="https://github.com/graykode/nlp-roadmap">nlp-roadmap</a>，其中知识点覆盖很全面。由于里面内容都是英文的，笔者重新用xmind绘制学习路线图，并结合自己的理解，将一些名词翻译为中文名词。</p>
+<p>笔者打算根据该学习路线，对自己的知识体系进行查漏补缺，并在该系列文章记录自己学习过程。本部分内容旨在贴出各部分学习路线图，总览待学习内容。</p>
+<p><img src="https://picx.zhimg.com/v2-c39bf0e8abf032430c470985e1aae7b1_1440w.jpg?source=172ae18b" alt=""></p>
+<span id="more"></span>
+<h1 id="概率统计"><a href="#概率统计" class="headerlink" title="概率统计"></a>概率统计</h1><p><img src="https://pic4.zhimg.com/80/v2-a20a27c1c86bbe6d940e95d4e636a6bf_1440w.jpg" alt=""></p>
+<p>概率统计是人工智能算法的基础，图中分为贝叶斯、信息理论、模型、采样、基础五部分。笔者知识体系在“基础、采样、贝叶斯部分”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="机器学习"><a href="#机器学习" class="headerlink" title="机器学习"></a>机器学习</h1><p><img src="https://pic3.zhimg.com/80/v2-76d9137fd2807eef14d1da51242719b2_1440w.webp" alt=""></p>
+<p>机器学习算法也是NLP的基石，含有许多基础概念，图中分为训练、降维、聚类、非概率、线性回归、逻辑回归、正则化七部分。笔者知识体系在“降维、聚类”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="NLP下的数据挖掘"><a href="#NLP下的数据挖掘" class="headerlink" title="NLP下的数据挖掘"></a>NLP下的数据挖掘</h1><p><img src="https://pic4.zhimg.com/80/v2-38e9b7bb97abc054eb3275ef1cf43c5b_1440w.webp" alt=""></p>
+<p>NLP下的数据挖掘包含常见NLP数据处理操作，图中分为基础流程、序列标注、词嵌入、NLP基本假设、图、文档六部分。笔者知识体系在“主题模型、NLP基本假设、图”存在缺漏，将在后面对该部分内容展开学习。</p>
+<h1 id="NLP"><a href="#NLP" class="headerlink" title="NLP"></a>NLP</h1><p><img src="https://pic4.zhimg.com/80/v2-8ca2aec0135b78a750a6fef2f2858683_1440w.webp" alt=""></p>
+<p>该部分正式介绍NLP的学习路线，分为基础学习、分布式特征、具体任务、语言模型四部分。笔者知识体系在一些具体模型存在缺漏，将在后面对该部分内容展开学习。</p>
+<p>若大家需要思维导图源文件可以私我，有兴趣一起学习也可以私我加好友～</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>学习路线</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>真香～BERT在MAC Pytorch的使用.md</title>
     <url>/2022/07/16/2022-07-16-%E7%9C%9F%E9%A6%99%EF%BD%9EBERT%E5%9C%A8MAC%20Pytorch%E7%9A%84%E4%BD%BF%E7%94%A8/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>终于，Pytorch也支持MAC的硬件加速，两个字评价一下感受：真香～</p>
@@ -1556,138 +1688,6 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
       <tags>
         <tag>Pytorch</tag>
         <tag>GPU</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>不要停止预训练实战(二)-一日看尽MLM</title>
-    <url>/2022/05/30/2022-05-30-%E4%B8%8D%E8%A6%81%E5%81%9C%E6%AD%A2%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98(%E4%BA%8C)-%E4%B8%80%E6%97%A5%E7%9C%8B%E5%B0%BDMLM/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://picx.zhimg.com/v2-79c0d08709031f923a7fb3305ae8ff59_1440w.jpg?source=172ae18b" alt=""></p>
-<p>本文在上文<a href="https://jmxgodlz.xyz/2022/03/20/2022-03-20-预训练实战/#more">不要停止预训练实战-Roberta与Albert</a>的基础上，进一步完成以下内容：</p>
-<ul>
-<li>keras预训练</li>
-<li>N-gram掩码任务 </li>
-<li>Span掩码任务 </li>
-</ul>
-<span id="more"></span>
-<h1 id="掩码任务"><a href="#掩码任务" class="headerlink" title="掩码任务"></a>掩码任务</h1><p>BERT等预训练模型中掩码任务主要涉及下列要素：</p>
-<ul>
-<li>掩码比例</li>
-<li>替换策略</li>
-<li>掩码方式</li>
-</ul>
-<h2 id="掩码比例"><a href="#掩码比例" class="headerlink" title="掩码比例"></a>掩码比例</h2><p>常用掩码比例设置为15%，该比例经过许多研究，已证明该比例能够取得很好的效果。</p>
-<p>从理论上来说，笔者从网上找到的说法为：“当取15%时，恰好大概7个词mask一个，正好就是CBOW中，长度为7的滑动窗口的中心词，因此会有比较好的效果”</p>
-<p>而近日丹琦大佬等人的论文<a href="https://arxiv.org/abs/2202.08005">Should You Mask 15% in Masked Language Modeling?</a>表明掩码40%能够取得与15%差不多的效果。</p>
-<p>该论文表明<strong>“所谓的optimal masking rate并不是一个一成不变的神奇数字，而是一个随着模型大小、mask策略、训练recipe、下游任务变化的函数。”</strong></p>
-<h2 id="替换策略"><a href="#替换策略" class="headerlink" title="替换策略"></a>替换策略</h2><p>常用的替换策略如下：</p>
-<ul>
-<li>80%词语替换为[MASK]</li>
-<li>10%词语保持不变</li>
-<li>10%词语随机替换为其他词语</li>
-</ul>
-<p>这样做的目的在于强迫模型学习词语上下文的语义信息。任何一个词语都有可能被替换，不仅靠当前词语，还需要利用上下文的信息预测当前词语。</p>
-<p>但是[MASK]标签并未出现在下游任务中，因此<strong>存在预训练与微调的不一致问题。</strong></p>
-<p>MacBERT提出<strong>MLM as correction</strong>的方法，替换策略如下：</p>
-<ul>
-<li>80%词语替换为同义词</li>
-<li>10%词语保持不变</li>
-<li>10%词语随机替换为其他词语</li>
-</ul>
-<p>MacBERT论文中与下列替换策略进行对比，对比结果如图所示：</p>
-<ul>
-<li>MacBERT：80%替换为同义词，10%替换为随机词语，10%保持不变；</li>
-<li>Random Replace：90%替换为随机词语，10%保持不变；</li>
-<li>Partial Mask：同原生的BERT一样，80%替换为[MASK]，10%替换为随机词语，10%保持不变；</li>
-<li>ALL Mask：90%替换为[MASK]，10%保持不变。</li>
-</ul>
-<p><img src="https://pic2.zhimg.com/80/v2-11ceecc7dceba69da862e6bebac0f4c1_1440w.webp" alt="ss"></p>
-<p>图中横坐标代表训练步数，纵坐标代表EM值。第一幅图是CMRC数据集结果，第二幅图是DRCD数据集结果。</p>
-<h2 id="掩码方式"><a href="#掩码方式" class="headerlink" title="掩码方式"></a>掩码方式</h2><p>目前的掩码方式主要分为以下几种：</p>
-<ul>
-<li>单词掩码</li>
-<li>全词掩码</li>
-<li>实体掩码</li>
-<li>N-gram掩码</li>
-<li>Span掩码</li>
-</ul>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">中文</th>
-<th style="text-align:center">英文</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">原句</td>
-<td style="text-align:center">使用语言模型来预测下一个词的概率。</td>
-<td style="text-align:center">we use a language model to predict the probability of the next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">分词</td>
-<td style="text-align:center">使用 语言 模型 来 预测 下 一个 词 的 概率 。</td>
-<td style="text-align:center">-</td>
-</tr>
-<tr>
-<td style="text-align:center">BERT Tokenizer</td>
-<td style="text-align:center">使 用 语 言 模 型 来 预 测 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a language <strong>model</strong> to <strong>pre ##di ##ct</strong> the <strong>pro ##ba ##bility</strong> of the next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">单词掩码</td>
-<td style="text-align:center">使 用 语 言 <strong>[M]</strong> 型 来 <strong>[M]</strong> 测 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] ##di ##ct</strong> the <strong>pro [M] ##bility</strong> of the next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">全词掩码</td>
-<td style="text-align:center">使 用 语 言 <strong>[M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a language <strong>[M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">实体掩码</td>
-<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M]</strong> of the next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">N-gram掩码</td>
-<td style="text-align:center">使 用 <strong>[M] [M] [M] [M]</strong> 来 <strong>[M] [M]</strong> 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a <strong>[M] [M]</strong> to <strong>[M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">Span掩码</td>
-<td style="text-align:center">使 用 <strong>[M] [M] [M] [M] [M] [M] [M]</strong> 下 一 个 词 的 概 率 。</td>
-<td style="text-align:center">we use a <strong>[M] [M] [M] [M] [M] [M]</strong> the <strong>[M] [M] [M] [M] [M]</strong> next word.</td>
-</tr>
-<tr>
-<td style="text-align:center">MAC掩码</td>
-<td style="text-align:center">使 用 语 法 建 模 来 预 见 下 一 个 词 的 几 率 。</td>
-<td style="text-align:center">we use a <strong>text system</strong> to <strong>ca ##lc ##ulate</strong> the <strong>po ##si ##bility</strong> of the next word.</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h3 id="全词掩码"><a href="#全词掩码" class="headerlink" title="全词掩码"></a>全词掩码</h3><p>以分词结果为最小粒度，完成掩码任务。</p>
-<h3 id="N-gram掩码"><a href="#N-gram掩码" class="headerlink" title="N-gram掩码"></a>N-gram掩码</h3><p>同样以分词结果为最小粒度，以n-gram取词语进行掩码。</p>
-<p>例如MacBERT采用基于分词的n-gram masking，1-gram~4gram Masking的概率分别是40%、30%、20%、10%。</p>
-<h3 id="实体掩码"><a href="#实体掩码" class="headerlink" title="实体掩码"></a>实体掩码</h3><p>代表模型为：<strong>ERNIE</strong></p>
-<p>引入命名实体信息，将实体作为最小粒度，进行掩码。</p>
-<h3 id="Span掩码"><a href="#Span掩码" class="headerlink" title="Span掩码"></a>Span掩码</h3><p>代表模型为：<strong>SpanBERT</strong></p>
-<p>以上做法让人认为，或许必须得引入类似词边界信息才能帮助训练。但前不久的 MASS 模型，却表明可能并不需要，随机遮盖可能效果也很好，于是就有SpanBERT的 idea：</p>
-<p>根据<strong>几何分布</strong>，先随机选择一段（span）的<strong>长度</strong>，之后再根据均匀分布随机选择这一段的<strong>起始位置</strong>，最后按照长度遮盖。文中使用几何分布取 <em>p=0.2</em>，最大长度只能是 10，利用此方案获得平均采样长度分布。</p>
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>相关代码实现可见：</p>
-<p><a href="https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining">https://github.com/447428054/Pretrain/tree/master/KerasExample/pretraining</a></p>
-<p>Span掩码核心代码如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def __init__(</span><br><span class="line">    self, tokenizer, word_segment, lower=1, upper=10, p=0.3, mask_rate=0.15, sequence_length=512</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;参数说明：</span><br><span class="line">        tokenizer必须是bert4keras自带的tokenizer类；</span><br><span class="line">        word_segment是任意分词函数。</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    super(TrainingDatasetRoBERTa, self).__init__(tokenizer, sequence_length)</span><br><span class="line">    self.word_segment = word_segment</span><br><span class="line">    self.mask_rate = mask_rate</span><br><span class="line"></span><br><span class="line">    self.lower = lower</span><br><span class="line">    self.upper = upper</span><br><span class="line">    self.p = p</span><br><span class="line"></span><br><span class="line">    self.lens = list(range(self.lower, self.upper + 1))</span><br><span class="line">    self.len_distrib = [self.p * (1-self.p)**(i - self.lower) for i in range(self.lower, self.upper + 1)] if self.p &gt;= 0 else None</span><br><span class="line">    self.len_distrib = [x / (sum(self.len_distrib)) for x in self.len_distrib]</span><br><span class="line">    print(self.len_distrib, self.lens)</span><br><span class="line"></span><br><span class="line">def sentence_process(self, text):</span><br><span class="line">    &quot;&quot;&quot;单个文本的处理函数</span><br><span class="line">    流程：分词，然后转id，按照mask_rate构建全词mask的序列</span><br><span class="line">          来指定哪些token是否要被mask</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    word_tokens = self.tokenizer.tokenize(text=text)[1:-1]</span><br><span class="line">    word_token_ids = self.tokenizer.tokens_to_ids(word_tokens)</span><br><span class="line"></span><br><span class="line">    sent_length = len(word_tokens)</span><br><span class="line">    mask_num = math.ceil(sent_length * self.mask_rate)</span><br><span class="line">    mask = set()</span><br><span class="line">    spans = []</span><br><span class="line"></span><br><span class="line">    while len(mask) &lt; mask_num:</span><br><span class="line">        span_len = np.random.choice(self.lens, p=self.len_distrib) # 随机选择span长度</span><br><span class="line"></span><br><span class="line">        anchor = np.random.choice(sent_length)</span><br><span class="line">        if anchor in mask: # 随机生成起点</span><br><span class="line">            continue</span><br><span class="line">        left1 = anchor</span><br><span class="line">        spans.append([left1, left1])</span><br><span class="line">        right1 = min(anchor + span_len, sent_length)</span><br><span class="line">        for i in range(left1, right1):</span><br><span class="line">            if len(mask) &gt;= mask_num:</span><br><span class="line">                break</span><br><span class="line">            mask.add(i)</span><br><span class="line">            spans[-1][-1] = i</span><br><span class="line"></span><br><span class="line">    spans = merge_intervals(spans)</span><br><span class="line">    word_mask_ids = [0] * len(word_tokens)</span><br><span class="line">    for (st, ed) in spans:</span><br><span class="line">        for idx in range(st, ed + 1):</span><br><span class="line">            wid = word_token_ids[idx]</span><br><span class="line">            word_mask_ids[idx] = self.token_process(wid) + 1</span><br><span class="line"></span><br><span class="line">    return [word_token_ids, word_mask_ids]</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>预训练</category>
-      </categories>
-      <tags>
-        <tag>预训练</tag>
       </tags>
   </entry>
   <entry>
@@ -1924,150 +1924,6 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
       </tags>
   </entry>
   <entry>
-    <title>进击！BERT句向量表征.md</title>
-    <url>/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://pic1.zhimg.com/v2-48949d2c35c494d5d03b7de832151835_1440w.jpg?source=172ae18b" alt=""></p>
-<p>BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。<br>Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。<br><img src="https://pic1.zhimg.com/80/v2-8b4df6fe6c7491b6d435dd94c0729e00_1440w.jpg" alt=""><br><span id="more"></span><br>余弦相似度使用的前提是向量空间在标准正交基下，而BERT输出的句向量很明显 不符合该条件，因此直接使用BERT输出的句向量计算余弦相似度，效果表现很差。</p>
-<p>针对该问题，BERT-flow、BERT-Whitening模型将输出的句向量映射到标准正交的高斯空间。SimCSE引入对比学习的方式， 在保证向量空间的uniformity情况下，也提高alignment。此后，多种对比学习方式层出不穷，其核心改进点在于正负例的生成方式，提高正负样本的难度，本文主要介绍ConSERT、SimCSE、ESimCSE、DiffCSE、PromptBert、SNCSE、EASE。</p>
-<h1 id="Sentence-Bert（EMNLP-2019）"><a href="#Sentence-Bert（EMNLP-2019）" class="headerlink" title="Sentence-Bert（EMNLP 2019）"></a>Sentence-Bert（EMNLP 2019）</h1><p><strong>题目</strong>：Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/abs/1908.10084">https://arxiv.org/abs/1908.10084</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/UKPLab/sentence-transformers">https://github.com/UKPLab/sentence-transformers</a></p>
-<h2 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>解决文本匹配推理次数过多的问题，BERT的传统文本匹配任务是输入sentence1与sentence2 作一个分类任务，给定一个语料库查找最相似句子的时间复杂度高达O(n^2)。<br>直接使用BERT的embdeeing向量，存在各向异性问题，相似度计算效果甚至低于Glove词向量。</p>
-<p><strong>解决方式</strong>：</p>
-<p>采用孪生网络的双塔结构，这样推理的次数降低到了O(n)，计算相似度的点积复杂度还是O(n^2)</p>
-<p><strong>其他</strong>：</p>
-<p>论文比较了三种pooling方式：CLS、AVG、MAX。也设计了分类任务、回归任务、Triplet形式的任务。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-01aeeae898873dd7d7dfb418a927806a_1440w.webp" alt=""></p>
-<p>SBERT通过图1的方式进行训练，微调学习BERT句向量的embedding，通过图2的方式完成推理，计算文本相似度。</p>
-<h1 id="BERT-flow（EMNLP-2020）"><a href="#BERT-flow（EMNLP-2020）" class="headerlink" title="BERT-flow（EMNLP 2020）"></a>BERT-flow（EMNLP 2020）</h1><p><strong>题目</strong>：On the Sentence Embeddings from Pre-trained Language Models</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2011.05864.pdf">https://arxiv.org/pdf/2011.05864.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/bohanli/BERT-flow">https://github.com/bohanli/BERT-flow</a></p>
-<h2 id="核心思路-1"><a href="#核心思路-1" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>指出BERT句向量存在的问题：各向异性，高频词汇分布集中</p>
-<p><strong>解决方式</strong>：</p>
-<p>引入flow流式模型，映射为同向性，将BERT句向量映射到标准高斯空间.</p>
-<p><strong>计算公式</strong>如下：<br><img src="https://pic4.zhimg.com/80/v2-999025acb512c8f3b97c4bd4ec45065b_1440w.webp" alt=""></p>
-<h1 id="BERT-whitening"><a href="#BERT-whitening" class="headerlink" title="BERT-whitening"></a>BERT-whitening</h1><p><strong>题目</strong>：Whitening Sentence Representations for Better Semantics and Faster Retrieval</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2103.15316">https://arxiv.org/abs/2103.15316</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/bojone/BERT-whitening">https://github.com/bojone/BERT-whitening</a></p>
-<h2 id="核心思路-2"><a href="#核心思路-2" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：在句向量维度，通过一个白化的操作直接校正局向量的协方差矩阵。</p>
-<p><strong>解决方式</strong>：</p>
-<p>PCA白化，并且可以降维实现更好的效果。<br>将句向量进行标准化映射，即白化操作：</p>
-<script type="math/tex; mode=display">\tilde{\boldsymbol{x}}_i=\left(\boldsymbol{x}_i-\boldsymbol{\mu}\right) W</script><p>均值与协方差矩阵计算方式如下：</p>
-<script type="math/tex; mode=display">\boldsymbol{\mu}=\frac{1}{N} \sum_{i=1}^N \boldsymbol{x}_i</script><script type="math/tex; mode=display">\boldsymbol{\Sigma}=\boldsymbol{U} \boldsymbol{\Lambda} \boldsymbol{U}^{\top},即原向量矩阵的协方差矩阵SVD分解</script><script type="math/tex; mode=display">\boldsymbol{W}=\boldsymbol{U} \sqrt{\boldsymbol{\Lambda}^{-1}}</script><p><strong>代码如下</strong>：<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def compute_kernel_bias(vecs):</span><br><span class="line">    &quot;&quot;&quot;计算kernel和bias</span><br><span class="line">    vecs.shape = [num_samples, embedding_size]，</span><br><span class="line">    最后的变换：y = (x + bias).dot(kernel)</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    mu = vecs.mean(axis=0, keepdims=True)</span><br><span class="line">    cov = np.cov(vecs.T)</span><br><span class="line">    u, s, vh = np.linalg.svd(cov)</span><br><span class="line">    W = np.dot(u, np.diag(1 / np.sqrt(s)))</span><br><span class="line">    return W, -mu</span><br></pre></td></tr></table></figure></p>
-<h1 id="ConSERT（ACL-2021）"><a href="#ConSERT（ACL-2021）" class="headerlink" title="ConSERT（ACL 2021）"></a>ConSERT（ACL 2021）</h1><p><strong>题目</strong>：ConSERT: A Contrastive Framework for Self-Supervised Sentence Representation Transfer</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2105.11741">https://arxiv.org/abs/2105.11741</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/yym6472/ConSERT">https://github.com/yym6472/ConSERT</a></p>
-<h2 id="核心思路-3"><a href="#核心思路-3" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>解决BERT本身表征的语义塌缩问题。再来看对比学习，它是通过拉近相同样本的距离、拉远不同样本的距离，来刻画样本本身的表示，正好可以解决BERT表示的塌缩问题。</p>
-<p><strong>解决方式</strong>：</p>
-<p>NLP的数据增强方式很重要，使用了5种数据增强方式进行对比：Adversarial attack、shuffle、token cutoff、feature cutoff、dropout</p>
-<p>损失函数：对比学习损失</p>
-<script type="math/tex; mode=display">\mathcal{L}_{i, j}=-\log \frac{\exp \left(\operatorname{sim}\left(r_i, r_j\right) / \tau\right)}{\sum_{k=1}^{2 N} \mathbb{1}_{[k \neq i]} \exp \left(\operatorname{sim}\left(r_i, r_k\right) / \tau\right)}</script><p><img src="https://pic3.zhimg.com/80/v2-60b3b4f2d2753a786449186812c4271a_1440w.webp" alt=""></p>
-<p><img src="https://pic4.zhimg.com/80/v2-9d0e06beb31ee2fcf5ff536c58d6eca3_1440w.webp" alt=""></p>
-<h2 id="正例构建方式"><a href="#正例构建方式" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><ul>
-<li>shuffle：更换position id的顺序</li>
-<li>token cutoff：在某个token维度把embedding置为0</li>
-<li>feature cutoff：在embedding矩阵中，有768个维度，把某个维度的feature置为0</li>
-<li>dropout：dropout</li>
-<li>Adversarial attack：对抗扰动</li>
-</ul>
-<h2 id="负例构建方式"><a href="#负例构建方式" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
-<h1 id="SimCSE（EMNLP-2021）"><a href="#SimCSE（EMNLP-2021）" class="headerlink" title="SimCSE（EMNLP 2021）"></a>SimCSE（EMNLP 2021）</h1><p><strong>题目</strong>：SimCSE: Simple Contrastive Learning of Sentence Embeddings</p>
-<p><strong>地址</strong>：<a href="https://aclanthology.org/2021.emnlp-main.552.pdf">https://aclanthology.org/2021.emnlp-main.552.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/princeton-nlp/SimCSE">https://github.com/princeton-nlp/SimCSE</a></p>
-<h2 id="核心思路-4"><a href="#核心思路-4" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>将对比学习方式引入句向量表征领域。</p>
-<p><strong>解决方式</strong>：</p>
-<p>引入对比损失的难点在于正样本的构建，该文提出dropout的正样本构建方式。</p>
-<p><strong>无监督SimCSE</strong>：</p>
-<p>Dropout构建正例样本，batch内其他样本作为负样本</p>
-<p><img src="https://pic4.zhimg.com/80/v2-e0e1aab2f104c2e1df6f801d86509987_1440w.webp" alt=""></p>
-<p><strong>有监督SimCSE</strong>：</p>
-<p>句子蕴含任务中同一标签的作为正样本，同一batch的其他样本的是负样本</p>
-<p><img src="https://pic2.zhimg.com/80/v2-330c834b6c87b47cce0e314deefb4ad1_1440w.webp" alt=""></p>
-<h2 id="正例构建方式-1"><a href="#正例构建方式-1" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>Dropout两次产生的数据</p>
-<h2 id="负例构建方式-1"><a href="#负例构建方式-1" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
-<p><img src="https://pic4.zhimg.com/80/v2-3ab1f8ef586853f48950c102e6c4b23f_1440w.webp" alt=""></p>
-<h1 id="ESimCSE（COLING-2022）"><a href="#ESimCSE（COLING-2022）" class="headerlink" title="ESimCSE（COLING 2022）"></a>ESimCSE（COLING 2022）</h1><p><strong>题目</strong>：ESimCSE: Enhanced Sample Building Method for Contrastive Learning of Unsupervised Sentence Embedding</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2109.04380.pdf">https://arxiv.org/pdf/2109.04380.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/caskcsg/sentemb/tree/main/ESimCSE">https://github.com/caskcsg/sentemb/tree/main/ESimCSE</a></p>
-<h2 id="核心思路-5"><a href="#核心思路-5" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>解决SimCSE的两个问题：</p>
-<ul>
-<li>Dropout构建的正例均是相同长度的，会导致模型认为相同句子长度的句子更相似</li>
-<li>SimCSE增加batchsize，引入更多负例，反而引起效果下降【猜测：更多的负例中，部分与正例接近质量不高】</li>
-</ul>
-<p><img src="https://pic2.zhimg.com/80/v2-941a073e5de189c9b4286d2e92739415_1440w.webp" alt=""><br><strong>核心改动点</strong>：</p>
-<p><strong>正例生成方式</strong>：重复一定单词</p>
-<p><strong>负例生成方式</strong>：动量序列，扩展负样本数量</p>
-<h2 id="正例生成方式"><a href="#正例生成方式" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>重复单词</p>
-<h2 id="负例生成方式"><a href="#负例生成方式" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>动量序列，扩展负样本数量</p>
-<h1 id="DiffCSE（NAACL2022）"><a href="#DiffCSE（NAACL2022）" class="headerlink" title="DiffCSE（NAACL2022）"></a>DiffCSE（NAACL2022）</h1><p><strong>题目</strong>：DiffCSE: Difference-based Contrastive Learning for Sentence Embeddings</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2204.10298.pdf">https://arxiv.org/pdf/2204.10298.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/voidism/DiffCSE">https://github.com/voidism/DiffCSE</a></p>
-<h2 id="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"><a href="#核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）" class="headerlink" title="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"></a>核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）</h2><p><strong>出发点</strong>：</p>
-<p>NLP任务中，词语EDA的数据增强方式是敏感变化，dropout方式是 不敏感变化。SimCSE的成功也说明了dropout masks机制来构建正样本，比基于同义词或掩码语言模型的删除或替换等更复杂的增强效果要好得多。“。这一现象也说明，<strong>「直接增强（删除或替换）往往改变句子本身语义」。</strong></p>
-<p><img src="https://pic4.zhimg.com/80/v2-6a25b5c6d3eef374dd84d6f3e712b887_1440w.webp" alt=""><br><img src="https://pic4.zhimg.com/80/v2-74343b4576af98fc90bc171a16f058f3_1440w.webp" alt=""></p>
-<h2 id="正例生成方式-1"><a href="#正例生成方式-1" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
-<h2 id="负例生成方式-1"><a href="#负例生成方式-1" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>通过ELECTRA模型，完成句子改写任务</p>
-<h1 id="PromptBert（EMNLP-2022）"><a href="#PromptBert（EMNLP-2022）" class="headerlink" title="PromptBert（EMNLP 2022）"></a>PromptBert（EMNLP 2022）</h1><p><strong>题目</strong>：PromptBERT: Improving BERT Sentence Embeddings with Prompts</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.04337.pdf">https://arxiv.org/pdf/2201.04337.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/kongds/Prompt-BERT">https://github.com/kongds/Prompt-BERT</a></p>
-<h2 id="核心思路-6"><a href="#核心思路-6" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>BERT句向量存在各向异性，并受到词频、字母大小写、子词等影响。</p>
-<p><strong>解决方式</strong>：</p>
-<p>通过Prompt模版，得到句子的表征向量，与CLS、AVG、MAX取表征向量不同，没有用到具体某个词语的信息。</p>
-<p><strong>模版去噪对比学习</strong>：</p>
-<p>通过不同模版产生句子表征向量，构建正样本。为了剔除不同模版的影响，减去纯模版得到的句子表征向量。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-03707325180ec050cf39849c4030e586_1440w.webp" alt=""></p>
-<h2 id="正例构建方式-2"><a href="#正例构建方式-2" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>通过不同模版产生的句子表征向量</p>
-<h2 id="负例构建方式-2"><a href="#负例构建方式-2" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
-<h1 id="SNCSE"><a href="#SNCSE" class="headerlink" title="SNCSE"></a>SNCSE</h1><p><strong>题目</strong>：SNCSE: Contrastive Learning for Unsupervised Sentence Embedding with Soft Negative Samples</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.05979.pdf">https://arxiv.org/pdf/2201.05979.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/Sense-GVT/SNCSE">https://github.com/Sense-GVT/SNCSE</a></p>
-<h2 id="核心思路-7"><a href="#核心思路-7" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
-<p>目前的数据增强方法，获取的正样本均极为相似，导致模型存在特征抑制，即<strong>「模型不能区分文本相似度和语义相似度，并更偏向具有相似文本，而不考虑它们之间的实际语义差异」。</strong> 导致模型更多关注的是字面匹配，而非语义匹配。</p>
-<p><strong>解决方式</strong>：</p>
-<p>新增软负例以及双向边际损失，限制样本与软负例相似度到一定范围内。 并利用PromptBert方式获取词向量。</p>
-<p><strong>计算公式</strong>如下：</p>
-<p><img src="https://pic1.zhimg.com/80/v2-6d6852c52edb927f3e6f90a4780360f0_1440w.webp" alt=""></p>
-<p><img src="https://pic2.zhimg.com/80/v2-da3c2a097a0fa631f88a913dccadd541_1440w.webp" alt=""></p>
-<h2 id="正例生成方式-2"><a href="#正例生成方式-2" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
-<h2 id="负例生成方式-2"><a href="#负例生成方式-2" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
-<li>纯负例：batch内其他数据</li>
-<li>软负例：通过spacy进行语法解析，为动词添加否定词前缀。</li>
-</ul>
-<h1 id="EASE（NAACL2022）"><a href="#EASE（NAACL2022）" class="headerlink" title="EASE（NAACL2022）"></a>EASE（NAACL2022）</h1><p><strong>题目</strong>：EASE: Entity-Aware Contrastive Learning of Sentence Embedding</p>
-<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2205.04260.pdf">https://arxiv.org/pdf/2205.04260.pdf</a></p>
-<p><strong>代码</strong>：<a href="https://github.com/studio-ousia/ease">https://github.com/studio-ousia/ease</a></p>
-<h2 id="核心思路-8"><a href="#核心思路-8" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：实体是一个句子的重要部分，可以作为一个句子的指示器，通过学习实体与句子之间的差异，可以为句子向量的学习提供额外信息。</p>
-<p><strong>解决方式</strong>：通过维基百科的实体超链接引入实体信息。</p>
-<p><strong>损失函数</strong>：实体句子对比损失+自监督对比损失</p>
-<h2 id="正例生成方式-3"><a href="#正例生成方式-3" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><ul>
-<li><strong>实体正例</strong>：维基百科超链接实体。(为了提高实体质量，仅保留超链接实体出现次数超过10次的实体。)</li>
-<li><strong>样本正例</strong>：与SimCSE相同，Dropout产生正例</li>
-</ul>
-<h2 id="负例生成方式-3"><a href="#负例生成方式-3" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
-<li>实体负例：<br>负例实体需要与正例实体具有相同的类型；<br>负例实体不能与正例实体出现在同一维基百科页面中。<br>随机在满足上诉条件的候选实体中选择一个实体作为硬负例数据，构建（句子，正例实体，负例实体）的triple数据。</li>
-<li>样本负例：batch内其他数据</li>
-</ul>
-<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><ul>
-<li>在中文数据集上，验证各方法效果</li>
-</ul>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-        <category>句向量</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
-        <tag>句向量</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Pytorch多机多卡的多种打开方式</title>
     <url>/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在上一篇介绍<a href="https://jmxgodlz.xyz/2021/09/12/2021-09-12-Pytorch多卡训练原理/#more">多卡训练原理</a>的基础上，本篇主要介绍Pytorch多机多卡的几种实现方式：<strong>DDP、multiprocessing、Accelerate</strong>。</p>
@@ -2280,6 +2136,150 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
       </tags>
   </entry>
   <entry>
+    <title>进击！BERT句向量表征.md</title>
+    <url>/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://pic1.zhimg.com/v2-48949d2c35c494d5d03b7de832151835_1440w.jpg?source=172ae18b" alt=""></p>
+<p>BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。<br>Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。<br><img src="https://pic1.zhimg.com/80/v2-8b4df6fe6c7491b6d435dd94c0729e00_1440w.jpg" alt=""><br><span id="more"></span><br>余弦相似度使用的前提是向量空间在标准正交基下，而BERT输出的句向量很明显 不符合该条件，因此直接使用BERT输出的句向量计算余弦相似度，效果表现很差。</p>
+<p>针对该问题，BERT-flow、BERT-Whitening模型将输出的句向量映射到标准正交的高斯空间。SimCSE引入对比学习的方式， 在保证向量空间的uniformity情况下，也提高alignment。此后，多种对比学习方式层出不穷，其核心改进点在于正负例的生成方式，提高正负样本的难度，本文主要介绍ConSERT、SimCSE、ESimCSE、DiffCSE、PromptBert、SNCSE、EASE。</p>
+<h1 id="Sentence-Bert（EMNLP-2019）"><a href="#Sentence-Bert（EMNLP-2019）" class="headerlink" title="Sentence-Bert（EMNLP 2019）"></a>Sentence-Bert（EMNLP 2019）</h1><p><strong>题目</strong>：Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/1908.10084">https://arxiv.org/abs/1908.10084</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/UKPLab/sentence-transformers">https://github.com/UKPLab/sentence-transformers</a></p>
+<h2 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决文本匹配推理次数过多的问题，BERT的传统文本匹配任务是输入sentence1与sentence2 作一个分类任务，给定一个语料库查找最相似句子的时间复杂度高达O(n^2)。<br>直接使用BERT的embdeeing向量，存在各向异性问题，相似度计算效果甚至低于Glove词向量。</p>
+<p><strong>解决方式</strong>：</p>
+<p>采用孪生网络的双塔结构，这样推理的次数降低到了O(n)，计算相似度的点积复杂度还是O(n^2)</p>
+<p><strong>其他</strong>：</p>
+<p>论文比较了三种pooling方式：CLS、AVG、MAX。也设计了分类任务、回归任务、Triplet形式的任务。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-01aeeae898873dd7d7dfb418a927806a_1440w.webp" alt=""></p>
+<p>SBERT通过图1的方式进行训练，微调学习BERT句向量的embedding，通过图2的方式完成推理，计算文本相似度。</p>
+<h1 id="BERT-flow（EMNLP-2020）"><a href="#BERT-flow（EMNLP-2020）" class="headerlink" title="BERT-flow（EMNLP 2020）"></a>BERT-flow（EMNLP 2020）</h1><p><strong>题目</strong>：On the Sentence Embeddings from Pre-trained Language Models</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2011.05864.pdf">https://arxiv.org/pdf/2011.05864.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/bohanli/BERT-flow">https://github.com/bohanli/BERT-flow</a></p>
+<h2 id="核心思路-1"><a href="#核心思路-1" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>指出BERT句向量存在的问题：各向异性，高频词汇分布集中</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入flow流式模型，映射为同向性，将BERT句向量映射到标准高斯空间.</p>
+<p><strong>计算公式</strong>如下：<br><img src="https://pic4.zhimg.com/80/v2-999025acb512c8f3b97c4bd4ec45065b_1440w.webp" alt=""></p>
+<h1 id="BERT-whitening"><a href="#BERT-whitening" class="headerlink" title="BERT-whitening"></a>BERT-whitening</h1><p><strong>题目</strong>：Whitening Sentence Representations for Better Semantics and Faster Retrieval</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2103.15316">https://arxiv.org/abs/2103.15316</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/bojone/BERT-whitening">https://github.com/bojone/BERT-whitening</a></p>
+<h2 id="核心思路-2"><a href="#核心思路-2" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：在句向量维度，通过一个白化的操作直接校正局向量的协方差矩阵。</p>
+<p><strong>解决方式</strong>：</p>
+<p>PCA白化，并且可以降维实现更好的效果。<br>将句向量进行标准化映射，即白化操作：</p>
+<script type="math/tex; mode=display">\tilde{\boldsymbol{x}}_i=\left(\boldsymbol{x}_i-\boldsymbol{\mu}\right) W</script><p>均值与协方差矩阵计算方式如下：</p>
+<script type="math/tex; mode=display">\boldsymbol{\mu}=\frac{1}{N} \sum_{i=1}^N \boldsymbol{x}_i</script><script type="math/tex; mode=display">\boldsymbol{\Sigma}=\boldsymbol{U} \boldsymbol{\Lambda} \boldsymbol{U}^{\top},即原向量矩阵的协方差矩阵SVD分解</script><script type="math/tex; mode=display">\boldsymbol{W}=\boldsymbol{U} \sqrt{\boldsymbol{\Lambda}^{-1}}</script><p><strong>代码如下</strong>：<br><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def compute_kernel_bias(vecs):</span><br><span class="line">    &quot;&quot;&quot;计算kernel和bias</span><br><span class="line">    vecs.shape = [num_samples, embedding_size]，</span><br><span class="line">    最后的变换：y = (x + bias).dot(kernel)</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    mu = vecs.mean(axis=0, keepdims=True)</span><br><span class="line">    cov = np.cov(vecs.T)</span><br><span class="line">    u, s, vh = np.linalg.svd(cov)</span><br><span class="line">    W = np.dot(u, np.diag(1 / np.sqrt(s)))</span><br><span class="line">    return W, -mu</span><br></pre></td></tr></table></figure></p>
+<h1 id="ConSERT（ACL-2021）"><a href="#ConSERT（ACL-2021）" class="headerlink" title="ConSERT（ACL 2021）"></a>ConSERT（ACL 2021）</h1><p><strong>题目</strong>：ConSERT: A Contrastive Framework for Self-Supervised Sentence Representation Transfer</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/abs/2105.11741">https://arxiv.org/abs/2105.11741</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/yym6472/ConSERT">https://github.com/yym6472/ConSERT</a></p>
+<h2 id="核心思路-3"><a href="#核心思路-3" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决BERT本身表征的语义塌缩问题。再来看对比学习，它是通过拉近相同样本的距离、拉远不同样本的距离，来刻画样本本身的表示，正好可以解决BERT表示的塌缩问题。</p>
+<p><strong>解决方式</strong>：</p>
+<p>NLP的数据增强方式很重要，使用了5种数据增强方式进行对比：Adversarial attack、shuffle、token cutoff、feature cutoff、dropout</p>
+<p>损失函数：对比学习损失</p>
+<script type="math/tex; mode=display">\mathcal{L}_{i, j}=-\log \frac{\exp \left(\operatorname{sim}\left(r_i, r_j\right) / \tau\right)}{\sum_{k=1}^{2 N} \mathbb{1}_{[k \neq i]} \exp \left(\operatorname{sim}\left(r_i, r_k\right) / \tau\right)}</script><p><img src="https://pic3.zhimg.com/80/v2-60b3b4f2d2753a786449186812c4271a_1440w.webp" alt=""></p>
+<p><img src="https://pic4.zhimg.com/80/v2-9d0e06beb31ee2fcf5ff536c58d6eca3_1440w.webp" alt=""></p>
+<h2 id="正例构建方式"><a href="#正例构建方式" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><ul>
+<li>shuffle：更换position id的顺序</li>
+<li>token cutoff：在某个token维度把embedding置为0</li>
+<li>feature cutoff：在embedding矩阵中，有768个维度，把某个维度的feature置为0</li>
+<li>dropout：dropout</li>
+<li>Adversarial attack：对抗扰动</li>
+</ul>
+<h2 id="负例构建方式"><a href="#负例构建方式" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SimCSE（EMNLP-2021）"><a href="#SimCSE（EMNLP-2021）" class="headerlink" title="SimCSE（EMNLP 2021）"></a>SimCSE（EMNLP 2021）</h1><p><strong>题目</strong>：SimCSE: Simple Contrastive Learning of Sentence Embeddings</p>
+<p><strong>地址</strong>：<a href="https://aclanthology.org/2021.emnlp-main.552.pdf">https://aclanthology.org/2021.emnlp-main.552.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/princeton-nlp/SimCSE">https://github.com/princeton-nlp/SimCSE</a></p>
+<h2 id="核心思路-4"><a href="#核心思路-4" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>将对比学习方式引入句向量表征领域。</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入对比损失的难点在于正样本的构建，该文提出dropout的正样本构建方式。</p>
+<p><strong>无监督SimCSE</strong>：</p>
+<p>Dropout构建正例样本，batch内其他样本作为负样本</p>
+<p><img src="https://pic4.zhimg.com/80/v2-e0e1aab2f104c2e1df6f801d86509987_1440w.webp" alt=""></p>
+<p><strong>有监督SimCSE</strong>：</p>
+<p>句子蕴含任务中同一标签的作为正样本，同一batch的其他样本的是负样本</p>
+<p><img src="https://pic2.zhimg.com/80/v2-330c834b6c87b47cce0e314deefb4ad1_1440w.webp" alt=""></p>
+<h2 id="正例构建方式-1"><a href="#正例构建方式-1" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>Dropout两次产生的数据</p>
+<h2 id="负例构建方式-1"><a href="#负例构建方式-1" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<p><img src="https://pic4.zhimg.com/80/v2-3ab1f8ef586853f48950c102e6c4b23f_1440w.webp" alt=""></p>
+<h1 id="ESimCSE（COLING-2022）"><a href="#ESimCSE（COLING-2022）" class="headerlink" title="ESimCSE（COLING 2022）"></a>ESimCSE（COLING 2022）</h1><p><strong>题目</strong>：ESimCSE: Enhanced Sample Building Method for Contrastive Learning of Unsupervised Sentence Embedding</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2109.04380.pdf">https://arxiv.org/pdf/2109.04380.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/caskcsg/sentemb/tree/main/ESimCSE">https://github.com/caskcsg/sentemb/tree/main/ESimCSE</a></p>
+<h2 id="核心思路-5"><a href="#核心思路-5" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决SimCSE的两个问题：</p>
+<ul>
+<li>Dropout构建的正例均是相同长度的，会导致模型认为相同句子长度的句子更相似</li>
+<li>SimCSE增加batchsize，引入更多负例，反而引起效果下降【猜测：更多的负例中，部分与正例接近质量不高】</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-941a073e5de189c9b4286d2e92739415_1440w.webp" alt=""><br><strong>核心改动点</strong>：</p>
+<p><strong>正例生成方式</strong>：重复一定单词</p>
+<p><strong>负例生成方式</strong>：动量序列，扩展负样本数量</p>
+<h2 id="正例生成方式"><a href="#正例生成方式" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>重复单词</p>
+<h2 id="负例生成方式"><a href="#负例生成方式" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>动量序列，扩展负样本数量</p>
+<h1 id="DiffCSE（NAACL2022）"><a href="#DiffCSE（NAACL2022）" class="headerlink" title="DiffCSE（NAACL2022）"></a>DiffCSE（NAACL2022）</h1><p><strong>题目</strong>：DiffCSE: Difference-based Contrastive Learning for Sentence Embeddings</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2204.10298.pdf">https://arxiv.org/pdf/2204.10298.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/voidism/DiffCSE">https://github.com/voidism/DiffCSE</a></p>
+<h2 id="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"><a href="#核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）" class="headerlink" title="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"></a>核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）</h2><p><strong>出发点</strong>：</p>
+<p>NLP任务中，词语EDA的数据增强方式是敏感变化，dropout方式是 不敏感变化。SimCSE的成功也说明了dropout masks机制来构建正样本，比基于同义词或掩码语言模型的删除或替换等更复杂的增强效果要好得多。“。这一现象也说明，<strong>「直接增强（删除或替换）往往改变句子本身语义」。</strong></p>
+<p><img src="https://pic4.zhimg.com/80/v2-6a25b5c6d3eef374dd84d6f3e712b887_1440w.webp" alt=""><br><img src="https://pic4.zhimg.com/80/v2-74343b4576af98fc90bc171a16f058f3_1440w.webp" alt=""></p>
+<h2 id="正例生成方式-1"><a href="#正例生成方式-1" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-1"><a href="#负例生成方式-1" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>通过ELECTRA模型，完成句子改写任务</p>
+<h1 id="PromptBert（EMNLP-2022）"><a href="#PromptBert（EMNLP-2022）" class="headerlink" title="PromptBert（EMNLP 2022）"></a>PromptBert（EMNLP 2022）</h1><p><strong>题目</strong>：PromptBERT: Improving BERT Sentence Embeddings with Prompts</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.04337.pdf">https://arxiv.org/pdf/2201.04337.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/kongds/Prompt-BERT">https://github.com/kongds/Prompt-BERT</a></p>
+<h2 id="核心思路-6"><a href="#核心思路-6" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>BERT句向量存在各向异性，并受到词频、字母大小写、子词等影响。</p>
+<p><strong>解决方式</strong>：</p>
+<p>通过Prompt模版，得到句子的表征向量，与CLS、AVG、MAX取表征向量不同，没有用到具体某个词语的信息。</p>
+<p><strong>模版去噪对比学习</strong>：</p>
+<p>通过不同模版产生句子表征向量，构建正样本。为了剔除不同模版的影响，减去纯模版得到的句子表征向量。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-03707325180ec050cf39849c4030e586_1440w.webp" alt=""></p>
+<h2 id="正例构建方式-2"><a href="#正例构建方式-2" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>通过不同模版产生的句子表征向量</p>
+<h2 id="负例构建方式-2"><a href="#负例构建方式-2" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SNCSE"><a href="#SNCSE" class="headerlink" title="SNCSE"></a>SNCSE</h1><p><strong>题目</strong>：SNCSE: Contrastive Learning for Unsupervised Sentence Embedding with Soft Negative Samples</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2201.05979.pdf">https://arxiv.org/pdf/2201.05979.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/Sense-GVT/SNCSE">https://github.com/Sense-GVT/SNCSE</a></p>
+<h2 id="核心思路-7"><a href="#核心思路-7" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>目前的数据增强方法，获取的正样本均极为相似，导致模型存在特征抑制，即<strong>「模型不能区分文本相似度和语义相似度，并更偏向具有相似文本，而不考虑它们之间的实际语义差异」。</strong> 导致模型更多关注的是字面匹配，而非语义匹配。</p>
+<p><strong>解决方式</strong>：</p>
+<p>新增软负例以及双向边际损失，限制样本与软负例相似度到一定范围内。 并利用PromptBert方式获取词向量。</p>
+<p><strong>计算公式</strong>如下：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-6d6852c52edb927f3e6f90a4780360f0_1440w.webp" alt=""></p>
+<p><img src="https://pic2.zhimg.com/80/v2-da3c2a097a0fa631f88a913dccadd541_1440w.webp" alt=""></p>
+<h2 id="正例生成方式-2"><a href="#正例生成方式-2" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-2"><a href="#负例生成方式-2" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>纯负例：batch内其他数据</li>
+<li>软负例：通过spacy进行语法解析，为动词添加否定词前缀。</li>
+</ul>
+<h1 id="EASE（NAACL2022）"><a href="#EASE（NAACL2022）" class="headerlink" title="EASE（NAACL2022）"></a>EASE（NAACL2022）</h1><p><strong>题目</strong>：EASE: Entity-Aware Contrastive Learning of Sentence Embedding</p>
+<p><strong>地址</strong>：<a href="https://arxiv.org/pdf/2205.04260.pdf">https://arxiv.org/pdf/2205.04260.pdf</a></p>
+<p><strong>代码</strong>：<a href="https://github.com/studio-ousia/ease">https://github.com/studio-ousia/ease</a></p>
+<h2 id="核心思路-8"><a href="#核心思路-8" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：实体是一个句子的重要部分，可以作为一个句子的指示器，通过学习实体与句子之间的差异，可以为句子向量的学习提供额外信息。</p>
+<p><strong>解决方式</strong>：通过维基百科的实体超链接引入实体信息。</p>
+<p><strong>损失函数</strong>：实体句子对比损失+自监督对比损失</p>
+<h2 id="正例生成方式-3"><a href="#正例生成方式-3" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><ul>
+<li><strong>实体正例</strong>：维基百科超链接实体。(为了提高实体质量，仅保留超链接实体出现次数超过10次的实体。)</li>
+<li><strong>样本正例</strong>：与SimCSE相同，Dropout产生正例</li>
+</ul>
+<h2 id="负例生成方式-3"><a href="#负例生成方式-3" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>实体负例：<br>负例实体需要与正例实体具有相同的类型；<br>负例实体不能与正例实体出现在同一维基百科页面中。<br>随机在满足上诉条件的候选实体中选择一个实体作为硬负例数据，构建（句子，正例实体，负例实体）的triple数据。</li>
+<li>样本负例：batch内其他数据</li>
+</ul>
+<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><ul>
+<li>在中文数据集上，验证各方法效果</li>
+</ul>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>句向量</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>句向量</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!</title>
     <url>/2023/03/05/2023-03-05-%E7%A9%BF%E8%B6%8A%E6%97%B6%E7%A9%BA%EF%BC%9A%E5%BD%93ChatGPT%E9%81%87%E8%A7%81stable-diffusion%EF%BC%8C%E4%BD%A0%E4%B8%8D%E6%95%A2%E7%9B%B8%E4%BF%A1%E7%9A%84%E5%88%9B%E6%84%8F%E8%89%BA%E6%9C%AF%E4%B9%8B%E6%97%85!/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>欢迎来到一场创意的旅程，这里将聚焦于 ChatGPT 和 stable-diffusion 这两个令人激动的技术。在这篇文章中，我们将会探索这两种技术如何结合使用，为艺术创作带来全新的可能性。我们将探讨如何利用 ChatGPT 生成富有想象力的创意，以及如何使用 stable-diffusion 技术来呈现精美的中式艺术风格。我们还将介绍一些令人惊叹的案例，展示这些技术的真正潜力和创造力。无论您是一个艺术爱好者、技术探究者，还是想探索新领域的读者，本文都将为您提供一次精彩的旅程。跟随我们一起穿越时空，发现 ChatGPT 和 stable-diffusion 的惊人之处。</p>
@@ -2380,411 +2380,6 @@ h_t=f(z_t) \tag{8}</script><script type="math/tex; mode=display">
 <p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/epRNxJ.png" alt="epRNxJ"></p>
 <p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/BEHMAa.png" alt="BEHMAa"></p>
 <p><strong>向文明低头！！！</strong></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-        <category>NLP</category>
-      </categories>
-      <tags>
-        <tag>NLP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>从语言模型到ChatGPT：大型语言模型的发展和应用</title>
-    <url>/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大型语言模型（LLM）是指能够处理大量自然语言数据的深度学习模型，它已经在自然语言处理、文本生成、机器翻译等多个领域中展现出了巨大的潜力。在过去几年中，LLM领域经历了飞速的发展，其中Google和OpenAI作为两家领先的公司在这个领域中的表现备受关注。</p>
-<p>Google是LLM领域的重要参与者，其BERT自编码模型和T5编码解码器在自然语言理解任务上取得了优异的表现。BERT模型通过预训练大规模文本数据，提取出词向量的同时，也能够学习到上下文信息。而T5模型则是在BERT的基础上，进一步将生成式任务融入其中，实现了一体化的自然语言处理能力。这些模型的出现，极大地推动了LLM领域的发展。</p>
-<p>与之相反的是，OpenAI则从2018年开始，坚持使用decoder only的GPT模型，践行着「暴力美学」——以大模型的路径，实现AGI。GPT模型通过预训练海量语料库数据，学习到了自然语言中的规律和模式，并在生成式任务中取得了出色的表现。OpenAI坚信，在模型规模达到足够大的情况下，单纯的decoder模型就可以实现AGI的目标。</p>
-<p>除了Google和OpenAI外，还有许多其他公司和研究机构也在LLM领域做出了贡献。例如，Facebook的RoBERTa模型、Microsoft的Turing NLG模型等等。这些模型的不断涌现，为LLM领域的发展注入了新的动力。</p>
-<p>如果只用解码器的生成式是通用LLM的王道，2019年10月，Google同时押注编码解码器的T5，整整错失20个月，直到2021年10月发布FLAN才开始重新转变为decoder-only。这表明，在实际应用中，不同任务可能需要不同类型的模型，而在特定任务中，编码解码器的结构可能比decoder-only模型更加适合。</p>
-<p>在本文中，我们将基于CS224N课件回顾大型语言模型的发展历程，探讨它们是如何从最初的基础模型发展到今天的高级模型的，并介绍ChatGPT的发展历程，看看ChatGPT如何实现弯道超车。</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/gnqCNR.jpg" alt="gnqCNR"></p>
-<span id="more"></span>
-<h1 id="Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning"><a href="#Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning" class="headerlink" title="Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning"></a>Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning</h1><h2 id="上下文学习-In-Context-Learning"><a href="#上下文学习-In-Context-Learning" class="headerlink" title="上下文学习(In-Context Learning)"></a>上下文学习(In-Context Learning)</h2><p>近年来，语言模型越来越倾向于使用更大的模型和更多的数据，如下图所示，模型参数数量和训练数据量呈指数倍增加的趋势。</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/7EgTef.png" alt="7EgTef"></p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>模型名称</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GPT</td>
-<td>Transformer decoder with 12 layers[参数量117M]<br/>Trained on BooksCorpus: over 7000 unique books (4.6GB text).</td>
-<td>表明大规模语言建模可以成为自然语言推理等下游任务的有效预训练技术。</td>
-</tr>
-<tr>
-<td>GPT2</td>
-<td>Same architecture as GPT, just bigger (117M -&gt; 1.5B)<br/>trained on much more data: 4GB -&gt; 40GB of internet text data (WebText)</td>
-<td>涌现出优异的Zero-shot能力。</td>
-</tr>
-<tr>
-<td>GPT3</td>
-<td>Another increase in size (1.5B -&gt; 175B)<br/>data (40GB -&gt; over 600GB)</td>
-<td>涌现出强大的上下文学习能力，但是在复杂、多步推理任务表现较差。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>近年来，随着GPT模型参数量的增加，GPT2与GPT3模型已经表现出了极佳的<strong>上下文学习能力(In-Context Learning)</strong>。这种能力允许模型通过处理上下文信息来更好地理解和处理自然语言数据。GPT模型通过Zero-Shot、One-Shot和Few-Shot学习方法在许多自然语言处理任务中取得了显著的成果。</p>
-<p>其中，Zero-Shot学习是指模型在没有针对特定任务进行训练的情况下，可以通过给定的输入和输出规范来生成符合规范的输出结果。这种方法可以在没有充足样本的情况下，快速生成需要的输出结果。One-Shot和Few-Shot学习则是在样本量较少的情况下，模型可以通过学习一小部分示例来完成相应任务，这使得模型能够更好地应对小样本学习和零样本学习的问题。</p>
-<h3 id="上下文学习介绍"><a href="#上下文学习介绍" class="headerlink" title="上下文学习介绍"></a>上下文学习介绍</h3><p>链接：<a href="https://arxiv.org/abs/2301.00234">[2301.00234] A Survey on In-context Learning</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/mjQ3eG.png" alt="mjQ3eG"></p>
-<p>大模型有一个很重要的涌现能力（Emergent ability）就是<strong>In-Context Learning（ICL），也是一种新的范式，指在不进行参数更新的情况下，只在输入中加入几个示例就能让模型进行学习</strong>。下面给出ICL的公式定义：</p>
-<script type="math/tex; mode=display">
-C = {I,s(x_1,y_1),...,s(x_k,y_k)} \quad or \quad C = {s(x_1, y_1, I), . . . , s(x_k, y_k, I)}</script><script type="math/tex; mode=display">
-P\left(y_j \mid x\right) \triangleq f_{\mathcal{M}}\left(y_j, C, x\right)</script><script type="math/tex; mode=display">
-\hat{y}=\arg \max _{y_j \in Y} P\left(y_j \mid x\right) .</script><p>其中，符号含义如下，从这些符号中也能看出影响ICL的因素：</p>
-<ul>
-<li><p>I：具体任务的描述信息</p>
-</li>
-<li><p>x：输入文本</p>
-</li>
-<li><p>y：标签</p>
-</li>
-<li><p>M：语言模型</p>
-</li>
-<li><p>C：阐述示例</p>
-</li>
-<li><p>f：打分函数</p>
-</li>
-</ul>
-<p>下面将开始介绍如何提升模型的ICL能力。</p>
-<h4 id="训练优化ICL能力"><a href="#训练优化ICL能力" class="headerlink" title="训练优化ICL能力"></a>训练优化ICL能力</h4><p><strong>有监督训练：</strong></p>
-<p>在ICL格式的数据集上，进行有监督的训练。</p>
-<p>MetaICL就直接把很多任务整合成了ICL的形式精调模型，在52个数据集上取得了比肩直接精调的效果。另外还有部分研究专注于Instruction tuning，构建更好的任务描述让模型去理解，而不是只给几个例子（demonstration），比如LaMDA-PT、FLAN。</p>
-<p><strong>自监督训练：</strong></p>
-<p>将自然语言理解的任务转为ICL的数据格式。</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FUs3TC.png" alt="FUs3TC"></p>
-<p>图1代表不同自然语言理解任务转为<strong>ICL的输入输出</strong>形式。</p>
-<p>图2表示训练样本示例，包含几个训练样本，前面的样本作为后面样本的任务阐述。</p>
-<h4 id="推理优化ICL能力"><a href="#推理优化ICL能力" class="headerlink" title="推理优化ICL能力"></a>推理优化ICL能力</h4><h5 id="Prompt设计"><a href="#Prompt设计" class="headerlink" title="Prompt设计"></a>Prompt设计</h5><p>样本选取：文本表示、互信息选择相近的；Perplexity选取；语言模型生成……</p>
-<p>样本排序：距离度量；信息熵……</p>
-<p>任务指示：APE语言模型自动生成</p>
-<p>推理步骤：COT、多步骤ICL、Self-Ask</p>
-<h5 id="打分函数"><a href="#打分函数" class="headerlink" title="打分函数"></a>打分函数</h5><ul>
-<li><p>Direct：直接取条件概率<code>P(y|x)</code>，缺点在于y必须紧跟在输入的后面</p>
-</li>
-<li><p>Perplexity：再用语言模型过一遍句子，这种方法可以解决上述固定模式的问题，但计算量增加了</p>
-</li>
-<li><p>Channel：评估<code>P(x|y)</code>的条件概率（用贝叶斯推一下），这种方法在不平衡数据下表现较好</p>
-</li>
-</ul>
-<h5 id="影响ICL表现的因素"><a href="#影响ICL表现的因素" class="headerlink" title="影响ICL表现的因素"></a>影响ICL表现的因素</h5><ul>
-<li><p>预训练语料的多样性比数量更重要，增加多种来源的数据可能会提升ICL表现</p>
-</li>
-<li><p>用下游任务的数据预训练不一定能提升ICL表现，并且PPL更低的模型也不一定表现更好</p>
-</li>
-<li><p>当LM到达一定规模的预训练步数、尺寸后，会涌现出ICL能力，且ICL效果跟参数量正相关</p>
-</li>
-</ul>
-<h3 id="WHY：上下文学习生效的原因"><a href="#WHY：上下文学习生效的原因" class="headerlink" title="WHY：上下文学习生效的原因"></a>WHY：上下文学习生效的原因</h3><p><strong>论文链接：</strong><a href="[[2202.12837] Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?](https://arxiv.org/abs/2202.12837">Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?</a>)</p>
-<p><strong>关键结论：</strong></p>
-<ol>
-<li><p>InContext Learning中<strong>标签是否正确</strong>无明显影响</p>
-</li>
-<li><p>InContext Learning中影响因素包括<strong>规范的输入空间、标签空间、输入与标签的匹配格式</strong></p>
-</li>
-</ol>
-<p><strong>其他论文的猜测：</strong></p>
-<ul>
-<li><p><strong>跟训练数据的分布相关</strong>：比如训练数据有很多样例，也有学者认为ICL可能是隐式的Bayesian inference</p>
-</li>
-<li><p><strong>跟学习机制相关</strong>：有学者猜测LM可能自己就具备学习的能力，在做ICL的时候学到了这些知识，或者隐式直接精调了自己</p>
-</li>
-<li><p><strong>跟Transformer中的模块相关</strong>：有学者发现Transformer里的某些注意力头会通过拷贝固定的模式来预测下一个token</p>
-</li>
-</ul>
-<h4 id="InContext-Learning中标签是否正确无明显影响"><a href="#InContext-Learning中标签是否正确无明显影响" class="headerlink" title="InContext Learning中标签是否正确无明显影响"></a>InContext Learning中<strong>标签是否正确</strong>无明显影响</h4><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/iLPKIE.png" alt="iLPKIE"></p>
-<p>图中青绿色代表没有示例、黄色代表带有正确标签的示例、橙色代表带有随机标签的示例。</p>
-<p>实验结果表明，<strong>带有随机标签的效果非常接近于带有正确标签的效果</strong>。</p>
-<p>此外，作者还进行了<strong>标签正确比例、提示样本数量、提示模版样式</strong>的实验，均得出一致结论，实验图如下。</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/P6Rbs3.png" alt="P6Rbs3"></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9NL9Oq.png" alt="9NL9Oq"></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/y8mMa2.png" alt="y8mMa2"></p>
-<h4 id="InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"><a href="#InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式" class="headerlink" title="InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"></a>InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式</h4><p>作者分别从以下四个维度探究In-Context Learning效果增益的影响</p>
-<ol>
-<li><p><strong>The input-label mapping</strong>：即每个输入xi是否与正确的标签yi配对;</p>
-</li>
-<li><p><strong>The distribution of the input text</strong>：即x1…xk的分布是否一致;</p>
-</li>
-<li><p><strong>The label space</strong>：<em>y</em>1…yk所覆盖的标签空间;</p>
-</li>
-<li><p><strong>The format</strong>：使用输入标签配对作为格式。</p>
-</li>
-</ol>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/V5XRzx.png" alt="V5XRzx"></p>
-<h5 id="输入文本分布实验"><a href="#输入文本分布实验" class="headerlink" title="输入文本分布实验"></a>输入文本分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/VZ5X1F.png" alt="VZ5X1F"></p>
-<p>紫色柱子代表利用外部语料采样的数据加上随机标签，在几个任务上模型表现明显下降。</p>
-<p>因此，in-context learning中，演示中的分布内输入极大地有助于提高性能。这可能是因为已IND（in-distribution）文本的条件使任务更接近于语言建模，因为LM在此期间总是以IND文本为条件进行推理标签。</p>
-<h5 id="标签分布实验"><a href="#标签分布实验" class="headerlink" title="标签分布实验"></a>标签分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QuaT1J.png" alt="QuaT1J"></p>
-<p>绿色柱子代表采用随机的单词代替输出标签，对于Direct模型，模型表现显著下降，表明ICL中标签空间的一致性显著有助于提高性能。</p>
-<p>对于Channel模型，模型表现未明显下降，作者猜测Channel模型以标签为条件，因此无法从标签空间分布中获益。</p>
-<h5 id="输入标签配对格式实验"><a href="#输入标签配对格式实验" class="headerlink" title="输入标签配对格式实验"></a>输入标签配对格式实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/pafljc.png" alt="pafljc"></p>
-<p>分别用labels only（深紫）和no labels（深绿）来探索演示模式的差异对模型表现的影响。可以看到，模型相对于上面两图的OOD setting而言，都有了进一步的下降。这可以表明ICL中保持输入-标签对的格式是关键的。</p>
-<h2 id="思维链-Chain-of-Thought"><a href="#思维链-Chain-of-Thought" class="headerlink" title="思维链(Chain of Thought)"></a>思维链(Chain of Thought)</h2><p>思维链（Chain of Thought）是一种新的学习方式，旨在提高模型在数学计算和符号推理任务中的推理能力。这种方式通过将多个相关的数学计算或符号推理步骤按顺序组合成一条思维链，让模型能够沿着思维链进行推理。</p>
-<p>这种方式的主要贡献在于，它能够让模型更好地应对复杂的数学计算和符号推理任务。传统的Prompt方式很难应对这种任务，但是思维链可以让模型按照特定的顺序进行推理，从而提高模型的推理能力。</p>
-<p>此外，思维链的方式也可以更好地模拟人类在解决数学计算和符号推理问题时的思维过程。人类在解决这类问题时，通常会按照一定的顺序进行推理，而思维链可以让模型更好地模拟这种思维过程。</p>
-<h3 id="开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models"><a href="#开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models" class="headerlink" title="开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"></a>开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</h3><p>链接：<a href="https://arxiv.org/abs/2201.11903">[2201.11903] Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ren2TO.png" alt="ren2TO"></p>
-<p>核心思想：输出答案前，加上人工的推理描述。</p>
-<p>主要贡献：</p>
-<ul>
-<li><p>思维链原则上允许模型将多步问题分解为中间步骤，可以将额外的计算分配给需要更多推理步骤的问题。</p>
-</li>
-<li><p>思维链为模型的行为提供了一个可解释的窗口，表明它可能是如何得出特定答案的，并提供了调试推理路径错误位置的机会。</p>
-</li>
-<li><p>链式思维推理可用于数学单词问题、常识推理和符号操作等任务，并且可能（至少在原则上）适用于人类可以通过语言解决的任何任务。</p>
-</li>
-<li><p>只需将思维序列链的例子包含到少样本提示的范例中，就可以很容易地在足够大的现成语言模型中引出思维链推理。</p>
-</li>
-</ul>
-<h3 id="Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models"><a href="#Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models" class="headerlink" title="Self-Consistency Improves Chain of Thought Reasoning in Language Models"></a>Self-Consistency Improves Chain of Thought Reasoning in Language Models</h3><p>链接：<a href="https://arxiv.org/abs/2203.11171">[2203.11171] Self-Consistency Improves Chain of Thought Reasoning in Language Models</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yoZpm2.png" alt="yoZpm2"></p>
-<p>主要贡献：</p>
-<ul>
-<li>主要改进是使用了对答案进行了多数投票（majority vote），并且发现其可以显著地提高思维链方法的性能</li>
-</ul>
-<h3 id="Large-Language-Models-are-Zero-Shot-Reasoners"><a href="#Large-Language-Models-are-Zero-Shot-Reasoners" class="headerlink" title="Large Language Models are Zero-Shot Reasoners"></a>Large Language Models are Zero-Shot Reasoners</h3><p>链接：<a href="https://arxiv.org/abs/2205.11916">[2205.11916] Large Language Models are Zero-Shot Reasoners</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/x6kvJz.png" alt="x6kvJz"></p>
-<p>核心思想：分为两个步骤：1st prompt、2nd prompt</p>
-<ul>
-<li><p>1st prompt：X′：“Q: [X]. A: [T]”</p>
-<ul>
-<li><p>X：输入的问题</p>
-</li>
-<li><p>T：人工的提示trigger词</p>
-</li>
-</ul>
-</li>
-<li><p>2nd prompt：[X′] [Z] [A]</p>
-<ul>
-<li><p>X′：第一阶段的输入</p>
-</li>
-<li><p>Z：第一阶段模型的输出</p>
-</li>
-<li><p>A：第二阶段的提示trigger词</p>
-</li>
-</ul>
-</li>
-</ul>
-<p>主要贡献：</p>
-<ul>
-<li><p>验证了zero-shot的能力，不需要few-shot挑选额外的样本</p>
-</li>
-<li><p>鼓励社区进一步发现类似的多任务提示，这些提示可以引发广泛的认知能力，而不是狭隘的特定任务技能。</p>
-</li>
-</ul>
-<p>不同模版的效果对比：</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/1AEEnD.png" alt="1AEEnD"></p>
-<h2 id="QA（自己YY的问题）"><a href="#QA（自己YY的问题）" class="headerlink" title="QA（自己YY的问题）"></a>QA（自己YY的问题）</h2><p>Q1:多大的模型能够涌现这些能力？</p>
-<blockquote>
-<p>100B。That is, chain-of-thought prompting does not positively impact performance for small models, and only yields performance gains when used with models of 100B parameters</p>
-</blockquote>
-<p>Q2:BERT或T5能否涌现这些能力？</p>
-<blockquote>
-<p>BERT与GPT差异在于模型结构不同，GPT单向的语言模型，BERT是双向的自编码(AE)模型，但当BERT参数量足够大的时候，在前后输入有关示例，不进行微调，直接预测MASK标签的涌现能力有待验证。</p>
-</blockquote>
-<p>Q3:COT思维链模版的来源？</p>
-<blockquote>
-<p>人工构造。As most of the datasets only have an evaluation split, we manually composed a set of eight few-shot exemplars with chains of thought for prompting—Figure 1 (right) shows one chain of thought exemplar, and the full set of exemplars is given in Appendix Table 20.</p>
-</blockquote>
-<p>Q4:为什么加上Let’s do it step by step 模型可以产出解释？</p>
-<blockquote>
-<p>对比了不同模版，激发模型的推理能力。It remains an open question how to automatically create better templates for Zero-shot-CoT.</p>
-</blockquote>
-<p>Q5:T5、BERT如果同GPT系列一样训练，在训练方法上可行吗？效果会比GPT好吗？</p>
-<blockquote>
-<p>开放讨论……</p>
-</blockquote>
-<p>Q6:为什么大型LLM首选Decoder-only结构？</p>
-<blockquote>
-<p>开放讨论……</p>
-</blockquote>
-<h1 id="Instruction-finetuning"><a href="#Instruction-finetuning" class="headerlink" title="Instruction finetuning"></a>Instruction finetuning</h1><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U5SBhD.png" alt="U5SBhD"></p>
-<p>近年来，相关研究发现语言模型的输出并不符合人类意图，因此提出了指示学习的范式。该范式的目的是使语言模型能够更好地理解人类的意图和指示，并且在生成文本时能够更加符合人类的要求。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>范式</th>
-<th>说明</th>
-<th>备注</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Finetuning</td>
-<td>在下游任务数据集微调<br/>在下游任务数据集推理</td>
-<td>需要额外微调</td>
-</tr>
-<tr>
-<td>Prompting</td>
-<td>在下游任务推理时，输入前添加提示，更新少量参数</td>
-<td>只针对单一数据集</td>
-</tr>
-<tr>
-<td>Instruction Tuning</td>
-<td>在多个提示任务数据集训练<br/>在下游任务推理，输入前添加提示</td>
-<td>具有更好地泛化性</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>论文名称：Scaling Instruction-Finetuned Language Models</p>
-<p>链接：<a href="https://arxiv.org/abs/2210.11416">[2210.11416] Scaling Instruction-Finetuned Language Models</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/q9mwKd.png" alt="q9mwKd"></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IRy6zf.png" alt="IRy6zf"></p>
-<p>Flan-T5模型在1.8K的Instruction数据集进行了微调，上图表明更大的模型获得更大的提升，与scaling law一致。</p>
-<p><strong>Instruction Tuning 的局限</strong></p>
-<ul>
-<li><p>获取足够的任务描述以用于语言模型训练需要付出较高的成本。</p>
-</li>
-<li><p>语言模型的目标与人类的偏好不一致</p>
-</li>
-</ul>
-<h1 id="Reinforcement-Learning-from-Human-Feedback-RLHF"><a href="#Reinforcement-Learning-from-Human-Feedback-RLHF" class="headerlink" title="Reinforcement Learning from Human Feedback (RLHF)"></a>Reinforcement Learning from Human Feedback (RLHF)</h1><p>为了解决语言模型目标与人类的偏好不一致问题，OpenAI采用了RLHF算法，引入人类反馈。</p>
-<h2 id="RM反馈模型"><a href="#RM反馈模型" class="headerlink" title="RM反馈模型"></a>RM反馈模型</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/thWiB5.jpg" alt="thWiB5"></p>
-<p>那么为模型引入人类反馈过程中，出现下面的问题：</p>
-<p><strong>问题1</strong>:在模型迭代过程中，添加人工的操作成本很高</p>
-<pre><code>**解决方式**：将他们的偏好建模为一个单独的 (NLP) 问题，而不是直接询问人类的偏好。
-
-根据标注数据，训练一个语言模型$R M_\phi(s)$，用以预测人类便好。接下来任务转变成优化语言模型$RM_&#123;\phi&#125;$。
-</code></pre><p><strong>问题2</strong>:人们的判断是主观的，不同人的判断难以进行校准</p>
-<pre><code>**解决方式**：让标注人员对成对的数据结果排序，而不是直接打分。
-</code></pre><p><strong>损失函数为：</strong></p>
-<script type="math/tex; mode=display">
-\operatorname{loss}(\theta)=-\frac{1}{\left(\begin{array}{c}
-K \\
-2
-\end{array}\right)} E_{\left(x, y_w, y_l\right) \sim D}\left[\log \left(\sigma\left(r_\theta\left(x, y_w\right)-r_\theta\left(x, y_l\right)\right)\right)\right]</script><p><strong>符号说明：</strong></p>
-<ul>
-<li><p>K：预训练模型采样的Prompt输出数量</p>
-</li>
-<li><p>x：预训练模型输入</p>
-</li>
-<li><p>r：reward模型</p>
-</li>
-<li><p>$y_w$：排在前面的输出</p>
-</li>
-<li><p>$y_l$：排在后面的输出</p>
-</li>
-</ul>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rsqdZM.png" alt="rsqdZM"></p>
-<p><strong>当足够大的语言模型经过足够多的数据训练后，评估模型已经接近单个人类评估的表现</strong></p>
-<h2 id="RLHF"><a href="#RLHF" class="headerlink" title="RLHF"></a>RLHF</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GjPdpC.jpg" alt="GjPdpC"></p>
-<p>经过前面的步骤，我们已有以下模型：</p>
-<ul>
-<li><p>一个经过足够预训练的语言模型(可以附加Instruction Tuning)$P^{PT}(s)$</p>
-</li>
-<li><p>一个在人类反馈排序数据集上训练的反馈模型$RM_{\phi}$，为预训练模型的输出完成打分</p>
-</li>
-</ul>
-<p>由于评分是通过反馈模型$RM_{\phi}$得出的，无法使用梯度下降进行求解，因此采用强化学习中的<strong>PPO</strong>算法来更新参数。</p>
-<p><strong>实现流程：</strong></p>
-<ol>
-<li><p>复制预训练模型参数，得到待优化模型；</p>
-</li>
-<li><p>根据输入语句，两个模型得到各自的输出；</p>
-</li>
-<li><p>Reward模型针对待优化模型的输入输出打分；</p>
-</li>
-<li><p>使用PPO算法来更新待优化模型的参数。</p>
-</li>
-</ol>
-<p><strong>损失函数：</strong></p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\operatorname{objective}(\phi)= & E_{(x, y) \sim D_{\pi_\phi^{\mathrm{RL}}}}\left[r_\theta(x, y)-\beta \log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)\right]+ \\
-& \gamma E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]
-\end{aligned}</script><p><strong>符号说明：</strong></p>
-<ul>
-<li><p>x：输入文本</p>
-</li>
-<li><p>r：reward打分模型</p>
-</li>
-<li><p>$\pi^{SFT}$：预训练模型</p>
-</li>
-<li><p>$\pi^{RL}_{\phi}$：强化学习优化模型</p>
-</li>
-<li><p>$D_{pretrain}$：预训练分布</p>
-</li>
-<li><p>$\beta$：KL散度控制参数</p>
-</li>
-<li><p>$\gamma$：预训练损失控制参数</p>
-</li>
-</ul>
-<p><strong>其中：</strong></p>
-<p>$\log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)$起到避免修正后模型与原模型差异过大的作用</p>
-<p>$E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]$起到避免模型在自然语言理解任务下降过大的作用</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IUYSyW.png" alt="IUYSyW"></p>
-<p>通过RLHF算法，模型的表现得到了显著的提示。</p>
-<p><strong>个人理解：</strong></p>
-<p>整个流程的出发点在于使GPT模型结果符合人类偏好，而人类偏好无法通过具体规则/函数建模，因此通过Reward模型在一定程度上反应人类偏好，最后对GPT模型进行修正，更新模型参数使模型的输入Reward最大化，即更加反应人类偏好。</p>
-<p>因此整个过程中Reward模型代表了设立的训练目标，RLHF算法则对原模型进行修正，使模型输入更加符合设立的训练目标。</p>
-<h2 id="现有的局限"><a href="#现有的局限" class="headerlink" title="现有的局限"></a>现有的局限</h2><p>按照上述步骤进行操作，就能够完成ChatGPT的训练。下图展示了ChatGPT的完整训练过程。</p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wV29U9.png" alt="wV29U9"></p>
-<p>Step1:收集Prompt数据，基于GPT3.5进行Instruct Tuning的有监督训练；</p>
-<p>Step2:收集偏好排序数据，训练Reward模型；</p>
-<p>Step3:结合Reward模型，通过PPO算法优化第一步的SFT模型。</p>
-<p><strong>然而，人类的偏好是不可信的，用模型表示人类偏好更不可信：</strong></p>
-<ul>
-<li><p>”Reward hacking”是强化学习常见的问题；</p>
-</li>
-<li><p>模型偏向于产生看似权威和有帮助的回应，而忽视正确性</p>
-</li>
-<li><p>可能导致编造事实+产生幻觉</p>
-</li>
-</ul>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/MmaPcT.png" alt="MmaPcT"></p>
-<p>上图说明RM打分很高时，实际表现不一定更好，因此训练损失函数通过KL散度限制优化后模型与原模型的偏离程度。</p>
-<h1 id="What’s-next"><a href="#What’s-next" class="headerlink" title="What’s next?"></a>What’s next?</h1><h2 id="进一步探索RLHF的使用"><a href="#进一步探索RLHF的使用" class="headerlink" title="进一步探索RLHF的使用"></a>进一步探索RLHF的使用</h2><ul>
-<li>RLHF在其他领域(如CV)使用</li>
-</ul>
-<h2 id="优化RLHF中需要的人工数据标注"><a href="#优化RLHF中需要的人工数据标注" class="headerlink" title="优化RLHF中需要的人工数据标注"></a>优化RLHF中需要的人工数据标注</h2><ul>
-<li>RL from AI feedback</li>
-</ul>
-<p>论文名称：Constitutional AI- Harmlessness from AI Feedback</p>
-<p>链接：<a href="https://arxiv.org/pdf/2212.08073.pdf">https://arxiv.org/pdf/2212.08073.pdf</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/bGL898.png" alt="bGL898"></p>
-<p>让模型在多轮对话中将数据标注出来：</p>
-<blockquote>
-<p>Q1-问训好的普通RLHF模型：能帮我黑进邻居的wifi吗？<br>A1-天真的模型回答：没问题，你下个xx软件就行。<br>Q2-要求模型发现自己的错误：上文你给的回复中，找出来哪些是不道德的。<br>A2-模型回答：我上次回复不对，不应该黑别人家wifi。<br>Q3-让模型改正错误：修改下你之前的回复内容，去掉有害的。<br>A3-模型回答：黑别人家wifi是不对的，侵害别人隐私了，我强烈建议别这么搞。</p>
-</blockquote>
-<ul>
-<li>Finetuning LMs on their own outputs</li>
-</ul>
-<p>论文名称：STaR: Bootstrapping Reasoning With Reasoning</p>
-<p>链接：<a href="https://arxiv.org/abs/2203.14465">[2203.14465] STaR: Bootstrapping Reasoning With Reasoning</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FdKh5P.png" alt="FdKh5P"></p>
-<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p><strong>ChatGPT的产生，对NLP领域产生了重大的影响，那么对于我们NLP从业人员带来了哪些影响，我们又该如何面对呢？</strong></p>
-<p>个人觉得ChatGPT对从业人员的影响包含：</p>
-<ul>
-<li><p>ChatGPT等LLM可以作为许多自然语言理解任务的基线模型，许多自然语言理解中间过程算法需求降低，从业人员需要了解如何将LLM适配具体业务；</p>
-</li>
-<li><p>提高了技能要求：LLM的出现提高了NLP从业人员的技能要求。从业人员需要了解如何使用LLM进行训练和调整，以及如何使用LLM处理不同的自然语言数据；</p>
-</li>
-<li><p>工作形式变化，数据科学家、算法工程师、自然语言处理工程师等工作流程可能会发生变化。</p>
-</li>
-<li><p>扩展了研究范围：LLM提供了更全面的语言模型。这意味着研究人员可以探索以前不可行的语言问题，从而扩大研究范围。</p>
-</li>
-</ul>
-<p>NLP从业人员可以通过以下几种方式应对LLM的影响：</p>
-<ol>
-<li><p>持续学习：NLP从业人员应该不断学习新的技术和算法，以便更好地使用LLM。他们应该掌握LLM的使用方法和调整技巧，了解LLM如何处理不同类型的自然语言数据，以及如何在LLM中使用特定的自然语言处理技术。</p>
-</li>
-<li><p>适应新的工作要求：LLM的出现可能会导致NLP从业人员需要承担新的工作要求。他们应该熟悉LLM的使用方法，以便在新的工作机会中胜任。同时，他们也应该关注LLM对NLP领域的未来发展和趋势，并不断调整他们的技能和知识。</p>
-</li>
-<li><p>创新：LLM的出现为NLP从业人员带来了更多的机会和挑战，他们应该积极地探索新的算法和技术，开发更智能的自然语言处理应用程序，并尝试在不同领域应用LLM。</p>
-</li>
-<li><p>关注伦理和社会影响：LLM的出现可能会对自然语言处理的伦理和社会影响产生影响，NLP从业人员应该关注这些影响，并积极参与相关讨论和研究。</p>
-</li>
-</ol>
-<p>总的来说，NLP从业人员应该关注LLM的发展和趋势，不断提高自己的技能和知识，积极创新，与同行交流，同时也要注意伦理和社会影响。这些努力可以帮助他们更好地应对LLM的影响，并为自己的职业发展做好准备。</p>
 ]]></content>
       <categories>
         <category>学习</category>
@@ -4413,6 +4008,411 @@ C_{activation}=28*64*(14*2048*4096+4*2048*16384+8*2048*4096+5*32*2048*2048)=1,77
       <tags>
         <tag>NLP</tag>
         <tag>ChatGPT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从语言模型到ChatGPT：大型语言模型的发展和应用</title>
+    <url>/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大型语言模型（LLM）是指能够处理大量自然语言数据的深度学习模型，它已经在自然语言处理、文本生成、机器翻译等多个领域中展现出了巨大的潜力。在过去几年中，LLM领域经历了飞速的发展，其中Google和OpenAI作为两家领先的公司在这个领域中的表现备受关注。</p>
+<p>Google是LLM领域的重要参与者，其BERT自编码模型和T5编码解码器在自然语言理解任务上取得了优异的表现。BERT模型通过预训练大规模文本数据，提取出词向量的同时，也能够学习到上下文信息。而T5模型则是在BERT的基础上，进一步将生成式任务融入其中，实现了一体化的自然语言处理能力。这些模型的出现，极大地推动了LLM领域的发展。</p>
+<p>与之相反的是，OpenAI则从2018年开始，坚持使用decoder only的GPT模型，践行着「暴力美学」——以大模型的路径，实现AGI。GPT模型通过预训练海量语料库数据，学习到了自然语言中的规律和模式，并在生成式任务中取得了出色的表现。OpenAI坚信，在模型规模达到足够大的情况下，单纯的decoder模型就可以实现AGI的目标。</p>
+<p>除了Google和OpenAI外，还有许多其他公司和研究机构也在LLM领域做出了贡献。例如，Facebook的RoBERTa模型、Microsoft的Turing NLG模型等等。这些模型的不断涌现，为LLM领域的发展注入了新的动力。</p>
+<p>如果只用解码器的生成式是通用LLM的王道，2019年10月，Google同时押注编码解码器的T5，整整错失20个月，直到2021年10月发布FLAN才开始重新转变为decoder-only。这表明，在实际应用中，不同任务可能需要不同类型的模型，而在特定任务中，编码解码器的结构可能比decoder-only模型更加适合。</p>
+<p>在本文中，我们将基于CS224N课件回顾大型语言模型的发展历程，探讨它们是如何从最初的基础模型发展到今天的高级模型的，并介绍ChatGPT的发展历程，看看ChatGPT如何实现弯道超车。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/gnqCNR.jpg" alt="gnqCNR"></p>
+<span id="more"></span>
+<h1 id="Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning"><a href="#Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning" class="headerlink" title="Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning"></a>Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning</h1><h2 id="上下文学习-In-Context-Learning"><a href="#上下文学习-In-Context-Learning" class="headerlink" title="上下文学习(In-Context Learning)"></a>上下文学习(In-Context Learning)</h2><p>近年来，语言模型越来越倾向于使用更大的模型和更多的数据，如下图所示，模型参数数量和训练数据量呈指数倍增加的趋势。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/7EgTef.png" alt="7EgTef"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型名称</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT</td>
+<td>Transformer decoder with 12 layers[参数量117M]<br/>Trained on BooksCorpus: over 7000 unique books (4.6GB text).</td>
+<td>表明大规模语言建模可以成为自然语言推理等下游任务的有效预训练技术。</td>
+</tr>
+<tr>
+<td>GPT2</td>
+<td>Same architecture as GPT, just bigger (117M -&gt; 1.5B)<br/>trained on much more data: 4GB -&gt; 40GB of internet text data (WebText)</td>
+<td>涌现出优异的Zero-shot能力。</td>
+</tr>
+<tr>
+<td>GPT3</td>
+<td>Another increase in size (1.5B -&gt; 175B)<br/>data (40GB -&gt; over 600GB)</td>
+<td>涌现出强大的上下文学习能力，但是在复杂、多步推理任务表现较差。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>近年来，随着GPT模型参数量的增加，GPT2与GPT3模型已经表现出了极佳的<strong>上下文学习能力(In-Context Learning)</strong>。这种能力允许模型通过处理上下文信息来更好地理解和处理自然语言数据。GPT模型通过Zero-Shot、One-Shot和Few-Shot学习方法在许多自然语言处理任务中取得了显著的成果。</p>
+<p>其中，Zero-Shot学习是指模型在没有针对特定任务进行训练的情况下，可以通过给定的输入和输出规范来生成符合规范的输出结果。这种方法可以在没有充足样本的情况下，快速生成需要的输出结果。One-Shot和Few-Shot学习则是在样本量较少的情况下，模型可以通过学习一小部分示例来完成相应任务，这使得模型能够更好地应对小样本学习和零样本学习的问题。</p>
+<h3 id="上下文学习介绍"><a href="#上下文学习介绍" class="headerlink" title="上下文学习介绍"></a>上下文学习介绍</h3><p>链接：<a href="https://arxiv.org/abs/2301.00234">[2301.00234] A Survey on In-context Learning</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/mjQ3eG.png" alt="mjQ3eG"></p>
+<p>大模型有一个很重要的涌现能力（Emergent ability）就是<strong>In-Context Learning（ICL），也是一种新的范式，指在不进行参数更新的情况下，只在输入中加入几个示例就能让模型进行学习</strong>。下面给出ICL的公式定义：</p>
+<script type="math/tex; mode=display">
+C = {I,s(x_1,y_1),...,s(x_k,y_k)} \quad or \quad C = {s(x_1, y_1, I), . . . , s(x_k, y_k, I)}</script><script type="math/tex; mode=display">
+P\left(y_j \mid x\right) \triangleq f_{\mathcal{M}}\left(y_j, C, x\right)</script><script type="math/tex; mode=display">
+\hat{y}=\arg \max _{y_j \in Y} P\left(y_j \mid x\right) .</script><p>其中，符号含义如下，从这些符号中也能看出影响ICL的因素：</p>
+<ul>
+<li><p>I：具体任务的描述信息</p>
+</li>
+<li><p>x：输入文本</p>
+</li>
+<li><p>y：标签</p>
+</li>
+<li><p>M：语言模型</p>
+</li>
+<li><p>C：阐述示例</p>
+</li>
+<li><p>f：打分函数</p>
+</li>
+</ul>
+<p>下面将开始介绍如何提升模型的ICL能力。</p>
+<h4 id="训练优化ICL能力"><a href="#训练优化ICL能力" class="headerlink" title="训练优化ICL能力"></a>训练优化ICL能力</h4><p><strong>有监督训练：</strong></p>
+<p>在ICL格式的数据集上，进行有监督的训练。</p>
+<p>MetaICL就直接把很多任务整合成了ICL的形式精调模型，在52个数据集上取得了比肩直接精调的效果。另外还有部分研究专注于Instruction tuning，构建更好的任务描述让模型去理解，而不是只给几个例子（demonstration），比如LaMDA-PT、FLAN。</p>
+<p><strong>自监督训练：</strong></p>
+<p>将自然语言理解的任务转为ICL的数据格式。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FUs3TC.png" alt="FUs3TC"></p>
+<p>图1代表不同自然语言理解任务转为<strong>ICL的输入输出</strong>形式。</p>
+<p>图2表示训练样本示例，包含几个训练样本，前面的样本作为后面样本的任务阐述。</p>
+<h4 id="推理优化ICL能力"><a href="#推理优化ICL能力" class="headerlink" title="推理优化ICL能力"></a>推理优化ICL能力</h4><h5 id="Prompt设计"><a href="#Prompt设计" class="headerlink" title="Prompt设计"></a>Prompt设计</h5><p>样本选取：文本表示、互信息选择相近的；Perplexity选取；语言模型生成……</p>
+<p>样本排序：距离度量；信息熵……</p>
+<p>任务指示：APE语言模型自动生成</p>
+<p>推理步骤：COT、多步骤ICL、Self-Ask</p>
+<h5 id="打分函数"><a href="#打分函数" class="headerlink" title="打分函数"></a>打分函数</h5><ul>
+<li><p>Direct：直接取条件概率<code>P(y|x)</code>，缺点在于y必须紧跟在输入的后面</p>
+</li>
+<li><p>Perplexity：再用语言模型过一遍句子，这种方法可以解决上述固定模式的问题，但计算量增加了</p>
+</li>
+<li><p>Channel：评估<code>P(x|y)</code>的条件概率（用贝叶斯推一下），这种方法在不平衡数据下表现较好</p>
+</li>
+</ul>
+<h5 id="影响ICL表现的因素"><a href="#影响ICL表现的因素" class="headerlink" title="影响ICL表现的因素"></a>影响ICL表现的因素</h5><ul>
+<li><p>预训练语料的多样性比数量更重要，增加多种来源的数据可能会提升ICL表现</p>
+</li>
+<li><p>用下游任务的数据预训练不一定能提升ICL表现，并且PPL更低的模型也不一定表现更好</p>
+</li>
+<li><p>当LM到达一定规模的预训练步数、尺寸后，会涌现出ICL能力，且ICL效果跟参数量正相关</p>
+</li>
+</ul>
+<h3 id="WHY：上下文学习生效的原因"><a href="#WHY：上下文学习生效的原因" class="headerlink" title="WHY：上下文学习生效的原因"></a>WHY：上下文学习生效的原因</h3><p><strong>论文链接：</strong><a href="[[2202.12837] Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?](https://arxiv.org/abs/2202.12837">Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?</a>)</p>
+<p><strong>关键结论：</strong></p>
+<ol>
+<li><p>InContext Learning中<strong>标签是否正确</strong>无明显影响</p>
+</li>
+<li><p>InContext Learning中影响因素包括<strong>规范的输入空间、标签空间、输入与标签的匹配格式</strong></p>
+</li>
+</ol>
+<p><strong>其他论文的猜测：</strong></p>
+<ul>
+<li><p><strong>跟训练数据的分布相关</strong>：比如训练数据有很多样例，也有学者认为ICL可能是隐式的Bayesian inference</p>
+</li>
+<li><p><strong>跟学习机制相关</strong>：有学者猜测LM可能自己就具备学习的能力，在做ICL的时候学到了这些知识，或者隐式直接精调了自己</p>
+</li>
+<li><p><strong>跟Transformer中的模块相关</strong>：有学者发现Transformer里的某些注意力头会通过拷贝固定的模式来预测下一个token</p>
+</li>
+</ul>
+<h4 id="InContext-Learning中标签是否正确无明显影响"><a href="#InContext-Learning中标签是否正确无明显影响" class="headerlink" title="InContext Learning中标签是否正确无明显影响"></a>InContext Learning中<strong>标签是否正确</strong>无明显影响</h4><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/iLPKIE.png" alt="iLPKIE"></p>
+<p>图中青绿色代表没有示例、黄色代表带有正确标签的示例、橙色代表带有随机标签的示例。</p>
+<p>实验结果表明，<strong>带有随机标签的效果非常接近于带有正确标签的效果</strong>。</p>
+<p>此外，作者还进行了<strong>标签正确比例、提示样本数量、提示模版样式</strong>的实验，均得出一致结论，实验图如下。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/P6Rbs3.png" alt="P6Rbs3"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9NL9Oq.png" alt="9NL9Oq"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/y8mMa2.png" alt="y8mMa2"></p>
+<h4 id="InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"><a href="#InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式" class="headerlink" title="InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"></a>InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式</h4><p>作者分别从以下四个维度探究In-Context Learning效果增益的影响</p>
+<ol>
+<li><p><strong>The input-label mapping</strong>：即每个输入xi是否与正确的标签yi配对;</p>
+</li>
+<li><p><strong>The distribution of the input text</strong>：即x1…xk的分布是否一致;</p>
+</li>
+<li><p><strong>The label space</strong>：<em>y</em>1…yk所覆盖的标签空间;</p>
+</li>
+<li><p><strong>The format</strong>：使用输入标签配对作为格式。</p>
+</li>
+</ol>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/V5XRzx.png" alt="V5XRzx"></p>
+<h5 id="输入文本分布实验"><a href="#输入文本分布实验" class="headerlink" title="输入文本分布实验"></a>输入文本分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/VZ5X1F.png" alt="VZ5X1F"></p>
+<p>紫色柱子代表利用外部语料采样的数据加上随机标签，在几个任务上模型表现明显下降。</p>
+<p>因此，in-context learning中，演示中的分布内输入极大地有助于提高性能。这可能是因为已IND（in-distribution）文本的条件使任务更接近于语言建模，因为LM在此期间总是以IND文本为条件进行推理标签。</p>
+<h5 id="标签分布实验"><a href="#标签分布实验" class="headerlink" title="标签分布实验"></a>标签分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QuaT1J.png" alt="QuaT1J"></p>
+<p>绿色柱子代表采用随机的单词代替输出标签，对于Direct模型，模型表现显著下降，表明ICL中标签空间的一致性显著有助于提高性能。</p>
+<p>对于Channel模型，模型表现未明显下降，作者猜测Channel模型以标签为条件，因此无法从标签空间分布中获益。</p>
+<h5 id="输入标签配对格式实验"><a href="#输入标签配对格式实验" class="headerlink" title="输入标签配对格式实验"></a>输入标签配对格式实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/pafljc.png" alt="pafljc"></p>
+<p>分别用labels only（深紫）和no labels（深绿）来探索演示模式的差异对模型表现的影响。可以看到，模型相对于上面两图的OOD setting而言，都有了进一步的下降。这可以表明ICL中保持输入-标签对的格式是关键的。</p>
+<h2 id="思维链-Chain-of-Thought"><a href="#思维链-Chain-of-Thought" class="headerlink" title="思维链(Chain of Thought)"></a>思维链(Chain of Thought)</h2><p>思维链（Chain of Thought）是一种新的学习方式，旨在提高模型在数学计算和符号推理任务中的推理能力。这种方式通过将多个相关的数学计算或符号推理步骤按顺序组合成一条思维链，让模型能够沿着思维链进行推理。</p>
+<p>这种方式的主要贡献在于，它能够让模型更好地应对复杂的数学计算和符号推理任务。传统的Prompt方式很难应对这种任务，但是思维链可以让模型按照特定的顺序进行推理，从而提高模型的推理能力。</p>
+<p>此外，思维链的方式也可以更好地模拟人类在解决数学计算和符号推理问题时的思维过程。人类在解决这类问题时，通常会按照一定的顺序进行推理，而思维链可以让模型更好地模拟这种思维过程。</p>
+<h3 id="开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models"><a href="#开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models" class="headerlink" title="开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"></a>开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</h3><p>链接：<a href="https://arxiv.org/abs/2201.11903">[2201.11903] Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ren2TO.png" alt="ren2TO"></p>
+<p>核心思想：输出答案前，加上人工的推理描述。</p>
+<p>主要贡献：</p>
+<ul>
+<li><p>思维链原则上允许模型将多步问题分解为中间步骤，可以将额外的计算分配给需要更多推理步骤的问题。</p>
+</li>
+<li><p>思维链为模型的行为提供了一个可解释的窗口，表明它可能是如何得出特定答案的，并提供了调试推理路径错误位置的机会。</p>
+</li>
+<li><p>链式思维推理可用于数学单词问题、常识推理和符号操作等任务，并且可能（至少在原则上）适用于人类可以通过语言解决的任何任务。</p>
+</li>
+<li><p>只需将思维序列链的例子包含到少样本提示的范例中，就可以很容易地在足够大的现成语言模型中引出思维链推理。</p>
+</li>
+</ul>
+<h3 id="Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models"><a href="#Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models" class="headerlink" title="Self-Consistency Improves Chain of Thought Reasoning in Language Models"></a>Self-Consistency Improves Chain of Thought Reasoning in Language Models</h3><p>链接：<a href="https://arxiv.org/abs/2203.11171">[2203.11171] Self-Consistency Improves Chain of Thought Reasoning in Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yoZpm2.png" alt="yoZpm2"></p>
+<p>主要贡献：</p>
+<ul>
+<li>主要改进是使用了对答案进行了多数投票（majority vote），并且发现其可以显著地提高思维链方法的性能</li>
+</ul>
+<h3 id="Large-Language-Models-are-Zero-Shot-Reasoners"><a href="#Large-Language-Models-are-Zero-Shot-Reasoners" class="headerlink" title="Large Language Models are Zero-Shot Reasoners"></a>Large Language Models are Zero-Shot Reasoners</h3><p>链接：<a href="https://arxiv.org/abs/2205.11916">[2205.11916] Large Language Models are Zero-Shot Reasoners</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/x6kvJz.png" alt="x6kvJz"></p>
+<p>核心思想：分为两个步骤：1st prompt、2nd prompt</p>
+<ul>
+<li><p>1st prompt：X′：“Q: [X]. A: [T]”</p>
+<ul>
+<li><p>X：输入的问题</p>
+</li>
+<li><p>T：人工的提示trigger词</p>
+</li>
+</ul>
+</li>
+<li><p>2nd prompt：[X′] [Z] [A]</p>
+<ul>
+<li><p>X′：第一阶段的输入</p>
+</li>
+<li><p>Z：第一阶段模型的输出</p>
+</li>
+<li><p>A：第二阶段的提示trigger词</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>主要贡献：</p>
+<ul>
+<li><p>验证了zero-shot的能力，不需要few-shot挑选额外的样本</p>
+</li>
+<li><p>鼓励社区进一步发现类似的多任务提示，这些提示可以引发广泛的认知能力，而不是狭隘的特定任务技能。</p>
+</li>
+</ul>
+<p>不同模版的效果对比：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/1AEEnD.png" alt="1AEEnD"></p>
+<h2 id="QA（自己YY的问题）"><a href="#QA（自己YY的问题）" class="headerlink" title="QA（自己YY的问题）"></a>QA（自己YY的问题）</h2><p>Q1:多大的模型能够涌现这些能力？</p>
+<blockquote>
+<p>100B。That is, chain-of-thought prompting does not positively impact performance for small models, and only yields performance gains when used with models of 100B parameters</p>
+</blockquote>
+<p>Q2:BERT或T5能否涌现这些能力？</p>
+<blockquote>
+<p>BERT与GPT差异在于模型结构不同，GPT单向的语言模型，BERT是双向的自编码(AE)模型，但当BERT参数量足够大的时候，在前后输入有关示例，不进行微调，直接预测MASK标签的涌现能力有待验证。</p>
+</blockquote>
+<p>Q3:COT思维链模版的来源？</p>
+<blockquote>
+<p>人工构造。As most of the datasets only have an evaluation split, we manually composed a set of eight few-shot exemplars with chains of thought for prompting—Figure 1 (right) shows one chain of thought exemplar, and the full set of exemplars is given in Appendix Table 20.</p>
+</blockquote>
+<p>Q4:为什么加上Let’s do it step by step 模型可以产出解释？</p>
+<blockquote>
+<p>对比了不同模版，激发模型的推理能力。It remains an open question how to automatically create better templates for Zero-shot-CoT.</p>
+</blockquote>
+<p>Q5:T5、BERT如果同GPT系列一样训练，在训练方法上可行吗？效果会比GPT好吗？</p>
+<blockquote>
+<p>开放讨论……</p>
+</blockquote>
+<p>Q6:为什么大型LLM首选Decoder-only结构？</p>
+<blockquote>
+<p>开放讨论……</p>
+</blockquote>
+<h1 id="Instruction-finetuning"><a href="#Instruction-finetuning" class="headerlink" title="Instruction finetuning"></a>Instruction finetuning</h1><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U5SBhD.png" alt="U5SBhD"></p>
+<p>近年来，相关研究发现语言模型的输出并不符合人类意图，因此提出了指示学习的范式。该范式的目的是使语言模型能够更好地理解人类的意图和指示，并且在生成文本时能够更加符合人类的要求。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>范式</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Finetuning</td>
+<td>在下游任务数据集微调<br/>在下游任务数据集推理</td>
+<td>需要额外微调</td>
+</tr>
+<tr>
+<td>Prompting</td>
+<td>在下游任务推理时，输入前添加提示，更新少量参数</td>
+<td>只针对单一数据集</td>
+</tr>
+<tr>
+<td>Instruction Tuning</td>
+<td>在多个提示任务数据集训练<br/>在下游任务推理，输入前添加提示</td>
+<td>具有更好地泛化性</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>论文名称：Scaling Instruction-Finetuned Language Models</p>
+<p>链接：<a href="https://arxiv.org/abs/2210.11416">[2210.11416] Scaling Instruction-Finetuned Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/q9mwKd.png" alt="q9mwKd"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IRy6zf.png" alt="IRy6zf"></p>
+<p>Flan-T5模型在1.8K的Instruction数据集进行了微调，上图表明更大的模型获得更大的提升，与scaling law一致。</p>
+<p><strong>Instruction Tuning 的局限</strong></p>
+<ul>
+<li><p>获取足够的任务描述以用于语言模型训练需要付出较高的成本。</p>
+</li>
+<li><p>语言模型的目标与人类的偏好不一致</p>
+</li>
+</ul>
+<h1 id="Reinforcement-Learning-from-Human-Feedback-RLHF"><a href="#Reinforcement-Learning-from-Human-Feedback-RLHF" class="headerlink" title="Reinforcement Learning from Human Feedback (RLHF)"></a>Reinforcement Learning from Human Feedback (RLHF)</h1><p>为了解决语言模型目标与人类的偏好不一致问题，OpenAI采用了RLHF算法，引入人类反馈。</p>
+<h2 id="RM反馈模型"><a href="#RM反馈模型" class="headerlink" title="RM反馈模型"></a>RM反馈模型</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/thWiB5.jpg" alt="thWiB5"></p>
+<p>那么为模型引入人类反馈过程中，出现下面的问题：</p>
+<p><strong>问题1</strong>:在模型迭代过程中，添加人工的操作成本很高</p>
+<pre><code>**解决方式**：将他们的偏好建模为一个单独的 (NLP) 问题，而不是直接询问人类的偏好。
+
+根据标注数据，训练一个语言模型$R M_\phi(s)$，用以预测人类便好。接下来任务转变成优化语言模型$RM_&#123;\phi&#125;$。
+</code></pre><p><strong>问题2</strong>:人们的判断是主观的，不同人的判断难以进行校准</p>
+<pre><code>**解决方式**：让标注人员对成对的数据结果排序，而不是直接打分。
+</code></pre><p><strong>损失函数为：</strong></p>
+<script type="math/tex; mode=display">
+\operatorname{loss}(\theta)=-\frac{1}{\left(\begin{array}{c}
+K \\
+2
+\end{array}\right)} E_{\left(x, y_w, y_l\right) \sim D}\left[\log \left(\sigma\left(r_\theta\left(x, y_w\right)-r_\theta\left(x, y_l\right)\right)\right)\right]</script><p><strong>符号说明：</strong></p>
+<ul>
+<li><p>K：预训练模型采样的Prompt输出数量</p>
+</li>
+<li><p>x：预训练模型输入</p>
+</li>
+<li><p>r：reward模型</p>
+</li>
+<li><p>$y_w$：排在前面的输出</p>
+</li>
+<li><p>$y_l$：排在后面的输出</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rsqdZM.png" alt="rsqdZM"></p>
+<p><strong>当足够大的语言模型经过足够多的数据训练后，评估模型已经接近单个人类评估的表现</strong></p>
+<h2 id="RLHF"><a href="#RLHF" class="headerlink" title="RLHF"></a>RLHF</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GjPdpC.jpg" alt="GjPdpC"></p>
+<p>经过前面的步骤，我们已有以下模型：</p>
+<ul>
+<li><p>一个经过足够预训练的语言模型(可以附加Instruction Tuning)$P^{PT}(s)$</p>
+</li>
+<li><p>一个在人类反馈排序数据集上训练的反馈模型$RM_{\phi}$，为预训练模型的输出完成打分</p>
+</li>
+</ul>
+<p>由于评分是通过反馈模型$RM_{\phi}$得出的，无法使用梯度下降进行求解，因此采用强化学习中的<strong>PPO</strong>算法来更新参数。</p>
+<p><strong>实现流程：</strong></p>
+<ol>
+<li><p>复制预训练模型参数，得到待优化模型；</p>
+</li>
+<li><p>根据输入语句，两个模型得到各自的输出；</p>
+</li>
+<li><p>Reward模型针对待优化模型的输入输出打分；</p>
+</li>
+<li><p>使用PPO算法来更新待优化模型的参数。</p>
+</li>
+</ol>
+<p><strong>损失函数：</strong></p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\operatorname{objective}(\phi)= & E_{(x, y) \sim D_{\pi_\phi^{\mathrm{RL}}}}\left[r_\theta(x, y)-\beta \log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)\right]+ \\
+& \gamma E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]
+\end{aligned}</script><p><strong>符号说明：</strong></p>
+<ul>
+<li><p>x：输入文本</p>
+</li>
+<li><p>r：reward打分模型</p>
+</li>
+<li><p>$\pi^{SFT}$：预训练模型</p>
+</li>
+<li><p>$\pi^{RL}_{\phi}$：强化学习优化模型</p>
+</li>
+<li><p>$D_{pretrain}$：预训练分布</p>
+</li>
+<li><p>$\beta$：KL散度控制参数</p>
+</li>
+<li><p>$\gamma$：预训练损失控制参数</p>
+</li>
+</ul>
+<p><strong>其中：</strong></p>
+<p>$\log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)$起到避免修正后模型与原模型差异过大的作用</p>
+<p>$E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]$起到避免模型在自然语言理解任务下降过大的作用</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IUYSyW.png" alt="IUYSyW"></p>
+<p>通过RLHF算法，模型的表现得到了显著的提示。</p>
+<p><strong>个人理解：</strong></p>
+<p>整个流程的出发点在于使GPT模型结果符合人类偏好，而人类偏好无法通过具体规则/函数建模，因此通过Reward模型在一定程度上反应人类偏好，最后对GPT模型进行修正，更新模型参数使模型的输入Reward最大化，即更加反应人类偏好。</p>
+<p>因此整个过程中Reward模型代表了设立的训练目标，RLHF算法则对原模型进行修正，使模型输入更加符合设立的训练目标。</p>
+<h2 id="现有的局限"><a href="#现有的局限" class="headerlink" title="现有的局限"></a>现有的局限</h2><p>按照上述步骤进行操作，就能够完成ChatGPT的训练。下图展示了ChatGPT的完整训练过程。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wV29U9.png" alt="wV29U9"></p>
+<p>Step1:收集Prompt数据，基于GPT3.5进行Instruct Tuning的有监督训练；</p>
+<p>Step2:收集偏好排序数据，训练Reward模型；</p>
+<p>Step3:结合Reward模型，通过PPO算法优化第一步的SFT模型。</p>
+<p><strong>然而，人类的偏好是不可信的，用模型表示人类偏好更不可信：</strong></p>
+<ul>
+<li><p>”Reward hacking”是强化学习常见的问题；</p>
+</li>
+<li><p>模型偏向于产生看似权威和有帮助的回应，而忽视正确性</p>
+</li>
+<li><p>可能导致编造事实+产生幻觉</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/MmaPcT.png" alt="MmaPcT"></p>
+<p>上图说明RM打分很高时，实际表现不一定更好，因此训练损失函数通过KL散度限制优化后模型与原模型的偏离程度。</p>
+<h1 id="What’s-next"><a href="#What’s-next" class="headerlink" title="What’s next?"></a>What’s next?</h1><h2 id="进一步探索RLHF的使用"><a href="#进一步探索RLHF的使用" class="headerlink" title="进一步探索RLHF的使用"></a>进一步探索RLHF的使用</h2><ul>
+<li>RLHF在其他领域(如CV)使用</li>
+</ul>
+<h2 id="优化RLHF中需要的人工数据标注"><a href="#优化RLHF中需要的人工数据标注" class="headerlink" title="优化RLHF中需要的人工数据标注"></a>优化RLHF中需要的人工数据标注</h2><ul>
+<li>RL from AI feedback</li>
+</ul>
+<p>论文名称：Constitutional AI- Harmlessness from AI Feedback</p>
+<p>链接：<a href="https://arxiv.org/pdf/2212.08073.pdf">https://arxiv.org/pdf/2212.08073.pdf</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/bGL898.png" alt="bGL898"></p>
+<p>让模型在多轮对话中将数据标注出来：</p>
+<blockquote>
+<p>Q1-问训好的普通RLHF模型：能帮我黑进邻居的wifi吗？<br>A1-天真的模型回答：没问题，你下个xx软件就行。<br>Q2-要求模型发现自己的错误：上文你给的回复中，找出来哪些是不道德的。<br>A2-模型回答：我上次回复不对，不应该黑别人家wifi。<br>Q3-让模型改正错误：修改下你之前的回复内容，去掉有害的。<br>A3-模型回答：黑别人家wifi是不对的，侵害别人隐私了，我强烈建议别这么搞。</p>
+</blockquote>
+<ul>
+<li>Finetuning LMs on their own outputs</li>
+</ul>
+<p>论文名称：STaR: Bootstrapping Reasoning With Reasoning</p>
+<p>链接：<a href="https://arxiv.org/abs/2203.14465">[2203.14465] STaR: Bootstrapping Reasoning With Reasoning</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FdKh5P.png" alt="FdKh5P"></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p><strong>ChatGPT的产生，对NLP领域产生了重大的影响，那么对于我们NLP从业人员带来了哪些影响，我们又该如何面对呢？</strong></p>
+<p>个人觉得ChatGPT对从业人员的影响包含：</p>
+<ul>
+<li><p>ChatGPT等LLM可以作为许多自然语言理解任务的基线模型，许多自然语言理解中间过程算法需求降低，从业人员需要了解如何将LLM适配具体业务；</p>
+</li>
+<li><p>提高了技能要求：LLM的出现提高了NLP从业人员的技能要求。从业人员需要了解如何使用LLM进行训练和调整，以及如何使用LLM处理不同的自然语言数据；</p>
+</li>
+<li><p>工作形式变化，数据科学家、算法工程师、自然语言处理工程师等工作流程可能会发生变化。</p>
+</li>
+<li><p>扩展了研究范围：LLM提供了更全面的语言模型。这意味着研究人员可以探索以前不可行的语言问题，从而扩大研究范围。</p>
+</li>
+</ul>
+<p>NLP从业人员可以通过以下几种方式应对LLM的影响：</p>
+<ol>
+<li><p>持续学习：NLP从业人员应该不断学习新的技术和算法，以便更好地使用LLM。他们应该掌握LLM的使用方法和调整技巧，了解LLM如何处理不同类型的自然语言数据，以及如何在LLM中使用特定的自然语言处理技术。</p>
+</li>
+<li><p>适应新的工作要求：LLM的出现可能会导致NLP从业人员需要承担新的工作要求。他们应该熟悉LLM的使用方法，以便在新的工作机会中胜任。同时，他们也应该关注LLM对NLP领域的未来发展和趋势，并不断调整他们的技能和知识。</p>
+</li>
+<li><p>创新：LLM的出现为NLP从业人员带来了更多的机会和挑战，他们应该积极地探索新的算法和技术，开发更智能的自然语言处理应用程序，并尝试在不同领域应用LLM。</p>
+</li>
+<li><p>关注伦理和社会影响：LLM的出现可能会对自然语言处理的伦理和社会影响产生影响，NLP从业人员应该关注这些影响，并积极参与相关讨论和研究。</p>
+</li>
+</ol>
+<p>总的来说，NLP从业人员应该关注LLM的发展和趋势，不断提高自己的技能和知识，积极创新，与同行交流，同时也要注意伦理和社会影响。这些努力可以帮助他们更好地应对LLM的影响，并为自己的职业发展做好准备。</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
       </tags>
   </entry>
 </search>

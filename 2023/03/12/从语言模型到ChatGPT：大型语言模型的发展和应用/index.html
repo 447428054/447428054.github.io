@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言大型语言模型（LLM）是指能够处理大量自然语言数据的深度学习模型，它已经在自然语言处理、文本生成、机器翻译等多个领域中展现出了巨大的潜力。在过去几年中，LLM领域经历了飞速的发展，其中Google和OpenAI作为两家领先的公司在这个领域中的表现备受关注。 Google是LLM领域的重要参与者，其BERT自编码模型和T5编码解码器在自然语言理解任务上取得了优异的表现。BERT模型通过预训练大规">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从语言模型到ChatGPT：大型语言模型的发展和应用">
+<meta property="og:url" content="https://447428054.github.io/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言大型语言模型（LLM）是指能够处理大量自然语言数据的深度学习模型，它已经在自然语言处理、文本生成、机器翻译等多个领域中展现出了巨大的潜力。在过去几年中，LLM领域经历了飞速的发展，其中Google和OpenAI作为两家领先的公司在这个领域中的表现备受关注。 Google是LLM领域的重要参与者，其BERT自编码模型和T5编码解码器在自然语言理解任务上取得了优异的表现。BERT模型通过预训练大规">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/gnqCNR.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/7EgTef.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/mjQ3eG.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FUs3TC.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/iLPKIE.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/P6Rbs3.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9NL9Oq.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/y8mMa2.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/V5XRzx.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/VZ5X1F.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QuaT1J.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/pafljc.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ren2TO.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yoZpm2.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/x6kvJz.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/1AEEnD.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U5SBhD.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/q9mwKd.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IRy6zf.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/thWiB5.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rsqdZM.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GjPdpC.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IUYSyW.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wV29U9.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/MmaPcT.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/bGL898.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FdKh5P.png">
+<meta property="article:published_time" content="2023-03-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-03-12T11:09:14.162Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/gnqCNR.jpg">
+
+<link rel="canonical" href="https://447428054.github.io/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>从语言模型到ChatGPT：大型语言模型的发展和应用 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          从语言模型到ChatGPT：大型语言模型的发展和应用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-12 00:00:00 / 修改时间：19:09:14" itemprop="dateCreated datePublished" datetime="2023-03-12T00:00:00+08:00">2023-03-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大型语言模型（LLM）是指能够处理大量自然语言数据的深度学习模型，它已经在自然语言处理、文本生成、机器翻译等多个领域中展现出了巨大的潜力。在过去几年中，LLM领域经历了飞速的发展，其中Google和OpenAI作为两家领先的公司在这个领域中的表现备受关注。</p>
+<p>Google是LLM领域的重要参与者，其BERT自编码模型和T5编码解码器在自然语言理解任务上取得了优异的表现。BERT模型通过预训练大规模文本数据，提取出词向量的同时，也能够学习到上下文信息。而T5模型则是在BERT的基础上，进一步将生成式任务融入其中，实现了一体化的自然语言处理能力。这些模型的出现，极大地推动了LLM领域的发展。</p>
+<p>与之相反的是，OpenAI则从2018年开始，坚持使用decoder only的GPT模型，践行着「暴力美学」——以大模型的路径，实现AGI。GPT模型通过预训练海量语料库数据，学习到了自然语言中的规律和模式，并在生成式任务中取得了出色的表现。OpenAI坚信，在模型规模达到足够大的情况下，单纯的decoder模型就可以实现AGI的目标。</p>
+<p>除了Google和OpenAI外，还有许多其他公司和研究机构也在LLM领域做出了贡献。例如，Facebook的RoBERTa模型、Microsoft的Turing NLG模型等等。这些模型的不断涌现，为LLM领域的发展注入了新的动力。</p>
+<p>如果只用解码器的生成式是通用LLM的王道，2019年10月，Google同时押注编码解码器的T5，整整错失20个月，直到2021年10月发布FLAN才开始重新转变为decoder-only。这表明，在实际应用中，不同任务可能需要不同类型的模型，而在特定任务中，编码解码器的结构可能比decoder-only模型更加适合。</p>
+<p>在本文中，我们将基于CS224N课件回顾大型语言模型的发展历程，探讨它们是如何从最初的基础模型发展到今天的高级模型的，并介绍ChatGPT的发展历程，看看ChatGPT如何实现弯道超车。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/gnqCNR.jpg" alt="gnqCNR"></p>
+<span id="more"></span>
+<h1 id="Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning"><a href="#Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning" class="headerlink" title="Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning"></a>Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning</h1><h2 id="上下文学习-In-Context-Learning"><a href="#上下文学习-In-Context-Learning" class="headerlink" title="上下文学习(In-Context Learning)"></a>上下文学习(In-Context Learning)</h2><p>近年来，语言模型越来越倾向于使用更大的模型和更多的数据，如下图所示，模型参数数量和训练数据量呈指数倍增加的趋势。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/7EgTef.png" alt="7EgTef"></p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型名称</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT</td>
+<td>Transformer decoder with 12 layers[参数量117M]<br/>Trained on BooksCorpus: over 7000 unique books (4.6GB text).</td>
+<td>表明大规模语言建模可以成为自然语言推理等下游任务的有效预训练技术。</td>
+</tr>
+<tr>
+<td>GPT2</td>
+<td>Same architecture as GPT, just bigger (117M -&gt; 1.5B)<br/>trained on much more data: 4GB -&gt; 40GB of internet text data (WebText)</td>
+<td>涌现出优异的Zero-shot能力。</td>
+</tr>
+<tr>
+<td>GPT3</td>
+<td>Another increase in size (1.5B -&gt; 175B)<br/>data (40GB -&gt; over 600GB)</td>
+<td>涌现出强大的上下文学习能力，但是在复杂、多步推理任务表现较差。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>近年来，随着GPT模型参数量的增加，GPT2与GPT3模型已经表现出了极佳的<strong>上下文学习能力(In-Context Learning)</strong>。这种能力允许模型通过处理上下文信息来更好地理解和处理自然语言数据。GPT模型通过Zero-Shot、One-Shot和Few-Shot学习方法在许多自然语言处理任务中取得了显著的成果。</p>
+<p>其中，Zero-Shot学习是指模型在没有针对特定任务进行训练的情况下，可以通过给定的输入和输出规范来生成符合规范的输出结果。这种方法可以在没有充足样本的情况下，快速生成需要的输出结果。One-Shot和Few-Shot学习则是在样本量较少的情况下，模型可以通过学习一小部分示例来完成相应任务，这使得模型能够更好地应对小样本学习和零样本学习的问题。</p>
+<h3 id="上下文学习介绍"><a href="#上下文学习介绍" class="headerlink" title="上下文学习介绍"></a>上下文学习介绍</h3><p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2301.00234">[2301.00234] A Survey on In-context Learning</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/mjQ3eG.png" alt="mjQ3eG"></p>
+<p>大模型有一个很重要的涌现能力（Emergent ability）就是<strong>In-Context Learning（ICL），也是一种新的范式，指在不进行参数更新的情况下，只在输入中加入几个示例就能让模型进行学习</strong>。下面给出ICL的公式定义：</p>
+<script type="math/tex; mode=display">
+C = {I,s(x_1,y_1),...,s(x_k,y_k)} \quad or \quad C = {s(x_1, y_1, I), . . . , s(x_k, y_k, I)}</script><script type="math/tex; mode=display">
+P\left(y_j \mid x\right) \triangleq f_{\mathcal{M}}\left(y_j, C, x\right)</script><script type="math/tex; mode=display">
+\hat{y}=\arg \max _{y_j \in Y} P\left(y_j \mid x\right) .</script><p>其中，符号含义如下，从这些符号中也能看出影响ICL的因素：</p>
+<ul>
+<li><p>I：具体任务的描述信息</p>
+</li>
+<li><p>x：输入文本</p>
+</li>
+<li><p>y：标签</p>
+</li>
+<li><p>M：语言模型</p>
+</li>
+<li><p>C：阐述示例</p>
+</li>
+<li><p>f：打分函数</p>
+</li>
+</ul>
+<p>下面将开始介绍如何提升模型的ICL能力。</p>
+<h4 id="训练优化ICL能力"><a href="#训练优化ICL能力" class="headerlink" title="训练优化ICL能力"></a>训练优化ICL能力</h4><p><strong>有监督训练：</strong></p>
+<p>在ICL格式的数据集上，进行有监督的训练。</p>
+<p>MetaICL就直接把很多任务整合成了ICL的形式精调模型，在52个数据集上取得了比肩直接精调的效果。另外还有部分研究专注于Instruction tuning，构建更好的任务描述让模型去理解，而不是只给几个例子（demonstration），比如LaMDA-PT、FLAN。</p>
+<p><strong>自监督训练：</strong></p>
+<p>将自然语言理解的任务转为ICL的数据格式。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FUs3TC.png" alt="FUs3TC"></p>
+<p>图1代表不同自然语言理解任务转为<strong>ICL的输入输出</strong>形式。</p>
+<p>图2表示训练样本示例，包含几个训练样本，前面的样本作为后面样本的任务阐述。</p>
+<h4 id="推理优化ICL能力"><a href="#推理优化ICL能力" class="headerlink" title="推理优化ICL能力"></a>推理优化ICL能力</h4><h5 id="Prompt设计"><a href="#Prompt设计" class="headerlink" title="Prompt设计"></a>Prompt设计</h5><p>样本选取：文本表示、互信息选择相近的；Perplexity选取；语言模型生成……</p>
+<p>样本排序：距离度量；信息熵……</p>
+<p>任务指示：APE语言模型自动生成</p>
+<p>推理步骤：COT、多步骤ICL、Self-Ask</p>
+<h5 id="打分函数"><a href="#打分函数" class="headerlink" title="打分函数"></a>打分函数</h5><ul>
+<li><p>Direct：直接取条件概率<code>P(y|x)</code>，缺点在于y必须紧跟在输入的后面</p>
+</li>
+<li><p>Perplexity：再用语言模型过一遍句子，这种方法可以解决上述固定模式的问题，但计算量增加了</p>
+</li>
+<li><p>Channel：评估<code>P(x|y)</code>的条件概率（用贝叶斯推一下），这种方法在不平衡数据下表现较好</p>
+</li>
+</ul>
+<h5 id="影响ICL表现的因素"><a href="#影响ICL表现的因素" class="headerlink" title="影响ICL表现的因素"></a>影响ICL表现的因素</h5><ul>
+<li><p>预训练语料的多样性比数量更重要，增加多种来源的数据可能会提升ICL表现</p>
+</li>
+<li><p>用下游任务的数据预训练不一定能提升ICL表现，并且PPL更低的模型也不一定表现更好</p>
+</li>
+<li><p>当LM到达一定规模的预训练步数、尺寸后，会涌现出ICL能力，且ICL效果跟参数量正相关</p>
+</li>
+</ul>
+<h3 id="WHY：上下文学习生效的原因"><a href="#WHY：上下文学习生效的原因" class="headerlink" title="WHY：上下文学习生效的原因"></a>WHY：上下文学习生效的原因</h3><p><strong>论文链接：</strong><a href="[[2202.12837] Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?](https://arxiv.org/abs/2202.12837">Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?</a>)</p>
+<p><strong>关键结论：</strong></p>
+<ol>
+<li><p>InContext Learning中<strong>标签是否正确</strong>无明显影响</p>
+</li>
+<li><p>InContext Learning中影响因素包括<strong>规范的输入空间、标签空间、输入与标签的匹配格式</strong></p>
+</li>
+</ol>
+<p><strong>其他论文的猜测：</strong></p>
+<ul>
+<li><p><strong>跟训练数据的分布相关</strong>：比如训练数据有很多样例，也有学者认为ICL可能是隐式的Bayesian inference</p>
+</li>
+<li><p><strong>跟学习机制相关</strong>：有学者猜测LM可能自己就具备学习的能力，在做ICL的时候学到了这些知识，或者隐式直接精调了自己</p>
+</li>
+<li><p><strong>跟Transformer中的模块相关</strong>：有学者发现Transformer里的某些注意力头会通过拷贝固定的模式来预测下一个token</p>
+</li>
+</ul>
+<h4 id="InContext-Learning中标签是否正确无明显影响"><a href="#InContext-Learning中标签是否正确无明显影响" class="headerlink" title="InContext Learning中标签是否正确无明显影响"></a>InContext Learning中<strong>标签是否正确</strong>无明显影响</h4><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/iLPKIE.png" alt="iLPKIE"></p>
+<p>图中青绿色代表没有示例、黄色代表带有正确标签的示例、橙色代表带有随机标签的示例。</p>
+<p>实验结果表明，<strong>带有随机标签的效果非常接近于带有正确标签的效果</strong>。</p>
+<p>此外，作者还进行了<strong>标签正确比例、提示样本数量、提示模版样式</strong>的实验，均得出一致结论，实验图如下。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/P6Rbs3.png" alt="P6Rbs3"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9NL9Oq.png" alt="9NL9Oq"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/y8mMa2.png" alt="y8mMa2"></p>
+<h4 id="InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"><a href="#InContext-Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式" class="headerlink" title="InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式"></a>InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式</h4><p>作者分别从以下四个维度探究In-Context Learning效果增益的影响</p>
+<ol>
+<li><p><strong>The input-label mapping</strong>：即每个输入xi是否与正确的标签yi配对;</p>
+</li>
+<li><p><strong>The distribution of the input text</strong>：即x1…xk的分布是否一致;</p>
+</li>
+<li><p><strong>The label space</strong>：<em>y</em>1…yk所覆盖的标签空间;</p>
+</li>
+<li><p><strong>The format</strong>：使用输入标签配对作为格式。</p>
+</li>
+</ol>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/V5XRzx.png" alt="V5XRzx"></p>
+<h5 id="输入文本分布实验"><a href="#输入文本分布实验" class="headerlink" title="输入文本分布实验"></a>输入文本分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/VZ5X1F.png" alt="VZ5X1F"></p>
+<p>紫色柱子代表利用外部语料采样的数据加上随机标签，在几个任务上模型表现明显下降。</p>
+<p>因此，in-context learning中，演示中的分布内输入极大地有助于提高性能。这可能是因为已IND（in-distribution）文本的条件使任务更接近于语言建模，因为LM在此期间总是以IND文本为条件进行推理标签。</p>
+<h5 id="标签分布实验"><a href="#标签分布实验" class="headerlink" title="标签分布实验"></a>标签分布实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QuaT1J.png" alt="QuaT1J"></p>
+<p>绿色柱子代表采用随机的单词代替输出标签，对于Direct模型，模型表现显著下降，表明ICL中标签空间的一致性显著有助于提高性能。</p>
+<p>对于Channel模型，模型表现未明显下降，作者猜测Channel模型以标签为条件，因此无法从标签空间分布中获益。</p>
+<h5 id="输入标签配对格式实验"><a href="#输入标签配对格式实验" class="headerlink" title="输入标签配对格式实验"></a>输入标签配对格式实验</h5><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/pafljc.png" alt="pafljc"></p>
+<p>分别用labels only（深紫）和no labels（深绿）来探索演示模式的差异对模型表现的影响。可以看到，模型相对于上面两图的OOD setting而言，都有了进一步的下降。这可以表明ICL中保持输入-标签对的格式是关键的。</p>
+<h2 id="思维链-Chain-of-Thought"><a href="#思维链-Chain-of-Thought" class="headerlink" title="思维链(Chain of Thought)"></a>思维链(Chain of Thought)</h2><p>思维链（Chain of Thought）是一种新的学习方式，旨在提高模型在数学计算和符号推理任务中的推理能力。这种方式通过将多个相关的数学计算或符号推理步骤按顺序组合成一条思维链，让模型能够沿着思维链进行推理。</p>
+<p>这种方式的主要贡献在于，它能够让模型更好地应对复杂的数学计算和符号推理任务。传统的Prompt方式很难应对这种任务，但是思维链可以让模型按照特定的顺序进行推理，从而提高模型的推理能力。</p>
+<p>此外，思维链的方式也可以更好地模拟人类在解决数学计算和符号推理问题时的思维过程。人类在解决这类问题时，通常会按照一定的顺序进行推理，而思维链可以让模型更好地模拟这种思维过程。</p>
+<h3 id="开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models"><a href="#开山之作：Chain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models" class="headerlink" title="开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models"></a>开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</h3><p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2201.11903">[2201.11903] Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ren2TO.png" alt="ren2TO"></p>
+<p>核心思想：输出答案前，加上人工的推理描述。</p>
+<p>主要贡献：</p>
+<ul>
+<li><p>思维链原则上允许模型将多步问题分解为中间步骤，可以将额外的计算分配给需要更多推理步骤的问题。</p>
+</li>
+<li><p>思维链为模型的行为提供了一个可解释的窗口，表明它可能是如何得出特定答案的，并提供了调试推理路径错误位置的机会。</p>
+</li>
+<li><p>链式思维推理可用于数学单词问题、常识推理和符号操作等任务，并且可能（至少在原则上）适用于人类可以通过语言解决的任何任务。</p>
+</li>
+<li><p>只需将思维序列链的例子包含到少样本提示的范例中，就可以很容易地在足够大的现成语言模型中引出思维链推理。</p>
+</li>
+</ul>
+<h3 id="Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models"><a href="#Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models" class="headerlink" title="Self-Consistency Improves Chain of Thought Reasoning in Language Models"></a>Self-Consistency Improves Chain of Thought Reasoning in Language Models</h3><p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.11171">[2203.11171] Self-Consistency Improves Chain of Thought Reasoning in Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yoZpm2.png" alt="yoZpm2"></p>
+<p>主要贡献：</p>
+<ul>
+<li>主要改进是使用了对答案进行了多数投票（majority vote），并且发现其可以显著地提高思维链方法的性能</li>
+</ul>
+<h3 id="Large-Language-Models-are-Zero-Shot-Reasoners"><a href="#Large-Language-Models-are-Zero-Shot-Reasoners" class="headerlink" title="Large Language Models are Zero-Shot Reasoners"></a>Large Language Models are Zero-Shot Reasoners</h3><p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2205.11916">[2205.11916] Large Language Models are Zero-Shot Reasoners</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/x6kvJz.png" alt="x6kvJz"></p>
+<p>核心思想：分为两个步骤：1st prompt、2nd prompt</p>
+<ul>
+<li><p>1st prompt：X′：“Q: [X]. A: [T]”</p>
+<ul>
+<li><p>X：输入的问题</p>
+</li>
+<li><p>T：人工的提示trigger词</p>
+</li>
+</ul>
+</li>
+<li><p>2nd prompt：[X′] [Z] [A]</p>
+<ul>
+<li><p>X′：第一阶段的输入</p>
+</li>
+<li><p>Z：第一阶段模型的输出</p>
+</li>
+<li><p>A：第二阶段的提示trigger词</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>主要贡献：</p>
+<ul>
+<li><p>验证了zero-shot的能力，不需要few-shot挑选额外的样本</p>
+</li>
+<li><p>鼓励社区进一步发现类似的多任务提示，这些提示可以引发广泛的认知能力，而不是狭隘的特定任务技能。</p>
+</li>
+</ul>
+<p>不同模版的效果对比：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/1AEEnD.png" alt="1AEEnD"></p>
+<h2 id="QA（自己YY的问题）"><a href="#QA（自己YY的问题）" class="headerlink" title="QA（自己YY的问题）"></a>QA（自己YY的问题）</h2><p>Q1:多大的模型能够涌现这些能力？</p>
+<blockquote>
+<p>100B。That is, chain-of-thought prompting does not positively impact performance for small models, and only yields performance gains when used with models of 100B parameters</p>
+</blockquote>
+<p>Q2:BERT或T5能否涌现这些能力？</p>
+<blockquote>
+<p>BERT与GPT差异在于模型结构不同，GPT单向的语言模型，BERT是双向的自编码(AE)模型，但当BERT参数量足够大的时候，在前后输入有关示例，不进行微调，直接预测MASK标签的涌现能力有待验证。</p>
+</blockquote>
+<p>Q3:COT思维链模版的来源？</p>
+<blockquote>
+<p>人工构造。As most of the datasets only have an evaluation split, we manually composed a set of eight few-shot exemplars with chains of thought for prompting—Figure 1 (right) shows one chain of thought exemplar, and the full set of exemplars is given in Appendix Table 20.</p>
+</blockquote>
+<p>Q4:为什么加上Let’s do it step by step 模型可以产出解释？</p>
+<blockquote>
+<p>对比了不同模版，激发模型的推理能力。It remains an open question how to automatically create better templates for Zero-shot-CoT.</p>
+</blockquote>
+<p>Q5:T5、BERT如果同GPT系列一样训练，在训练方法上可行吗？效果会比GPT好吗？</p>
+<blockquote>
+<p>开放讨论……</p>
+</blockquote>
+<p>Q6:为什么大型LLM首选Decoder-only结构？</p>
+<blockquote>
+<p>开放讨论……</p>
+</blockquote>
+<h1 id="Instruction-finetuning"><a href="#Instruction-finetuning" class="headerlink" title="Instruction finetuning"></a>Instruction finetuning</h1><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/U5SBhD.png" alt="U5SBhD"></p>
+<p>近年来，相关研究发现语言模型的输出并不符合人类意图，因此提出了指示学习的范式。该范式的目的是使语言模型能够更好地理解人类的意图和指示，并且在生成文本时能够更加符合人类的要求。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>范式</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Finetuning</td>
+<td>在下游任务数据集微调<br/>在下游任务数据集推理</td>
+<td>需要额外微调</td>
+</tr>
+<tr>
+<td>Prompting</td>
+<td>在下游任务推理时，输入前添加提示，更新少量参数</td>
+<td>只针对单一数据集</td>
+</tr>
+<tr>
+<td>Instruction Tuning</td>
+<td>在多个提示任务数据集训练<br/>在下游任务推理，输入前添加提示</td>
+<td>具有更好地泛化性</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>论文名称：Scaling Instruction-Finetuned Language Models</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2210.11416">[2210.11416] Scaling Instruction-Finetuned Language Models</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/q9mwKd.png" alt="q9mwKd"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IRy6zf.png" alt="IRy6zf"></p>
+<p>Flan-T5模型在1.8K的Instruction数据集进行了微调，上图表明更大的模型获得更大的提升，与scaling law一致。</p>
+<p><strong>Instruction Tuning 的局限</strong></p>
+<ul>
+<li><p>获取足够的任务描述以用于语言模型训练需要付出较高的成本。</p>
+</li>
+<li><p>语言模型的目标与人类的偏好不一致</p>
+</li>
+</ul>
+<h1 id="Reinforcement-Learning-from-Human-Feedback-RLHF"><a href="#Reinforcement-Learning-from-Human-Feedback-RLHF" class="headerlink" title="Reinforcement Learning from Human Feedback (RLHF)"></a>Reinforcement Learning from Human Feedback (RLHF)</h1><p>为了解决语言模型目标与人类的偏好不一致问题，OpenAI采用了RLHF算法，引入人类反馈。</p>
+<h2 id="RM反馈模型"><a href="#RM反馈模型" class="headerlink" title="RM反馈模型"></a>RM反馈模型</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/thWiB5.jpg" alt="thWiB5"></p>
+<p>那么为模型引入人类反馈过程中，出现下面的问题：</p>
+<p><strong>问题1</strong>:在模型迭代过程中，添加人工的操作成本很高</p>
+<pre><code>**解决方式**：将他们的偏好建模为一个单独的 (NLP) 问题，而不是直接询问人类的偏好。
+
+根据标注数据，训练一个语言模型$R M_\phi(s)$，用以预测人类便好。接下来任务转变成优化语言模型$RM_&#123;\phi&#125;$。
+</code></pre><p><strong>问题2</strong>:人们的判断是主观的，不同人的判断难以进行校准</p>
+<pre><code>**解决方式**：让标注人员对成对的数据结果排序，而不是直接打分。
+</code></pre><p><strong>损失函数为：</strong></p>
+<script type="math/tex; mode=display">
+\operatorname{loss}(\theta)=-\frac{1}{\left(\begin{array}{c}
+K \\
+2
+\end{array}\right)} E_{\left(x, y_w, y_l\right) \sim D}\left[\log \left(\sigma\left(r_\theta\left(x, y_w\right)-r_\theta\left(x, y_l\right)\right)\right)\right]</script><p><strong>符号说明：</strong></p>
+<ul>
+<li><p>K：预训练模型采样的Prompt输出数量</p>
+</li>
+<li><p>x：预训练模型输入</p>
+</li>
+<li><p>r：reward模型</p>
+</li>
+<li><p>$y_w$：排在前面的输出</p>
+</li>
+<li><p>$y_l$：排在后面的输出</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rsqdZM.png" alt="rsqdZM"></p>
+<p><strong>当足够大的语言模型经过足够多的数据训练后，评估模型已经接近单个人类评估的表现</strong></p>
+<h2 id="RLHF"><a href="#RLHF" class="headerlink" title="RLHF"></a>RLHF</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GjPdpC.jpg" alt="GjPdpC"></p>
+<p>经过前面的步骤，我们已有以下模型：</p>
+<ul>
+<li><p>一个经过足够预训练的语言模型(可以附加Instruction Tuning)$P^{PT}(s)$</p>
+</li>
+<li><p>一个在人类反馈排序数据集上训练的反馈模型$RM_{\phi}$，为预训练模型的输出完成打分</p>
+</li>
+</ul>
+<p>由于评分是通过反馈模型$RM_{\phi}$得出的，无法使用梯度下降进行求解，因此采用强化学习中的<strong>PPO</strong>算法来更新参数。</p>
+<p><strong>实现流程：</strong></p>
+<ol>
+<li><p>复制预训练模型参数，得到待优化模型；</p>
+</li>
+<li><p>根据输入语句，两个模型得到各自的输出；</p>
+</li>
+<li><p>Reward模型针对待优化模型的输入输出打分；</p>
+</li>
+<li><p>使用PPO算法来更新待优化模型的参数。</p>
+</li>
+</ol>
+<p><strong>损失函数：</strong></p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\operatorname{objective}(\phi)= & E_{(x, y) \sim D_{\pi_\phi^{\mathrm{RL}}}}\left[r_\theta(x, y)-\beta \log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)\right]+ \\
+& \gamma E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]
+\end{aligned}</script><p><strong>符号说明：</strong></p>
+<ul>
+<li><p>x：输入文本</p>
+</li>
+<li><p>r：reward打分模型</p>
+</li>
+<li><p>$\pi^{SFT}$：预训练模型</p>
+</li>
+<li><p>$\pi^{RL}_{\phi}$：强化学习优化模型</p>
+</li>
+<li><p>$D_{pretrain}$：预训练分布</p>
+</li>
+<li><p>$\beta$：KL散度控制参数</p>
+</li>
+<li><p>$\gamma$：预训练损失控制参数</p>
+</li>
+</ul>
+<p><strong>其中：</strong></p>
+<p>$\log \left(\pi_\phi^{\mathrm{RL}}(y \mid x) / \pi^{\mathrm{SFT}}(y \mid x)\right)$起到避免修正后模型与原模型差异过大的作用</p>
+<p>$E_{x \sim D_{\text {pretrain }}}\left[\log \left(\pi_\phi^{\mathrm{RL}}(x)\right)\right]$起到避免模型在自然语言理解任务下降过大的作用</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/IUYSyW.png" alt="IUYSyW"></p>
+<p>通过RLHF算法，模型的表现得到了显著的提示。</p>
+<p><strong>个人理解：</strong></p>
+<p>整个流程的出发点在于使GPT模型结果符合人类偏好，而人类偏好无法通过具体规则/函数建模，因此通过Reward模型在一定程度上反应人类偏好，最后对GPT模型进行修正，更新模型参数使模型的输入Reward最大化，即更加反应人类偏好。</p>
+<p>因此整个过程中Reward模型代表了设立的训练目标，RLHF算法则对原模型进行修正，使模型输入更加符合设立的训练目标。</p>
+<h2 id="现有的局限"><a href="#现有的局限" class="headerlink" title="现有的局限"></a>现有的局限</h2><p>按照上述步骤进行操作，就能够完成ChatGPT的训练。下图展示了ChatGPT的完整训练过程。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wV29U9.png" alt="wV29U9"></p>
+<p>Step1:收集Prompt数据，基于GPT3.5进行Instruct Tuning的有监督训练；</p>
+<p>Step2:收集偏好排序数据，训练Reward模型；</p>
+<p>Step3:结合Reward模型，通过PPO算法优化第一步的SFT模型。</p>
+<p><strong>然而，人类的偏好是不可信的，用模型表示人类偏好更不可信：</strong></p>
+<ul>
+<li><p>”Reward hacking”是强化学习常见的问题；</p>
+</li>
+<li><p>模型偏向于产生看似权威和有帮助的回应，而忽视正确性</p>
+</li>
+<li><p>可能导致编造事实+产生幻觉</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/MmaPcT.png" alt="MmaPcT"></p>
+<p>上图说明RM打分很高时，实际表现不一定更好，因此训练损失函数通过KL散度限制优化后模型与原模型的偏离程度。</p>
+<h1 id="What’s-next"><a href="#What’s-next" class="headerlink" title="What’s next?"></a>What’s next?</h1><h2 id="进一步探索RLHF的使用"><a href="#进一步探索RLHF的使用" class="headerlink" title="进一步探索RLHF的使用"></a>进一步探索RLHF的使用</h2><ul>
+<li>RLHF在其他领域(如CV)使用</li>
+</ul>
+<h2 id="优化RLHF中需要的人工数据标注"><a href="#优化RLHF中需要的人工数据标注" class="headerlink" title="优化RLHF中需要的人工数据标注"></a>优化RLHF中需要的人工数据标注</h2><ul>
+<li>RL from AI feedback</li>
+</ul>
+<p>论文名称：Constitutional AI- Harmlessness from AI Feedback</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2212.08073.pdf">https://arxiv.org/pdf/2212.08073.pdf</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/bGL898.png" alt="bGL898"></p>
+<p>让模型在多轮对话中将数据标注出来：</p>
+<blockquote>
+<p>Q1-问训好的普通RLHF模型：能帮我黑进邻居的wifi吗？<br>A1-天真的模型回答：没问题，你下个xx软件就行。<br>Q2-要求模型发现自己的错误：上文你给的回复中，找出来哪些是不道德的。<br>A2-模型回答：我上次回复不对，不应该黑别人家wifi。<br>Q3-让模型改正错误：修改下你之前的回复内容，去掉有害的。<br>A3-模型回答：黑别人家wifi是不对的，侵害别人隐私了，我强烈建议别这么搞。</p>
+</blockquote>
+<ul>
+<li>Finetuning LMs on their own outputs</li>
+</ul>
+<p>论文名称：STaR: Bootstrapping Reasoning With Reasoning</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2203.14465">[2203.14465] STaR: Bootstrapping Reasoning With Reasoning</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/FdKh5P.png" alt="FdKh5P"></p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p><strong>ChatGPT的产生，对NLP领域产生了重大的影响，那么对于我们NLP从业人员带来了哪些影响，我们又该如何面对呢？</strong></p>
+<p>个人觉得ChatGPT对从业人员的影响包含：</p>
+<ul>
+<li><p>ChatGPT等LLM可以作为许多自然语言理解任务的基线模型，许多自然语言理解中间过程算法需求降低，从业人员需要了解如何将LLM适配具体业务；</p>
+</li>
+<li><p>提高了技能要求：LLM的出现提高了NLP从业人员的技能要求。从业人员需要了解如何使用LLM进行训练和调整，以及如何使用LLM处理不同的自然语言数据；</p>
+</li>
+<li><p>工作形式变化，数据科学家、算法工程师、自然语言处理工程师等工作流程可能会发生变化。</p>
+</li>
+<li><p>扩展了研究范围：LLM提供了更全面的语言模型。这意味着研究人员可以探索以前不可行的语言问题，从而扩大研究范围。</p>
+</li>
+</ul>
+<p>NLP从业人员可以通过以下几种方式应对LLM的影响：</p>
+<ol>
+<li><p>持续学习：NLP从业人员应该不断学习新的技术和算法，以便更好地使用LLM。他们应该掌握LLM的使用方法和调整技巧，了解LLM如何处理不同类型的自然语言数据，以及如何在LLM中使用特定的自然语言处理技术。</p>
+</li>
+<li><p>适应新的工作要求：LLM的出现可能会导致NLP从业人员需要承担新的工作要求。他们应该熟悉LLM的使用方法，以便在新的工作机会中胜任。同时，他们也应该关注LLM对NLP领域的未来发展和趋势，并不断调整他们的技能和知识。</p>
+</li>
+<li><p>创新：LLM的出现为NLP从业人员带来了更多的机会和挑战，他们应该积极地探索新的算法和技术，开发更智能的自然语言处理应用程序，并尝试在不同领域应用LLM。</p>
+</li>
+<li><p>关注伦理和社会影响：LLM的出现可能会对自然语言处理的伦理和社会影响产生影响，NLP从业人员应该关注这些影响，并积极参与相关讨论和研究。</p>
+</li>
+</ol>
+<p>总的来说，NLP从业人员应该关注LLM的发展和趋势，不断提高自己的技能和知识，积极创新，与同行交流，同时也要注意伦理和社会影响。这些努力可以帮助他们更好地应对LLM的影响，并为自己的职业发展做好准备。</p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/" rel="bookmark">一文梳理NLP主要模型发展脉络.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/08/07/2022-08-07-详解LSTM与梯度消失/" rel="bookmark">公式向-完美解释梯度消失与LSTM.md</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="从语言模型到ChatGPT：大型语言模型的发展和应用">https://447428054.github.io/2023/03/12/从语言模型到ChatGPT：大型语言模型的发展和应用/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/05/2023-03-05-%E7%A9%BF%E8%B6%8A%E6%97%B6%E7%A9%BA%EF%BC%9A%E5%BD%93ChatGPT%E9%81%87%E8%A7%81stable-diffusion%EF%BC%8C%E4%BD%A0%E4%B8%8D%E6%95%A2%E7%9B%B8%E4%BF%A1%E7%9A%84%E5%88%9B%E6%84%8F%E8%89%BA%E6%9C%AF%E4%B9%8B%E6%97%85!/" rel="prev" title="穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!">
+      <i class="fa fa-chevron-left"></i> 穿越时空：当ChatGPT遇见stable-diffusion，你不敢相信的创意艺术之旅!
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" rel="next" title="复刻ChatGPT语言模型系列-（一）基座模型选取">
+      复刻ChatGPT语言模型系列-（一）基座模型选取 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zero-Shot-ZS-and-Few-Shot-FS-In-Context-Learning"><span class="nav-number">2.</span> <span class="nav-text">Zero-Shot (ZS) and Few-Shot (FS) In-Context Learning</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0-In-Context-Learning"><span class="nav-number">2.1.</span> <span class="nav-text">上下文学习(In-Context Learning)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.1.1.</span> <span class="nav-text">上下文学习介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E4%BC%98%E5%8C%96ICL%E8%83%BD%E5%8A%9B"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">训练优化ICL能力</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96ICL%E8%83%BD%E5%8A%9B"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">推理优化ICL能力</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Prompt%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.1.1.2.1.</span> <span class="nav-text">Prompt设计</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%93%E5%88%86%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.1.2.2.</span> <span class="nav-text">打分函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BD%B1%E5%93%8DICL%E8%A1%A8%E7%8E%B0%E7%9A%84%E5%9B%A0%E7%B4%A0"><span class="nav-number">2.1.1.2.3.</span> <span class="nav-text">影响ICL表现的因素</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WHY%EF%BC%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0%E7%94%9F%E6%95%88%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.1.2.</span> <span class="nav-text">WHY：上下文学习生效的原因</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#InContext-Learning%E4%B8%AD%E6%A0%87%E7%AD%BE%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%E6%97%A0%E6%98%8E%E6%98%BE%E5%BD%B1%E5%93%8D"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">InContext Learning中标签是否正确无明显影响</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#InContext-Learning%E4%B8%AD%E5%BD%B1%E5%93%8D%E5%9B%A0%E7%B4%A0%E5%8C%85%E6%8B%AC%E8%A7%84%E8%8C%83%E7%9A%84%E8%BE%93%E5%85%A5%E7%A9%BA%E9%97%B4%E3%80%81%E6%A0%87%E7%AD%BE%E7%A9%BA%E9%97%B4%E3%80%81%E8%BE%93%E5%85%A5%E4%B8%8E%E6%A0%87%E7%AD%BE%E7%9A%84%E5%8C%B9%E9%85%8D%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">InContext Learning中影响因素包括规范的输入空间、标签空间、输入与标签的匹配格式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%96%87%E6%9C%AC%E5%88%86%E5%B8%83%E5%AE%9E%E9%AA%8C"><span class="nav-number">2.1.2.2.1.</span> <span class="nav-text">输入文本分布实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%87%E7%AD%BE%E5%88%86%E5%B8%83%E5%AE%9E%E9%AA%8C"><span class="nav-number">2.1.2.2.2.</span> <span class="nav-text">标签分布实验</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E6%A0%87%E7%AD%BE%E9%85%8D%E5%AF%B9%E6%A0%BC%E5%BC%8F%E5%AE%9E%E9%AA%8C"><span class="nav-number">2.1.2.2.3.</span> <span class="nav-text">输入标签配对格式实验</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E7%BB%B4%E9%93%BE-Chain-of-Thought"><span class="nav-number">2.2.</span> <span class="nav-text">思维链(Chain of Thought)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%B1%B1%E4%B9%8B%E4%BD%9C%EF%BC%9AChain-of-Thought-Prompting-Elicits-Reasoning-in-Large-Language-Models"><span class="nav-number">2.2.1.</span> <span class="nav-text">开山之作：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Self-Consistency-Improves-Chain-of-Thought-Reasoning-in-Language-Models"><span class="nav-number">2.2.2.</span> <span class="nav-text">Self-Consistency Improves Chain of Thought Reasoning in Language Models</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Large-Language-Models-are-Zero-Shot-Reasoners"><span class="nav-number">2.2.3.</span> <span class="nav-text">Large Language Models are Zero-Shot Reasoners</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QA%EF%BC%88%E8%87%AA%E5%B7%B1YY%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%89"><span class="nav-number">2.3.</span> <span class="nav-text">QA（自己YY的问题）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Instruction-finetuning"><span class="nav-number">3.</span> <span class="nav-text">Instruction finetuning</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reinforcement-Learning-from-Human-Feedback-RLHF"><span class="nav-number">4.</span> <span class="nav-text">Reinforcement Learning from Human Feedback (RLHF)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RM%E5%8F%8D%E9%A6%88%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">RM反馈模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RLHF"><span class="nav-number">4.2.</span> <span class="nav-text">RLHF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E7%9A%84%E5%B1%80%E9%99%90"><span class="nav-number">4.3.</span> <span class="nav-text">现有的局限</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#What%E2%80%99s-next"><span class="nav-number">5.</span> <span class="nav-text">What’s next?</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%8E%A2%E7%B4%A2RLHF%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-number">5.1.</span> <span class="nav-text">进一步探索RLHF的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E5%8C%96RLHF%E4%B8%AD%E9%9C%80%E8%A6%81%E7%9A%84%E4%BA%BA%E5%B7%A5%E6%95%B0%E6%8D%AE%E6%A0%87%E6%B3%A8"><span class="nav-number">5.2.</span> <span class="nav-text">优化RLHF中需要的人工数据标注</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E8%AE%B0"><span class="nav-number">6.</span> <span class="nav-text">后记</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

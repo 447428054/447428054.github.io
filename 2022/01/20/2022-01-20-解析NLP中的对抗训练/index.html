@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解析NLP竞赛中的提分点-对抗训练">
+<meta property="og:url" content="https://447428054.github.io/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-efaa81e59a5af299791913e5e8f519cd_1440w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-b54c33d95d0e8123091297d3c4b89a2f_720w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-da1e6a090490028ab91e49bbe1484443_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-a75ca4a6fcbc48588c3cd643efd6d7fe_1440w.webp">
+<meta property="article:published_time" content="2022-01-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-12T12:14:19.411Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="对抗训练">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-efaa81e59a5af299791913e5e8f519cd_1440w.jpg">
+
+<link rel="canonical" href="https://447428054.github.io/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>解析NLP竞赛中的提分点-对抗训练 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          解析NLP竞赛中的提分点-对抗训练
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-20 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-20T00:00:00+08:00">2022-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-12 20:14:19" itemprop="dateModified" datetime="2023-02-12T20:14:19+08:00">2023-02-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" itemprop="url" rel="index"><span itemprop="name">对抗训练</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在NLP比赛中，对抗训练是常见的提分手段。本文将详细介绍对抗训练的场景、作用、类型、具体实现以及未来的展望。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-efaa81e59a5af299791913e5e8f519cd_1440w.jpg" alt=""></p>
+<span id="more"></span>
+<h1 id="对抗训练应用场景"><a href="#对抗训练应用场景" class="headerlink" title="对抗训练应用场景"></a>对抗训练应用场景</h1><p>Szegedy在14年的ICLR中提出了对抗样本的概念。对抗样本可以用来攻击和防御，而对抗训练其实是“对抗”家族中防御的一种方式，其基本原理为：通过添加扰动构建对抗样本，喂入模型一同训练，提高模型遇到对抗样本时的鲁棒性，同时一定程度也能提高模型的表现和泛化能力。</p>
+<p>对抗样本一般需要具有两个特点：</p>
+<ol>
+<li>相对于原始输入，所添加的扰动是微小的；</li>
+<li>能使模型犯错。</li>
+</ol>
+<p>对抗训练的公式如下：</p>
+<script type="math/tex; mode=display">
+\min _{\theta} \mathbb{E}_{(x, y) \sim \mathcal{D}}\left[\max _{r_{a d v} \in \mathcal{S}} L\left(\theta, x+r_{a d v}, y\right)\right]</script><p>该过程可以分为两步：</p>
+<ol>
+<li>内部的max过程：寻找让模型犯错最大的扰动</li>
+<li>外部的min过程：寻找整体损失最小的参数</li>
+</ol>
+<p>在图像领域，扰动可以为图像上的噪点，但是在NLP中，如果直接在词编码上加上扰动，输入会偏离原先的语义。由于向量空间中语义相近的词语相互接近，在向量空间中添加微小的扰动的方式并不会对语义带来较大的破坏，因此当前NLP中的对抗训练均针对embedding做扰动。</p>
+<h1 id="对抗训练的作用"><a href="#对抗训练的作用" class="headerlink" title="对抗训练的作用"></a>对抗训练的作用</h1><ol>
+<li>提高模型应对恶意对抗样本时的鲁棒性。</li>
+<li>作为一种正则化方式(regularization)，减少过拟合(overfitting)，提高泛化能力。</li>
+</ol>
+<p>在NLP任务中，对抗训练的角色不再是为了防御基于梯度的恶意攻击，更多的是作为一种正则化方式(regularization)，提高模型的泛化能力。</p>
+<h1 id="对抗训练具体方式FGM-PGD-FreeLB"><a href="#对抗训练具体方式FGM-PGD-FreeLB" class="headerlink" title="对抗训练具体方式FGM/PGD/FreeLB"></a>对抗训练具体方式FGM/PGD/FreeLB</h1><h2 id="API介绍"><a href="#API介绍" class="headerlink" title="API介绍"></a>API介绍</h2><p>在介绍对抗训练的具体实现之前，本文先介绍下面Pytorch代码中常见的函数：</p>
+<p><strong>一般优化流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># zero the parameter gradients</span><br><span class="line">optimizer.zero_grad()</span><br><span class="line"># forward + backward + optimize</span><br><span class="line">outputs = net(inputs)</span><br><span class="line">loss = criterion(outputs, labels)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br></pre></td></tr></table></figure>
+<p><strong>具体展开流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># gradient descent</span><br><span class="line">weights = [0] * n</span><br><span class="line">alpha = 0.0001</span><br><span class="line">max_Iter = 50000</span><br><span class="line">for i in range(max_Iter):</span><br><span class="line">    loss = 0</span><br><span class="line">    d_weights = [0] * n</span><br><span class="line">    for k in range(m):</span><br><span class="line">        h = dot(input[k], weights)</span><br><span class="line">        d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)] # 梯度下降优化</span><br><span class="line">        loss += (label[k] - h) * (label[k] - h) / 2 # 梯度下降优化</span><br><span class="line">    d_weights = [d_weights[k]/m for k in range(n)]</span><br><span class="line">    weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</span><br><span class="line">    if i%10000 == 0:</span><br><span class="line">        print &quot;Iteration %d loss: %f&quot;%(i, loss/m)</span><br><span class="line">        print weights</span><br></pre></td></tr></table></figure>
+<p>可以发现它们实际上是一一对应的：</p>
+<ul>
+<li><strong>optimizer.zero_grad()对应d_weights = [0] * n</strong></li>
+</ul>
+<p>该步骤将梯度初始化为零（因为一个batch的loss关于weight的导数是所有sample的loss关于weight的导数的累加和）</p>
+<ul>
+<li><strong>outputs = net(inputs)对应h = dot(input[k], weights)</strong></li>
+</ul>
+<p>该步骤即前向传播求出预测的值</p>
+<ul>
+<li><strong>loss = criterion(outputs, labels)对应loss += (label[k] - h) * (label[k] - h) / 2</strong></li>
+</ul>
+<p>该步骤为求当前具体loss值</p>
+<ul>
+<li><strong>loss.backward()对应d_weights = [d_weights[j] + (label[k] - h) * input[k][j] for j in range(n)]</strong></li>
+</ul>
+<p>该步骤即反向传播求梯度</p>
+<ul>
+<li><strong>optimizer.step()对应weights = [weights[k] + alpha * d_weights[k] for k in range(n)]</strong></li>
+</ul>
+<p>该步骤即更新所有参数</p>
+<h2 id="FGSM-FGM"><a href="#FGSM-FGM" class="headerlink" title="FGSM/FGM"></a>FGSM/FGM</h2><p>该方式的思想为沿着梯度上升方向对扰动可以对模型带来最大的破坏。</p>
+<p>FGSM：采用Sign函数对梯度采取max归一化，max归一化是是说如果梯度某个维度上的值为正，则设为1；如果为负，则设为-1；如果为0，则设为0</p>
+<p>FGM：采用L2归一化，L2归一化则将梯度的每个维度的值除以梯度的L2范数。 理论上L2归一化更严格的保留了梯度的方向，但是max归一化则不一定和原始梯度的方向相同。</p>
+<script type="math/tex; mode=display">
+FGSM：\delta=\epsilon Sign(g)</script><script type="math/tex; mode=display">
+FGM: \delta = \epsilon (g/||g_2||)</script><script type="math/tex; mode=display">
+其中g为梯度g=\nabla x(L(f_{\theta}(X), y))</script><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FGM</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                self.backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = epsilon * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.backup</span><br><span class="line">                param.data = self.backup[name]</span><br><span class="line">        self.backup = &#123;&#125;</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">fgm = FGM(model)</span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    fgm.attack() <span class="comment"># 在embedding上添加对抗扰动</span></span><br><span class="line">    loss_adv = model(batch_input, batch_label)</span><br><span class="line">    loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    fgm.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="FGM-FGSM-流程总结"><a href="#FGM-FGSM-流程总结" class="headerlink" title="FGM/FGSM 流程总结"></a>FGM/FGSM 流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>执行对抗训练-根据当前梯度对参数值添加扰动；前向传播得到损失与最终梯度</li>
+<li>恢复embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>根据min-max公式可以看出，对抗训练主要完成内部max的过程。FGM/FGSM思想就是沿着梯度上升的方向，找寻最优解。但是<strong>FGM/FGSM 有假设：损失函数是线性或者局部线性。如果不是线性，那梯度提升方向不一定是最优方向。</strong></p>
+<h2 id="PGD"><a href="#PGD" class="headerlink" title="PGD"></a>PGD</h2><p>为了解决FGM中线性假设问题，PGD分多次迭代，若扰动超出范围将扰动映射到规定范围内。</p>
+<script type="math/tex; mode=display">
+X_{t + 1}=\prod _{X+S}(X_t + \epsilon(g_t/||g_t||))</script><script type="math/tex; mode=display">
+其中g为梯度g_t=\nabla x_t(L(f_{\theta}(X_t), y))</script><p>虽然PGD很有效，但效率并不高，若经过m次迭代，PGD需要迭代m*(K + 1)次。其代码展示如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PGD</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, model</span>):</span></span><br><span class="line">        self.model = model</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line">        self.grad_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">attack</span>(<span class="params">self, epsilon=<span class="number">1.</span>, alpha=<span class="number">0.3</span>, emb_name=<span class="string">&#x27;emb.&#x27;</span>, is_first_attack=<span class="literal">False</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name:</span><br><span class="line">                <span class="keyword">if</span> is_first_attack:</span><br><span class="line">                    self.emb_backup[name] = param.data.clone()</span><br><span class="line">                norm = torch.norm(param.grad)</span><br><span class="line">                <span class="keyword">if</span> norm != <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> torch.isnan(norm):</span><br><span class="line">                    r_at = alpha * param.grad / norm</span><br><span class="line">                    param.data.add_(r_at)</span><br><span class="line">                    param.data = self.project(name, param.data, epsilon)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore</span>(<span class="params">self, emb_name=<span class="string">&#x27;emb.&#x27;</span></span>):</span></span><br><span class="line">        <span class="comment"># emb_name这个参数要换成你模型中embedding的参数名</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad <span class="keyword">and</span> emb_name <span class="keyword">in</span> name: </span><br><span class="line">                <span class="keyword">assert</span> name <span class="keyword">in</span> self.emb_backup</span><br><span class="line">                param.data = self.emb_backup[name]</span><br><span class="line">        self.emb_backup = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">project</span>(<span class="params">self, param_name, param_data, epsilon</span>):</span></span><br><span class="line">        r = param_data - self.emb_backup[param_name]</span><br><span class="line">        <span class="keyword">if</span> torch.norm(r) &gt; epsilon:</span><br><span class="line">            r = epsilon * r / torch.norm(r)</span><br><span class="line">        <span class="keyword">return</span> self.emb_backup[param_name] + r</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">backup_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                self.grad_backup[name] = param.grad.clone()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">restore_grad</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">for</span> name, param <span class="keyword">in</span> self.model.named_parameters():</span><br><span class="line">            <span class="keyword">if</span> param.requires_grad:</span><br><span class="line">                param.grad = self.grad_backup[name]</span><br><span class="line">                </span><br><span class="line">pgd = PGD(model)</span><br><span class="line">K = <span class="number">3</span></span><br><span class="line"><span class="keyword">for</span> batch_input, batch_label <span class="keyword">in</span> data:</span><br><span class="line">    <span class="comment"># 正常训练</span></span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() <span class="comment"># 反向传播，得到正常的grad</span></span><br><span class="line">    pgd.backup_grad()</span><br><span class="line">    <span class="comment"># 对抗训练</span></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(K):</span><br><span class="line">        pgd.attack(is_first_attack=(t==<span class="number">0</span>)) <span class="comment"># 在embedding上添加对抗扰动, first attack时备份param.data</span></span><br><span class="line">        <span class="keyword">if</span> t != K-<span class="number">1</span>:</span><br><span class="line">            model.zero_grad()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            pgd.restore_grad()</span><br><span class="line">        loss_adv = model(batch_input, batch_label)</span><br><span class="line">        loss_adv.backward() <span class="comment"># 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span></span><br><span class="line">    pgd.restore() <span class="comment"># 恢复embedding参数</span></span><br><span class="line">    <span class="comment"># 梯度下降，更新参数</span></span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="PGD流程总结"><a href="#PGD流程总结" class="headerlink" title="PGD流程总结"></a>PGD流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>若t=0，备份参数；梯度清零；前向传播，计算梯度与loss值</li>
+<li>若t=K-1；恢复第1步的梯度；前向传播，计算梯度与loss值</li>
+</ol>
+</li>
+<li>恢复3.1中的embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>PGD执行K次目的为分多步获取<strong>内部max的扰动-扰动表现在参数上</strong>，每一步梯度归零，但是参数值得到了累加:$x^{‘}=x+\sum_{t=0}^{K} r_t$,最后根据参数$x^{‘}$以及初始梯度前向传播计算loss和最终梯度，最后，恢复初始参数，根据最终梯度完成参数更新。</p>
+<h2 id="FreeAT"><a href="#FreeAT" class="headerlink" title="FreeAT"></a>FreeAT</h2><p>PGD中进行m次反向传播，m *（K + 1） 次前向传播效率不高</p>
+<p>FreeAT把前向传播计算出的梯度也进行回传</p>
+<p>对比图为：</p>
+<p><img src="https://pic4.zhimg.com/80/v2-b54c33d95d0e8123091297d3c4b89a2f_720w.jpg" alt="image"></p>
+<p>进行（m/k）*k=m 次反向传播，（m/k）* k = m次前向传播</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">初始化r=0</span><br><span class="line">对于epoch=1...N/m:</span><br><span class="line">  对于每个x:</span><br><span class="line">    对于每步m:</span><br><span class="line">      1.利用上一步的r，计算x+r的前后向，得到梯度</span><br><span class="line">      2.根据梯度更新参数</span><br><span class="line">      3.根据梯度更新r</span><br></pre></td></tr></table></figure>
+<h3 id="FreeAT流程总结"><a href="#FreeAT流程总结" class="headerlink" title="FreeAT流程总结"></a>FreeAT流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>前向传播得到梯度与loss值</li>
+<li>根据梯度更新参数</li>
+<li>根据梯度更新扰动</li>
+</ol>
+</li>
+</ol>
+<p><strong>缺点：FreeLB指出，FreeAT的问题在于每次的r对于当前的参数都是次优的（无法最大化loss），因为当前r是由$ r_{t-1} $和$\theta_{t-1}$计算出来的，是对于$\theta_{ t-1 }$的最优。</strong></p>
+<h2 id="FreeLB"><a href="#FreeLB" class="headerlink" title="FreeLB"></a>FreeLB</h2><p>FreeLB认为，FreeAT和YOPO对于获得最优r (inner max)的计算都存在问题，因此提出了一种类似PGD的方法。只不过PGD只使用了最后一步x+r输出的梯度，而FreeLB取了每次迭代r输出梯度的平均值，相当于把输入看作一个K倍大的虚拟batch，由[X+r1, X+r2, …, X+rk]拼接而成。具体的公式为：</p>
+<script type="math/tex; mode=display">
+min_{\theta} E(Z,y) - D(\frac{1}{K} \sum_{t=0}^{K-1}max_{r_t \in L_t} L(f_{\theta}(X+r_t),y))</script><p>PGD公式为:</p>
+<script type="math/tex; mode=display">
+min_{\theta} E(Z,y) - D(max_{||r|| \le\epsilon} L(f_{\theta}(X+r_t),y))</script><p><strong>FreeLB与PGD区别如下：</strong></p>
+<ol>
+<li>PGD是迭代K次r后取最后一次扰动的梯度更新参数，FreeLB是取K次迭代中的平均梯度</li>
+<li>PGD的扰动范围都在epsilon内，因为流程第3步将梯度归0了，每次投影都会回到以第1步x为圆心，半径是epsilon的圆内，而FreeLB每次的x都会迭代，所以r的范围更加灵活，更可能接近局部最优</li>
+</ol>
+<p>伪代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">对于每个x:</span><br><span class="line">  1.通过均匀分布初始化r，梯度g为0</span><br><span class="line">  对于每步t=1...K:</span><br><span class="line">    2.根据x+r计算前后向，累计梯度g</span><br><span class="line">    3.更新r</span><br><span class="line">  4.根据g/K更新梯度</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line">class FreeLB(object):</span><br><span class="line">    def __init__(self, adv_K, adv_lr, adv_init_mag, adv_max_norm=0., adv_norm_type=&#x27;l2&#x27;, base_model=&#x27;bert&#x27;):</span><br><span class="line">        self.adv_K = adv_K</span><br><span class="line">        self.adv_lr = adv_lr</span><br><span class="line">        self.adv_max_norm = adv_max_norm</span><br><span class="line">        self.adv_init_mag = adv_init_mag    # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">    def attack(self, model, inputs, gradient_accumulation_steps=1):</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        if isinstance(model, torch.nn.DataParallel):</span><br><span class="line">            embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        else:</span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-self.adv_init_mag, self.adv_init_mag)</span><br><span class="line">                delta = delta * input_mask.unsqueeze(2)</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        loss, logits = None, None</span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            outputs = model(**inputs)</span><br><span class="line">            loss, logits = outputs[:2]  # model outputs are always tuple in transformers (see doc)</span><br><span class="line">            loss = loss.mean()  # mean() to average on multi-gpu parallel training</span><br><span class="line">            loss = loss / gradient_accumulation_steps</span><br><span class="line">            loss.backward()</span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            elif self.adv_norm_type == &quot;linf&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1, p=float(&quot;inf&quot;)).view(-1, 1, 1)  # p=&#x27;inf&#x27;,无穷范数，获取绝对值最大者</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)  # 类似np.clip，将数值夹逼到(min, max)之间</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()  # 计算该步的delta，然后累加到原delta值上(梯度上升)</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta = torch.clamp(delta, -self.adv_max_norm, self.adv_max_norm).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line">            if isinstance(model, torch.nn.DataParallel):  </span><br><span class="line">                embeds_init = getattr(model.module, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">            else:</span><br><span class="line">                embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids)</span><br><span class="line">        return loss, logits</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if args.do_adv:</span><br><span class="line">    inputs = &#123;</span><br><span class="line">        &quot;input_ids&quot;: input_ids,</span><br><span class="line">        &quot;bbox&quot;: layout,</span><br><span class="line">        &quot;token_type_ids&quot;: segment_ids,</span><br><span class="line">        &quot;attention_mask&quot;: input_mask,</span><br><span class="line">        &quot;masked_lm_labels&quot;: lm_label_ids</span><br><span class="line">    &#125;</span><br><span class="line">    loss, prediction_scores = freelb.attack(model, inputs)</span><br><span class="line">loss.backward()</span><br><span class="line">optimizer.step()</span><br><span class="line">scheduler.step()</span><br><span class="line">model.zero_grad()</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">class FreeLB():</span><br><span class="line">    def __init__(self, model, args, optimizer, base_model=&#x27;xlm-roberta&#x27;):</span><br><span class="line">        self.args = args</span><br><span class="line">        self.model = model</span><br><span class="line">        self.adv_K = self.args.adv_K</span><br><span class="line">        self.adv_lr = self.args.adv_lr</span><br><span class="line">        self.adv_max_norm = self.args.adv_max_norm</span><br><span class="line">        self.adv_init_mag = self.args.adv_init_mag  # adv-training initialize with what magnitude, 即我们用多大的数值初始化delta</span><br><span class="line">        self.adv_norm_type = self.args.adv_norm_type</span><br><span class="line">        self.base_model = base_model</span><br><span class="line">        self.optimizer = optimizer</span><br><span class="line"></span><br><span class="line">    def attack(self, model, inputs):</span><br><span class="line">        args = self.args</span><br><span class="line">        input_ids = inputs[&#x27;input_ids&#x27;]</span><br><span class="line">        #获取初始化时的embedding</span><br><span class="line">        embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line"></span><br><span class="line">        if self.adv_init_mag &gt; 0:   # 影响attack首步是基于原始梯度(delta=0)，还是对抗梯度(delta!=0)</span><br><span class="line">            input_mask = inputs[&#x27;attention_mask&#x27;].to(embeds_init)</span><br><span class="line">            input_lengths = torch.sum(input_mask, 1)</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                delta = torch.zeros_like(embeds_init).uniform_(-1, 1) * input_mask.unsqueeze(2)</span><br><span class="line">                dims = input_lengths * embeds_init.size(-1)</span><br><span class="line">                mag = self.adv_init_mag / torch.sqrt(dims)</span><br><span class="line">                delta = (delta * mag.view(-1, 1, 1)).detach()</span><br><span class="line">        else:</span><br><span class="line">            delta = torch.zeros_like(embeds_init)  # 扰动初始化</span><br><span class="line">        # loss, logits = None, None</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        for astep in range(self.adv_K):</span><br><span class="line">            delta.requires_grad_()</span><br><span class="line">            inputs[&#x27;inputs_embeds&#x27;] = delta + embeds_init  # 累积一次扰动delta</span><br><span class="line">            # inputs[&#x27;input_ids&#x27;] = None</span><br><span class="line">            loss, _ = model(input_ids=None,</span><br><span class="line">                            attention_mask=inputs[&quot;attention_mask&quot;].to(args.device),</span><br><span class="line">                             token_type_ids=inputs[&quot;token_type_ids&quot;].to(args.device),</span><br><span class="line">                             labels=inputs[&quot;sl_labels&quot;].to(args.device),</span><br><span class="line">                            inputs_embeds=inputs[&quot;inputs_embeds&quot;].to(args.device))</span><br><span class="line"></span><br><span class="line">            loss = loss / self.adv_K # 求平均的梯度</span><br><span class="line"></span><br><span class="line">            loss.backward()</span><br><span class="line"></span><br><span class="line">            if astep == self.adv_K - 1:</span><br><span class="line">                # further updates on delta</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">            delta_grad = delta.grad.clone().detach()  # 备份扰动的grad</span><br><span class="line">            if self.adv_norm_type == &quot;l2&quot;:</span><br><span class="line">                denorm = torch.norm(delta_grad.view(delta_grad.size(0), -1), dim=1).view(-1, 1, 1)</span><br><span class="line">                denorm = torch.clamp(denorm, min=1e-8)</span><br><span class="line">                delta = (delta + self.adv_lr * delta_grad / denorm).detach()</span><br><span class="line">                if self.adv_max_norm &gt; 0:</span><br><span class="line">                    delta_norm = torch.norm(delta.view(delta.size(0), -1).float(), p=2, dim=1).detach()</span><br><span class="line">                    exceed_mask = (delta_norm &gt; self.adv_max_norm).to(embeds_init)</span><br><span class="line">                    reweights = (self.adv_max_norm / delta_norm * exceed_mask + (1 - exceed_mask)).view(-1, 1, 1)</span><br><span class="line">                    delta = (delta * reweights).detach()</span><br><span class="line">            else:</span><br><span class="line">                raise ValueError(&quot;Norm type &#123;&#125; not specified.&quot;.format(self.adv_norm_type))</span><br><span class="line"></span><br><span class="line">            embeds_init = getattr(model, self.base_model).embeddings.word_embeddings(input_ids.to(args.device))</span><br><span class="line">        return loss</span><br><span class="line"></span><br><span class="line">for batch_input, batch_label in data:</span><br><span class="line">    # 正常训练</span><br><span class="line">    loss = model(batch_input, batch_label)</span><br><span class="line">    loss.backward() # 反向传播，得到正常的grad</span><br><span class="line">    # 对抗训练</span><br><span class="line">    freelb = FreeLB( model, args, optimizer, base_model)</span><br><span class="line">    loss_adv = freelb.attack(model, batch_input)</span><br><span class="line">    loss_adv.backward() # 反向传播，并在正常的grad基础上，累加对抗训练的梯度</span><br><span class="line">    # 梯度下降，更新参数</span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br></pre></td></tr></table></figure>
+<h3 id="FreeLB流程总结"><a href="#FreeLB流程总结" class="headerlink" title="FreeLB流程总结"></a>FreeLB流程总结</h3><ol>
+<li>正常的前向传播-得到梯度与loss值</li>
+<li>备份正常的梯度</li>
+<li>执行K次对抗训练<ol>
+<li>前向传播，计算梯度与loss值</li>
+<li>梯度累加</li>
+<li>根据梯度计算扰动</li>
+</ol>
+</li>
+<li>恢复初始embedding参数</li>
+<li>更新本次迭代的参数</li>
+</ol>
+<p>该方法与FreeAT一样都想高效的利用两种梯度。<strong>不同的是，该方法并不是每次都进行更新，而是将参数梯度累积起来，用累积的梯度对参数更新</strong>。</p>
+<h2 id="通用范式"><a href="#通用范式" class="headerlink" title="通用范式"></a>通用范式</h2><p>通过对上述几种对抗训练方式的学习，不难看出对抗训练的目的为完成<strong>内部max的任务，找出最大扰动的最优解</strong>。具体表现为：求解最大扰动更新参数；根据参数进行前向传播得到loss与最终梯度；恢复最初的参数值；利用最终的梯度对最初的参数值进行更新。所以通用流程表示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1. 正常的前向传播-得到梯度与loss值</span><br><span class="line">2. 备份正常的参数</span><br><span class="line">3. 求解扰动最优值，更新参数</span><br><span class="line">4. 根据更新后参数以及最初梯度，前向传播得到最终梯度</span><br><span class="line">5. 恢复最初的参数</span><br><span class="line">6. 根据最初的参数与最终梯度，完成参数的更新</span><br></pre></td></tr></table></figure>
+<p><strong>不同对抗训练方式体现为求解扰动最优值的方式不同：</strong></p>
+<ul>
+<li>FGM/FGSM最优值求解方式为：一步到位，根据最初的梯度与参数值，得到扰动值</li>
+<li>PGD最优值求解方式为：多步走，每一步根据上一步的参数获取扰动并更新参数，最终得到多步累加的扰动值</li>
+<li>FreeAT最优值求解方式为：与PGD一样分多步，但是该方法相当于：每一步根据上一步参数和梯度获取的扰动值就是最终扰动值</li>
+<li>FreeLB最优值求解方式为：与PGD一样分多步，但是在最后进行梯度更新的时候，最终梯度为初始梯度加上每一步梯度的平均值</li>
+</ul>
+<h1 id="对抗训练展望"><a href="#对抗训练展望" class="headerlink" title="对抗训练展望"></a>对抗训练展望</h1><h2 id="虚拟对抗训练"><a href="#虚拟对抗训练" class="headerlink" title="虚拟对抗训练"></a>虚拟对抗训练</h2><p><strong>那什么是虚拟对抗训练(VAT)呢</strong>？</p>
+<blockquote>
+<p>VAT不需要标签信息，可应用于无监督学习，其梯度上升的方向是能使预测的输出分布偏离现状的方向，而传统对抗训练课找的是使模型预测最大地偏离label的方向。因此，VAT不使用真实label，而是“虚拟”label——当前模型的预测结果。</p>
+</blockquote>
+<p>该部分可以查看JayJay的博客：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/345264876">虚拟对抗训练：让预训练模型再次强大！</a></p>
+<h1 id="延伸思考"><a href="#延伸思考" class="headerlink" title="延伸思考"></a>延伸思考</h1><h2 id="对抗训练与梯度惩罚"><a href="#对抗训练与梯度惩罚" class="headerlink" title="对抗训练与梯度惩罚"></a>对抗训练与梯度惩罚</h2><p>该内容为苏神在博客<a target="_blank" rel="noopener" href="https://kexue.fm/archives/7234">对抗训练浅谈：意义、方法和思考（附Keras实现）</a>中所提及：</p>
+<p>假设已经得到对抗扰动Δx，那么我们在更新θ时，考虑对$L(x+Δx,y;θ)$的展开：</p>
+<script type="math/tex; mode=display">
+\min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x+\Delta x, y;\theta)\right]\\ 
+\approx\, \min_{\theta}\mathbb{E}_{(x,y)\sim\mathcal{D}}\left[L(x, y;\theta)+\langle\nabla_x L(x, y;\theta), \Delta x\rangle\right]</script><p>对应的θ的梯度为：</p>
+<script type="math/tex; mode=display">
+\nabla_{\theta}L(x, y;\theta)+\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \Delta x\rangle</script><p>代入$\Delta x=\epsilon \nabla_x L(x, y;\theta)$，得到</p>
+<script type="math/tex; mode=display">
+\nabla_{\theta}L(x, y;\theta)+\epsilon\langle\nabla_{\theta}\nabla_x L(x, y;\theta), \nabla_x L(x, y;\theta)\rangle\\ 
+=\,\nabla_{\theta}\left(L(x, y;\theta)+\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2\right)</script><p>这个结果表示，对输入样本施加$\epsilon \nabla_x L(x, y;\theta)$的对抗扰动，一定程度上等价于往loss里边加入“梯度惩罚”</p>
+<script type="math/tex; mode=display">
+\frac{1}{2}\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert^2</script><p>如果对抗扰动是$\nabla_x L(x, y;\theta)/\Vert \nabla_x L(x, y;\theta)\Vert$，那么对应的梯度惩罚项则是$\epsilon\left\Vert\nabla_x L(x, y;\theta)\right\Vert$（少了个1/2，也少了个2次方）。</p>
+<p>事实上，这个结果不是新的，它首先出现论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1711.09404">《Improving the Adversarial Robustness and Interpretability of Deep Neural Networks by Regularizing their Input Gradients》</a>里。只不过这篇文章不容易搜到，因为你一旦搜索“adversarial training gradient penalty”等关键词，出来的结果几乎都是WGAN-GP相关的东西。</p>
+<h2 id="词向量空间"><a href="#词向量空间" class="headerlink" title="词向量空间"></a>词向量空间</h2><p>NLP中对抗训练目前的方式均是对embedding向量空间添加扰动，那么向量空间究竟什么样呢？在对比学习的研究中<Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere>，同样提出一个好的对比学习系统应该具体两个特点：</p>
+<ul>
+<li><strong>Alignment：</strong>指的是相似的例子，也就是正例，映射到单位超球面后，应该有接近的特征，也即是说，在超球面上距离比较近</li>
+<li><strong>Uniformity：</strong>指的是系统应该倾向在特征里保留尽可能多的信息，这等价于使得映射到单位超球面的特征，尽可能均匀地分布在球面上，分布得越均匀，意味着保留的信息越充分。分布均匀意味着两两有差异，也意味着各自保有独有信息，这代表信息保留充分。</li>
+</ul>
+<p><img src="https://pic4.zhimg.com/80/v2-da1e6a090490028ab91e49bbe1484443_1440w.webp" alt=""></p>
+<p>极端情况下会出现模型塌缩的情况，即所有特征映射到同一点：</p>
+<p><img src="https://pic3.zhimg.com/80/v2-a75ca4a6fcbc48588c3cd643efd6d7fe_1440w.webp" alt=""></p>
+<p>笔者认为，对抗训练在词向量层添加扰动，与对比学习类似，实现相似的例子在向量空间中相接近的目的，完成输入发生微小改变，输出改变幅度也不大的任务。</p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/" rel="bookmark">一文梳理NLP主要模型发展脉络.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/08/07/2022-08-07-详解LSTM与梯度消失/" rel="bookmark">公式向-完美解释梯度消失与LSTM.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/12/07/2022-12-07-【律师函警告】-ChatGPT以鸡你太美主题写小说/" rel="bookmark">【律师函警告】-ChatGPT以鸡你太美主题写小说.md</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" title="解析NLP竞赛中的提分点-对抗训练">https://447428054.github.io/2022/01/20/2022-01-20-解析NLP中的对抗训练/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" rel="tag"><i class="fa fa-tag"></i> 对抗训练</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/09/2022-01-09-Python%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90-%E6%95%B0%E6%8D%AE%E5%8F%AF%E8%A7%86%E5%8C%96(%E4%BA%8C)/" rel="prev" title="Python数据分析-数据可视化(二)">
+      <i class="fa fa-chevron-left"></i> Python数据分析-数据可视化(二)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/" rel="next" title="神经网络调参-warmup and decay">
+      神经网络调参-warmup and decay <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.</span> <span class="nav-text">对抗训练应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">对抗训练的作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E5%85%B7%E4%BD%93%E6%96%B9%E5%BC%8FFGM-PGD-FreeLB"><span class="nav-number">4.</span> <span class="nav-text">对抗训练具体方式FGM&#x2F;PGD&#x2F;FreeLB</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#API%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.1.</span> <span class="nav-text">API介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FGSM-FGM"><span class="nav-number">4.2.</span> <span class="nav-text">FGSM&#x2F;FGM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FGM-FGSM-%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="nav-number">4.2.1.</span> <span class="nav-text">FGM&#x2F;FGSM 流程总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PGD"><span class="nav-number">4.3.</span> <span class="nav-text">PGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PGD%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="nav-number">4.3.1.</span> <span class="nav-text">PGD流程总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FreeAT"><span class="nav-number">4.4.</span> <span class="nav-text">FreeAT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FreeAT%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="nav-number">4.4.1.</span> <span class="nav-text">FreeAT流程总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FreeLB"><span class="nav-number">4.5.</span> <span class="nav-text">FreeLB</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FreeLB%E6%B5%81%E7%A8%8B%E6%80%BB%E7%BB%93"><span class="nav-number">4.5.1.</span> <span class="nav-text">FreeLB流程总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%94%A8%E8%8C%83%E5%BC%8F"><span class="nav-number">4.6.</span> <span class="nav-text">通用范式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E5%B1%95%E6%9C%9B"><span class="nav-number">5.</span> <span class="nav-text">对抗训练展望</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83"><span class="nav-number">5.1.</span> <span class="nav-text">虚拟对抗训练</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E6%80%9D%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">延伸思考</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%A2%AF%E5%BA%A6%E6%83%A9%E7%BD%9A"><span class="nav-number">6.1.</span> <span class="nav-text">对抗训练与梯度惩罚</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%8D%E5%90%91%E9%87%8F%E7%A9%BA%E9%97%B4"><span class="nav-number">6.2.</span> <span class="nav-text">词向量空间</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

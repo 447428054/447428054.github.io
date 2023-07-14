@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引言在上一篇文章LLM训练指南：Token及模型参数准备中，我们详细探讨了如何为预训练模型确定合适的大小和数据集规模，从而提高模型的性能表现。在本文中，我们将在前文的基础上，讨论如何在给定的参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过这些分析，希望能为您在实际应用中的模型训练提供更多的指导和帮助。 本文得出的结论如下，详细过程见下文分析：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM训练指南(二):模型参数、计算量、显存、计算时间计算">
+<meta property="og:url" content="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="引言在上一篇文章LLM训练指南：Token及模型参数准备中，我们详细探讨了如何为预训练模型确定合适的大小和数据集规模，从而提高模型的性能表现。在本文中，我们将在前文的基础上，讨论如何在给定的参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过这些分析，希望能为您在实际应用中的模型训练提供更多的指导和帮助。 本文得出的结论如下，详细过程见下文分析：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/img_1.png">
+<meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1687830387173-c2176c26-c711-4f3c-be9c-de1c211bb19f.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5wf6V7.jpg">
+<meta property="article:published_time" content="2023-06-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-07-01T02:43:52.535Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/img_1.png">
+
+<link rel="canonical" href="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>LLM训练指南(二):模型参数、计算量、显存、计算时间计算 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LLM训练指南(二):模型参数、计算量、显存、计算时间计算
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-07-01 00:00:00 / 修改时间：10:43:52" itemprop="dateCreated datePublished" datetime="2023-07-01T00:00:00+08:00">2023-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在上一篇文章<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/636812912">LLM训练指南：Token及模型参数准备</a>中，我们详细探讨了如何为预训练模型确定合适的大小和数据集规模，从而提高模型的性能表现。在本文中，我们将在前文的基础上，讨论如何在给定的参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过这些分析，希望能为您在实际应用中的模型训练提供更多的指导和帮助。</p>
+<p>本文得出的结论如下，详细过程见下文分析：</p>
+<p><strong>模型参数量：</strong></p>
+<script type="math/tex; mode=display">
+N=n_{layer}(d_{model}3d_{attn}+d_{attn}d_{model}+2d_{model}d_{ff})=2d_{model}n_{layer}(2d_{attn}+d_{ff})</script><p><strong>训练计算量：</strong></p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+C_{forward}&=2n_{layer}(d_{model}3d_{attn}+n_{ctx}d_{model}+d_{attn}d_{model}+2d_{model}d_{ff}) \\
+&=4d_{model}n_{layer}(2d_{attn}+d_{ff})+2n_{layer}n_{ctx}d_{model} \\
+&=2N+2n_{layer}n_{ctx}d_{model}
+\end{aligned}</script><p><strong>训练显存占用：</strong></p>
+<p><strong>假设模型参数为$\Phi$以AdamW优化器和混合精度训练进行模型训练为例：</strong></p>
+<p>显存占用情况如下：</p>
+<ol>
+<li>模型参数：</li>
+</ol>
+<script type="math/tex; mode=display">
+2\Phi</script><ol>
+<li>模型梯度：</li>
+</ol>
+<script type="math/tex; mode=display">
+2\Phi</script><ol>
+<li>优化器状态：</li>
+</ol>
+<script type="math/tex; mode=display">
+4\Phi(参数)+4\Phi(动量)+4\Phi(方差)</script><ol>
+<li>中间激活值：</li>
+</ol>
+<script type="math/tex; mode=display">
+n_{layer}(14*batch*n_{ctx}d_{model}+4*batch*n_{ctx}d_{ff}+\
+   8*batch*n_{heads}*n_{ctx}d_{attn}+5*batch*n_{heads}*n_{ctx}n_{ctx}</script><p><strong>训练时间：</strong></p>
+<script type="math/tex; mode=display">
+训练时间 \approx \frac{8 * token训练数 * 模型参数量}{GPU数量 * GPU峰值flops * GPU利用率}</script><p>文章结构如下：</p>
+<p><img src="img_1.png" alt="img_1.png"><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1687830387173-c2176c26-c711-4f3c-be9c-de1c211bb19f.png" alt=""></p>
+<span id="more"></span>
+<h1 id="模型参数量-amp-计算量计算"><a href="#模型参数量-amp-计算量计算" class="headerlink" title="模型参数量&amp;计算量计算"></a>模型参数量&amp;计算量计算</h1><p><strong>符号说明：</strong></p>
+<ul>
+<li><p>$n_{layer}$:模型层数；</p>
+</li>
+<li><p>$d_{model}$:模型残差输出维度大小；</p>
+</li>
+<li><p>$d_{ff}$:前馈神经网络输出维度大小；</p>
+</li>
+<li><p>$d_{attn}$:注意力网络输出维度大小；</p>
+</li>
+<li><p>$n_{heads}$:每一层的多头注意力的数量；</p>
+</li>
+<li><p>$n_{ctx}$:输入的上下文长度大小；</p>
+</li>
+</ul>
+<p>Transformer各层参数及计算量如下表所示：</p>
+<script type="math/tex; mode=display">
+\begin{array}{|l|l|l|}
+\hline \text { Operation } & \text { Parameters } & \text { FLOPs per Token } \\
+\hline \hline \text { Embed } & \left(n_{\text {vocab }}+n_{\mathrm{ctx}}\right) d_{\text {model }} & 4 d_{\text {model }} \\
+\hline \text { Attention: QKV } & n_{\text {layer }} d_{\text {model }} 3 d_{\mathrm{attn}} & 2 n_{\text {layer }} d_{\text {model }} 3 d_{\mathrm{attn}} \\
+\hline \text { Attention: Mask } & - & 2 n_{\text {layer }} n_{\text {ctx }} d_{\mathrm{attn}} \\
+\hline \text { Attention: Project } & n_{\text {layer }} d_{\mathrm{attn}} d_{\text {model }} & 2 n_{\text {layer }} d_{\mathrm{attn}} d_{\mathrm{embd}} \\
+\hline \text { Feedforward } & n_{\text {layer }} 2 d_{\text {model }} d_{\mathrm{ff}} & 2 n_{\text {layer }} 2 d_{\text {model }} d_{\mathrm{ff}} \\
+\hline \text { De-embed } & - & 2 d_{\text {model }} n_{\text {vocab }} \\
+\hline \hline \text { Total (Non-Embedding) } & N=2 d_{\text {model }} n_{\text {layer }}\left(2 d_{\mathrm{attn}}+d_{\mathrm{ff}}\right) & C_{\text {forward }}=2 N+2 n_{\text {layer }} n_{\text {ctx }} d_{\mathrm{attn}} \\
+\hline
+\end{array}</script><p><strong>下文中涉及的前置知识如下：</strong></p>
+<blockquote>
+<p>参数量定义：模型参数量是指一个神经网络或机器学习模型中可以进行学习和调整的参数的数量。这些参数包括权重（weights）和偏置（biases），它们在训练过程中会不断地更新以优化模型的性能。</p>
+<p>FLOPs定义：FLOPs，floating point operations，表示浮点数运算次数，衡量了计算量的大小。<br>如何计算矩阵乘法的FLOPs呢？<br>对于$A \in R^{1<em>n},B \in R^{n</em>1}$，计算$AB$需要进行n次乘法运算和n次加法运算，共计2n次浮点数运算，需要2n的FLOPs。对于$A \in R^{m<em>n},B \in R^{n</em>p}$，计算$AB$需要的浮点数运算次数为2mnp。</p>
+</blockquote>
+<h2 id="Embedding层"><a href="#Embedding层" class="headerlink" title="Embedding层"></a>Embedding层</h2><p>Embedding层完成输入ID到向量的映射，将词表大小的ID映射到$d_{model}$维度的向量。计算转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}] * [vocab, d_{model}] -> [batch, n_{ctx}, d_{model}]</script><p>这里的*代表lookup操作</p>
+<p>词嵌入矩阵参数量大小为：$n_{vocab}*d_{model}$；</p>
+<p>上下文输入向量大小为：$n_{ctx}*d_{model}$</p>
+<h2 id="Attention-QKV层"><a href="#Attention-QKV层" class="headerlink" title="Attention QKV层"></a>Attention QKV层</h2><p>Attention QKV层完成输入向量到注意力层的映射，将隐藏层大小$d_{model}$映射到多头注意力$3d_{attn}$维度的向量。计算转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}] * [d_{model}, 3d_{attn}]</script><p>每一层的变化均如上所示，Attention QKV层参数量大小为：$n_{layer}d_{model}3d_{attn}$</p>
+<p>计算量包括矩阵的乘法运算[拆分为加&amp;和两个操作]，每个Token计算量大小为：</p>
+<script type="math/tex; mode=display">
+2*batch*n_{ctx}*n_{layer}d_{model}3d_{attn}/(batch*n_{ctx})=2n_{layer}d_{model}3d_{attn}</script><h2 id="Attention-Mask层"><a href="#Attention-Mask层" class="headerlink" title="Attention Mask层"></a>Attention Mask层</h2><p>Attention Mask层完成下列计算操作:</p>
+<script type="math/tex; mode=display">
+Softmax(\frac{QK^T}{\sqrt{d_{model}}})V</script><p>计算维度转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{attn}]*[batch, d_{attn}, n_{ctx}]->[batch, n_{ctx}, n_{ctx}]</script><script type="math/tex; mode=display">
+[batch, n_{ctx}, n_{ctx}]*[batch, n_{ctx}, d_{attn}]->[batch, n_{ctx}, d_{attn}]</script><p>未引入新的变量，因为无参数量</p>
+<p>Attention Mask层计算量包括矩阵的乘法运算[拆分为加&amp;和两个操作]，每个Token计算量大小为：</p>
+<script type="math/tex; mode=display">
+2*n_{layer}*(batch*n_{ctx}*d_{attn}n_{ctx}+batch*n_{ctx}n_{ctx}d_{attn})/(batch*n_{ctx})=2n_{layer}n_{ctx}d_{attn}</script><h2 id="Attention-Project层"><a href="#Attention-Project层" class="headerlink" title="Attention Project层"></a>Attention Project层</h2><p>Attention Project层完成Attention输出维度$d_{attn}$到隐藏层大小$d_{model}$的映射。计算转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{attn}]*[d_{attn}, d_{model}]->[batch, n_{ctx}, d_{model}]</script><p>每一层的变化均如上所示，Attention QKV层参数量大小为：$n_{layer}d_{attn}d_{model}$</p>
+<p>Attention Project层计算量包括矩阵的乘法运算[拆分为加&amp;和两个操作]，每个Token计算量大小为：</p>
+<script type="math/tex; mode=display">
+2*n_{layer}*batch*n_{ctx}d_{attn}d_{model}/(batch*n_{ctx})=2n_{layer}d_{attn}d_{model}</script><h2 id="Feedforward层"><a href="#Feedforward层" class="headerlink" title="Feedforward层"></a>Feedforward层</h2><p>Feedforward层完成从隐藏层大小$d_{model}$到前馈隐藏层大小$d_{ff}$再到隐藏层大小$d_{model}$的映射。计算转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}] * [d_{model}, d_{ff}] ->[batch, n_{ctx},d_{ff}]</script><script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{ff}] * [d_{ff}, d_{model}]->[batch, n_{ctx}, d_{model}]</script><p>每一层的变化均如上所示，Feedforward参数量大小为：$n_{layer}2d_{model}d_{ff}$；</p>
+<p>计算量包括矩阵的乘法运算[拆分为加&amp;和两个操作]，每个Token计算量大小为：</p>
+<script type="math/tex; mode=display">
+2*n_{layer}*(batch*n_{ctx}*d_{model}d_{ff}+batch*n_{ctx}*d_{ff}d_{model})/(batch*n_{ctx})=2n_{layer}2d_{model}d_{ff}</script><h2 id="De-emb层"><a href="#De-emb层" class="headerlink" title="De-emb层"></a>De-emb层</h2><p>De-emb层完成从隐藏层大小$d_{model}$到输出$n_{vocab}$的映射。计算转换如下：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}]*[d_{model}, n_{vocab}]->[batch, n_{ctx}, n_{vocab}]</script><p>De-embedding层通常使用与输入嵌入层（Embedding层）相同的权重矩阵来进行线性转换。这种权重共享的策略有助于减少模型参数量，从而降低过拟合的风险。因此，不需要为De-embedding层单独分配参数量。</p>
+<p>计算量包括矩阵的乘法运算[拆分为加&amp;和两个操作]，每个Token计算量大小为：</p>
+<script type="math/tex; mode=display">
+2*batch*n_{ctx}d_{model}n_{vocab}/(batch*n_{ctx})=2d_{model}n_{vocab}</script><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>剔除Embedding参数量：</p>
+<script type="math/tex; mode=display">
+N=n_{layer}(d_{model}3d_{attn}+d_{attn}d_{model}+2d_{model}d_{ff})=2d_{model}n_{layer}(2d_{attn}+d_{ff})</script><p>每个Token计算量：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+C_{forward}&=2n_{layer}(d_{model}3d_{attn}+n_{ctx}d_{model}+d_{attn}d_{model}+2d_{model}d_{ff}) \\
+&=4d_{model}n_{layer}(2d_{attn}+d_{ff})+2n_{layer}n_{ctx}d_{model} \\
+&=2N+2n_{layer}n_{ctx}d_{model}
+\end{aligned}</script><p>具体实例：</p>
+<p>ChatGLM-6B：28层，隐藏层大小4096，中间隐藏层大小16384，注意力头数32，词表大小130528，上下文长度2048：</p>
+<script type="math/tex; mode=display">
+N=2*4096*28*(2*4096+16386)+(130528+2048)*4096=6,180,634,624</script><p>LLAMA-7B:32层，隐藏层大小4096，中间隐藏层大小11008，注意力头数32词表大小32000，上下文长度2048：</p>
+<script type="math/tex; mode=display">
+N=2*4096*32*(2*4096+11008)+(32000+2048)*4096=5,172,625,408</script><p>可以看到这样计算出来的参数量与给出的模型大小不相符，那么差在哪里呢？</p>
+<p>原因在于<strong>LLAMA的前馈神经网络采用SwiGLU激活函数</strong>，FFN层的计算方式变成如下：</p>
+<script type="math/tex; mode=display">
+{FFN}_{SwiGLU}(x, W, V, W_2)=(Swish_1(xW) \otimes xV)W_2</script><p>与上述FFN相比<strong>参数矩阵从2个变成了三个</strong>，因此参数量计算方式如下：</p>
+<script type="math/tex; mode=display">
+N=2*4096*32*(2*4096+11008*3/2 )+(32000+2048)*4096=6,615,465,984</script><p>再看LLAMA-13B:40层，隐藏层大小5120，中间隐藏层大小13824，注意力头数40词表大小32000，上下文长度2048：</p>
+<script type="math/tex; mode=display">
+N=2*5120*40*(2*5120+13824*3/2)+(32000+2048)*5120=12,862,095,360</script><h1 id="中间激活值计算"><a href="#中间激活值计算" class="headerlink" title="中间激活值计算"></a>中间激活值计算</h1><p>除了模型参数、梯度、优化器状态外，占用显存的大头就是前向传递过程中计算得到的中间激活值了，需要保存中间激活以便在后向传递计算梯度时使用。这里的激活（activations）指的是：<strong>前向传递过程中计算得到的，并在后向传递过程中需要用到的所有张量</strong>。这里的激活不包含模型参数和优化器状态，但包含了<strong>dropout操作需要用到的mask矩阵</strong>。</p>
+<p>在分析中间激活的显存占用时，只考虑激活占用显存的大头，忽略掉一些小的buffers。比如，对于layer normalization，计算梯度时需要用到层的输入、输入的均值$\mu$和方差 $\sigma^2$。输入包含了$bsh$个元素，而输入的均值和方差分别包含了$bs$个元素。由于$h$通常是比较大的（千数量级），有$bsh&gt;&gt;bs$。因此，对于layer normalization，中间激活近似估计为$bsh$，而不是$bsh+2bs$。</p>
+<h2 id="Attention-QKV层-1"><a href="#Attention-QKV层-1" class="headerlink" title="Attention QKV层"></a>Attention QKV层</h2><p>需要存储Embedding层的输出结果：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}]</script><p>元素个数为:$batch*n_{ctx}d_{model}$</p>
+<h2 id="Attention-Mask层-1"><a href="#Attention-Mask层-1" class="headerlink" title="Attention Mask层"></a>Attention Mask层</h2><p>需要存储下列中间值：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+Q&：[batch, n_{heads}, n_{ctx}, d_{attn}] \\
+K&: [batch, n_{heads}, n_{ctx}, d_{attn}] \\ 
+V&: [batch, n_{heads}, n_{ctx}, d_{attn}] \\
+QK^T&: [batch, n_{heads}, n_{ctx}, n_{ctx}] \\ 
+Softmax(\frac{QK^T}{\sqrt{d_{model}}})&: [batch, n_{heads}, n_{ctx}, n_{ctx}] \\
+Dropout(Softmax(\frac{QK^T}{\sqrt{d_{model}}}))&: [batch, n_{heads}, n_{ctx}, n_{ctx}] \\
+Softmax(\frac{QK^T}{\sqrt{d_{model}}})V&:[batch, n_{heads}, n_{ctx}, d_{attn}]
+\end{aligned}</script><p>元素个数：$4<em>batch</em>n_{heads}<em>n_{ctx}d_{attn}+2</em>batch<em>n_{heads}</em>n_{ctx}n_{ctx} + batch<em>n_{heads}</em>n_{ctx}n_{ctx}（dropout）$</p>
+<h2 id="Attention-Project层-1"><a href="#Attention-Project层-1" class="headerlink" title="Attention Project层"></a>Attention Project层</h2><p>需要储存输入及Dropout 掩码矩阵：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}]</script><p>元素个数为:$batch<em>n_{ctx}d_{model}+batch</em>n_{ctx}d_{model}(dropout)$</p>
+<h2 id="Feedforward层-1"><a href="#Feedforward层-1" class="headerlink" title="Feedforward层"></a>Feedforward层</h2><p> 计算公式如下：</p>
+<script type="math/tex; mode=display">
+f_{gelu}(x_{attn}W_1)W_2+x_{attn}</script><p>需要存储下列中间值：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+x_{attn}&:[batch, n_{ctx}, d_{model}] \\
+x_{attn}W_1&:[batch, n_{ctx}, d_{ff}] \\ 
+f_{gelu}(x_{attn}W_1)&:[batch, n_{ctx}, d_{ff}] \\ 
+f_{gelu}(x_{attn}W_1)W_2&:[batch, n_{ctx}, d_{model}] \\ 
+Dropout(f_{gelu}(x_{attn}W_1)W_2)&:[batch, n_{ctx}, d_{model}]
+\end{aligned}</script><p>元素个数为：$2<em>batch</em>n_{ctx}(d_{model}+d_{ff})+batch*n_{ctx}d_{model}(dropout)$</p>
+<h2 id="LayerNorm"><a href="#LayerNorm" class="headerlink" title="LayerNorm"></a>LayerNorm</h2><p>Attention及Feedforward层各有一个Layer Normalization层，每一个层归一化需要保留输入向量：</p>
+<script type="math/tex; mode=display">
+[batch, n_{ctx}, d_{model}]</script><p>元素个数为：$2<em>batch</em>n_{ctx}d_{model}$</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>总元素个数：</p>
+<script type="math/tex; mode=display">
+n_{layer}(6*batch*n_{ctx}d_{model}+2*batch*n_{ctx}d_{ff}+\\
+4*batch*n_{heads}*n_{ctx}d_{attn}+2*batch*n_{heads}*n_{ctx}n_{ctx} + \\
+batch*n_{heads}*n_{ctx}n_{ctx}（dropout）+2*batch*n_{ctx}d_{model}(dropout))</script><h1 id="显存占用分析"><a href="#显存占用分析" class="headerlink" title="显存占用分析"></a>显存占用分析</h1><p><strong>前提条件</strong>:模型参数量为$\Phi$</p>
+<h2 id="推理过程"><a href="#推理过程" class="headerlink" title="推理过程"></a>推理过程</h2><p>推理过程包括模型的<strong>一次前向传播</strong>，显存主要存储<strong>模型的参数</strong>。当模型通过Float 16数据类型存储时，每个元素占据2个bytes，因此显存占用量为$2\Phi$；当模型通过Float 32数据类型存储时，每个元素占据4个bytes，因此显存占用量为$4\Phi$。</p>
+<p>以ChatGLM-6B为例，FP16存储时6*2=12G：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>量化等级</strong></th>
+<th style="text-align:center"><strong>最低 GPU 显存</strong>（推理）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FP16（无量化）</td>
+<td style="text-align:center">13 GB</td>
+</tr>
+<tr>
+<td>INT8</td>
+<td style="text-align:center">8 GB</td>
+</tr>
+<tr>
+<td>INT4</td>
+<td style="text-align:center">6 GB</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="训练过程"><a href="#训练过程" class="headerlink" title="训练过程"></a>训练过程</h2><p>模型训练过程中，显存占用主要包括下面四个部分：</p>
+<ol>
+<li><p><strong>模型参数</strong></p>
+</li>
+<li><p><strong>模型梯度</strong></p>
+</li>
+<li><p><strong>优化器状态</strong></p>
+</li>
+<li><p><strong>中间激活值</strong></p>
+</li>
+</ol>
+<p><strong>以AdamW优化器和混合精度训练进行模型训练为例：</strong></p>
+<p>AdamW优化器在反向传播时，需要保存一阶梯度及二阶的动量；</p>
+<p>混合精度训练指训练过程采用FP16数据格式，反向传播进行参数更新时，采用FP32数据格式。</p>
+<p>显存占用情况如下：</p>
+<ol>
+<li><p>模型参数：$2\Phi$</p>
+</li>
+<li><p>模型梯度：$2\Phi$</p>
+</li>
+<li><p>优化器状态：$4\Phi(参数)+4\Phi(动量)+4\Phi(方差)$</p>
+</li>
+<li><p>中间激活值：$n_{layer}(14<em>batch</em>n_{ctx}d_{model}+4<em>batch</em>n_{ctx}d_{ff}+\<br>8<em>batch</em>n_{heads}<em>n_{ctx}d_{attn}+5</em>batch<em>n_{heads}</em>n_{ctx}n_{ctx}$</p>
+</li>
+</ol>
+<p>还是以ChatGLM-6B为例：28层，隐藏层大小4096，中间隐藏层大小16384，注意力头数32，词表大小130528，上下文长度2048：</p>
+<p>模型参数大小：$C_{model}=6*2=12G$</p>
+<p>模型梯度大小：$C_{grad}=6*2=12G$</p>
+<p>优化器状态大小：$C_{opti}=12*6=72G$</p>
+<p>batch为1时，中间激活值大小：</p>
+<script type="math/tex; mode=display">
+C_{activation}=28*(14*2048*4096+4*2048*16384+8*2048*4096+5*32*2048*2048)=27,715,960,832 \approx 27GB</script><p>batch为64时，中间激活值大小：</p>
+<script type="math/tex; mode=display">
+C_{activation}=28*64*(14*2048*4096+4*2048*16384+8*2048*4096+5*32*2048*2048)=1,773,821,493,248 \approx 1.7TB</script><p>可以看到随着批次大小$batch$的增大，中间激活占用的显存远远超过了模型参数显存。通常会采用<strong>激活重计算</strong>技术来减少中间激活，理论上可以将中间激活显存从$O(n)$减少到$O(\sqrt{n})$，代价是增加了一次额外前向计算的时间，本质上是“时间换空间”。</p>
+<h1 id="训练时间估计"><a href="#训练时间估计" class="headerlink" title="训练时间估计"></a>训练时间估计</h1><p>模型参数量和训练总tokens数决定了训练transformer模型需要的计算量。给定硬件GPU类型的情况下，可以估计所需要的训练时间。给定计算量，训练时间（也就是GPU算完这么多flops的计算时间）不仅跟GPU类型有关，还与GPU利用率有关。计算端到端训练的GPU利用率时，不仅要考虑前向传递和后向传递的计算时间，还要考虑CPU加载数据、优化器更新、多卡通信和记录日志的时间。一般来讲，<strong>GPU利用率一般在$0.3-0.55$之间</strong>。</p>
+<p>上文讲到一次前向传递中，对于每个token，每个模型参数，进行2次浮点数计算。使用激活重计算技术来减少中间激活显存需要进行一次额外的前向传递，因此前向传递 + 后向传递 + 激活重计算的系数=1+2+1=4。使用<strong>激活重计算</strong>的一次训练迭代中，对于每个token，每个模型参数，需要进行$2<em>4=8$次浮点数运算。<em>*在给定训练tokens数、硬件环境配置的情况下，训练transformer模型的计算时间为</em></em>：</p>
+<script type="math/tex; mode=display">
+训练时间 \approx \frac{8 * token训练数 * 模型参数量}{GPU数量 * GPU峰值flops * GPU利用率}</script><p>Nvidia A100算力情况如下：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5wf6V7.jpg" alt="5wf6V7"></p>
+<p>以GPT3-175B为例，在1024张40GB显存的A100上，在300B tokens的数据上训练175B参数量的GPT3。40GB显存A100的峰值性能为312TFLOPS，设GPU利用率为0.45，则<strong>所需要的训练时间为34天，这与论文中的训练时间是对得上的</strong>。</p>
+<script type="math/tex; mode=display">
+\frac{8*(300*10^9)*(175*10^9)}{1024*(312*10^{12}*0.45)} \approx 2921340 seconds \approx 34 days</script><p>以LLaMA-65B为例，在2048张80GB显存的A100上，在1.4TB tokens的数据上训练了65B参数量的模型。80GB显存A100的峰值性能为624TFLOPS，设GPU利用率为0.3，则<strong>所需要的训练时间为21天，这与论文中的实际训练时间是对得上的</strong>。</p>
+<script type="math/tex; mode=display">
+\frac {8*(1.4*10^{12})*(65*10^9)}{2048*(624*10^{12})*0.3} \approx 1898871 seconds \approx 21 days</script><p>以GLM-130B为例，在768张40GB显存的A100上，在400B tokens的数据上训练了130B参数量的模型。40GB显存A100的峰值性能为312TFLOPS，设GPU利用率为0.35，则<strong>所需要的训练时间为57天，这与GLM报告中的实际训练2个月时间是对得上的</strong>。</p>
+<script type="math/tex; mode=display">
+\frac{8 * (400 * 10^9) * (130 * 10^9)}{768 * (312 * 10^{12}) * 0.35} \approx 4960317 seconds \approx 57 days</script><h1 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h1><p>在本文中，我们主要关注了如何在给定参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过对模型参数、计算量和计算时间的深入分析，希望能为读者在实际应用中的模型训练提供更加明确的指导原则和技巧。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/624740065">https://zhuanlan.zhihu.com/p/624740065</a></p>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2001.08361.pdf">https://arxiv.org/pdf/2001.08361.pdf</a></p>
+<p><a target="_blank" rel="noopener" href="http://keg.cs.tsinghua.edu.cn/glm-130b/posts/glm-130b/">GLM-130B: An Open Bilingual Pre-Trained Model | GLM-130B</a></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="LLM训练指南(二):模型参数、计算量、显存、计算时间计算">https://447428054.github.io/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" rel="prev" title="LLM训练指南-Token及模型参数准备">
+      <i class="fa fa-chevron-left"></i> LLM训练指南-Token及模型参数准备
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E9%87%8F-amp-%E8%AE%A1%E7%AE%97%E9%87%8F%E8%AE%A1%E7%AE%97"><span class="nav-number">2.</span> <span class="nav-text">模型参数量&amp;计算量计算</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Embedding%E5%B1%82"><span class="nav-number">2.1.</span> <span class="nav-text">Embedding层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-QKV%E5%B1%82"><span class="nav-number">2.2.</span> <span class="nav-text">Attention QKV层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-Mask%E5%B1%82"><span class="nav-number">2.3.</span> <span class="nav-text">Attention Mask层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-Project%E5%B1%82"><span class="nav-number">2.4.</span> <span class="nav-text">Attention Project层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feedforward%E5%B1%82"><span class="nav-number">2.5.</span> <span class="nav-text">Feedforward层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#De-emb%E5%B1%82"><span class="nav-number">2.6.</span> <span class="nav-text">De-emb层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.7.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%AD%E9%97%B4%E6%BF%80%E6%B4%BB%E5%80%BC%E8%AE%A1%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">中间激活值计算</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-QKV%E5%B1%82-1"><span class="nav-number">3.1.</span> <span class="nav-text">Attention QKV层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-Mask%E5%B1%82-1"><span class="nav-number">3.2.</span> <span class="nav-text">Attention Mask层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention-Project%E5%B1%82-1"><span class="nav-number">3.3.</span> <span class="nav-text">Attention Project层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feedforward%E5%B1%82-1"><span class="nav-number">3.4.</span> <span class="nav-text">Feedforward层</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LayerNorm"><span class="nav-number">3.5.</span> <span class="nav-text">LayerNorm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">3.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%98%BE%E5%AD%98%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">显存占用分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-number">4.1.</span> <span class="nav-text">推理过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B"><span class="nav-number">4.2.</span> <span class="nav-text">训练过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%97%B6%E9%97%B4%E4%BC%B0%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">训练时间估计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">7.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

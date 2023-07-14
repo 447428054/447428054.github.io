@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言 BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进击！BERT句向量表征.md">
+<meta property="og:url" content="https://447428054.github.io/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言 BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/v2-48949d2c35c494d5d03b7de832151835_1440w.jpg?source=172ae18b">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-8b4df6fe6c7491b6d435dd94c0729e00_1440w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-01aeeae898873dd7d7dfb418a927806a_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-999025acb512c8f3b97c4bd4ec45065b_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-60b3b4f2d2753a786449186812c4271a_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-9d0e06beb31ee2fcf5ff536c58d6eca3_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-e0e1aab2f104c2e1df6f801d86509987_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-330c834b6c87b47cce0e314deefb4ad1_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-3ab1f8ef586853f48950c102e6c4b23f_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-941a073e5de189c9b4286d2e92739415_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-6a25b5c6d3eef374dd84d6f3e712b887_1440w.webp">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-74343b4576af98fc90bc171a16f058f3_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-03707325180ec050cf39849c4030e586_1440w.webp">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-6d6852c52edb927f3e6f90a4780360f0_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-da3c2a097a0fa631f88a913dccadd541_1440w.webp">
+<meta property="article:published_time" content="2022-11-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-12T11:49:12.053Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="句向量">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/v2-48949d2c35c494d5d03b7de832151835_1440w.jpg?source=172ae18b">
+
+<link rel="canonical" href="https://447428054.github.io/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>进击！BERT句向量表征.md | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          进击！BERT句向量表征.md
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-05 00:00:00" itemprop="dateCreated datePublished" datetime="2022-11-05T00:00:00+08:00">2022-11-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-12 19:49:12" itemprop="dateModified" datetime="2023-02-12T19:49:12+08:00">2023-02-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E5%8F%A5%E5%90%91%E9%87%8F/" itemprop="url" rel="index"><span itemprop="name">句向量</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><img src="https://pic1.zhimg.com/v2-48949d2c35c494d5d03b7de832151835_1440w.jpg?source=172ae18b" alt=""></p>
+<p>BERT等语言模型在多数NLP任务中取得优异的表现，但如果直接取BERT输出的句向量作表征，取得的效果甚至还不如Glove词向量。<br>Bert-flow论文中指出，产生该现象的原因是BERT模型的各向异性过高，Transformer模型的输出中，高频词汇分布集中，低频词汇分布分散，整个向量空间类似于锥形结构。<br><img src="https://pic1.zhimg.com/80/v2-8b4df6fe6c7491b6d435dd94c0729e00_1440w.jpg" alt=""><br><span id="more"></span><br>余弦相似度使用的前提是向量空间在标准正交基下，而BERT输出的句向量很明显 不符合该条件，因此直接使用BERT输出的句向量计算余弦相似度，效果表现很差。</p>
+<p>针对该问题，BERT-flow、BERT-Whitening模型将输出的句向量映射到标准正交的高斯空间。SimCSE引入对比学习的方式， 在保证向量空间的uniformity情况下，也提高alignment。此后，多种对比学习方式层出不穷，其核心改进点在于正负例的生成方式，提高正负样本的难度，本文主要介绍ConSERT、SimCSE、ESimCSE、DiffCSE、PromptBert、SNCSE、EASE。</p>
+<h1 id="Sentence-Bert（EMNLP-2019）"><a href="#Sentence-Bert（EMNLP-2019）" class="headerlink" title="Sentence-Bert（EMNLP 2019）"></a>Sentence-Bert（EMNLP 2019）</h1><p><strong>题目</strong>：Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1908.10084">https://arxiv.org/abs/1908.10084</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/UKPLab/sentence-transformers">https://github.com/UKPLab/sentence-transformers</a></p>
+<h2 id="核心思路"><a href="#核心思路" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决文本匹配推理次数过多的问题，BERT的传统文本匹配任务是输入sentence1与sentence2 作一个分类任务，给定一个语料库查找最相似句子的时间复杂度高达O(n^2)。<br>直接使用BERT的embdeeing向量，存在各向异性问题，相似度计算效果甚至低于Glove词向量。</p>
+<p><strong>解决方式</strong>：</p>
+<p>采用孪生网络的双塔结构，这样推理的次数降低到了O(n)，计算相似度的点积复杂度还是O(n^2)</p>
+<p><strong>其他</strong>：</p>
+<p>论文比较了三种pooling方式：CLS、AVG、MAX。也设计了分类任务、回归任务、Triplet形式的任务。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-01aeeae898873dd7d7dfb418a927806a_1440w.webp" alt=""></p>
+<p>SBERT通过图1的方式进行训练，微调学习BERT句向量的embedding，通过图2的方式完成推理，计算文本相似度。</p>
+<h1 id="BERT-flow（EMNLP-2020）"><a href="#BERT-flow（EMNLP-2020）" class="headerlink" title="BERT-flow（EMNLP 2020）"></a>BERT-flow（EMNLP 2020）</h1><p><strong>题目</strong>：On the Sentence Embeddings from Pre-trained Language Models</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2011.05864.pdf">https://arxiv.org/pdf/2011.05864.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/bohanli/BERT-flow">https://github.com/bohanli/BERT-flow</a></p>
+<h2 id="核心思路-1"><a href="#核心思路-1" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>指出BERT句向量存在的问题：各向异性，高频词汇分布集中</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入flow流式模型，映射为同向性，将BERT句向量映射到标准高斯空间.</p>
+<p><strong>计算公式</strong>如下：<br><img src="https://pic4.zhimg.com/80/v2-999025acb512c8f3b97c4bd4ec45065b_1440w.webp" alt=""></p>
+<h1 id="BERT-whitening"><a href="#BERT-whitening" class="headerlink" title="BERT-whitening"></a>BERT-whitening</h1><p><strong>题目</strong>：Whitening Sentence Representations for Better Semantics and Faster Retrieval</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2103.15316">https://arxiv.org/abs/2103.15316</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/bojone/BERT-whitening">https://github.com/bojone/BERT-whitening</a></p>
+<h2 id="核心思路-2"><a href="#核心思路-2" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：在句向量维度，通过一个白化的操作直接校正局向量的协方差矩阵。</p>
+<p><strong>解决方式</strong>：</p>
+<p>PCA白化，并且可以降维实现更好的效果。<br>将句向量进行标准化映射，即白化操作：</p>
+<script type="math/tex; mode=display">\tilde{\boldsymbol{x}}_i=\left(\boldsymbol{x}_i-\boldsymbol{\mu}\right) W</script><p>均值与协方差矩阵计算方式如下：</p>
+<script type="math/tex; mode=display">\boldsymbol{\mu}=\frac{1}{N} \sum_{i=1}^N \boldsymbol{x}_i</script><script type="math/tex; mode=display">\boldsymbol{\Sigma}=\boldsymbol{U} \boldsymbol{\Lambda} \boldsymbol{U}^{\top},即原向量矩阵的协方差矩阵SVD分解</script><script type="math/tex; mode=display">\boldsymbol{W}=\boldsymbol{U} \sqrt{\boldsymbol{\Lambda}^{-1}}</script><p><strong>代码如下</strong>：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def compute_kernel_bias(vecs):</span><br><span class="line">    &quot;&quot;&quot;计算kernel和bias</span><br><span class="line">    vecs.shape = [num_samples, embedding_size]，</span><br><span class="line">    最后的变换：y = (x + bias).dot(kernel)</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    mu = vecs.mean(axis=0, keepdims=True)</span><br><span class="line">    cov = np.cov(vecs.T)</span><br><span class="line">    u, s, vh = np.linalg.svd(cov)</span><br><span class="line">    W = np.dot(u, np.diag(1 / np.sqrt(s)))</span><br><span class="line">    return W, -mu</span><br></pre></td></tr></table></figure></p>
+<h1 id="ConSERT（ACL-2021）"><a href="#ConSERT（ACL-2021）" class="headerlink" title="ConSERT（ACL 2021）"></a>ConSERT（ACL 2021）</h1><p><strong>题目</strong>：ConSERT: A Contrastive Framework for Self-Supervised Sentence Representation Transfer</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.11741">https://arxiv.org/abs/2105.11741</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/yym6472/ConSERT">https://github.com/yym6472/ConSERT</a></p>
+<h2 id="核心思路-3"><a href="#核心思路-3" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决BERT本身表征的语义塌缩问题。再来看对比学习，它是通过拉近相同样本的距离、拉远不同样本的距离，来刻画样本本身的表示，正好可以解决BERT表示的塌缩问题。</p>
+<p><strong>解决方式</strong>：</p>
+<p>NLP的数据增强方式很重要，使用了5种数据增强方式进行对比：Adversarial attack、shuffle、token cutoff、feature cutoff、dropout</p>
+<p>损失函数：对比学习损失</p>
+<script type="math/tex; mode=display">\mathcal{L}_{i, j}=-\log \frac{\exp \left(\operatorname{sim}\left(r_i, r_j\right) / \tau\right)}{\sum_{k=1}^{2 N} \mathbb{1}_{[k \neq i]} \exp \left(\operatorname{sim}\left(r_i, r_k\right) / \tau\right)}</script><p><img src="https://pic3.zhimg.com/80/v2-60b3b4f2d2753a786449186812c4271a_1440w.webp" alt=""></p>
+<p><img src="https://pic4.zhimg.com/80/v2-9d0e06beb31ee2fcf5ff536c58d6eca3_1440w.webp" alt=""></p>
+<h2 id="正例构建方式"><a href="#正例构建方式" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><ul>
+<li>shuffle：更换position id的顺序</li>
+<li>token cutoff：在某个token维度把embedding置为0</li>
+<li>feature cutoff：在embedding矩阵中，有768个维度，把某个维度的feature置为0</li>
+<li>dropout：dropout</li>
+<li>Adversarial attack：对抗扰动</li>
+</ul>
+<h2 id="负例构建方式"><a href="#负例构建方式" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SimCSE（EMNLP-2021）"><a href="#SimCSE（EMNLP-2021）" class="headerlink" title="SimCSE（EMNLP 2021）"></a>SimCSE（EMNLP 2021）</h1><p><strong>题目</strong>：SimCSE: Simple Contrastive Learning of Sentence Embeddings</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://aclanthology.org/2021.emnlp-main.552.pdf">https://aclanthology.org/2021.emnlp-main.552.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/princeton-nlp/SimCSE">https://github.com/princeton-nlp/SimCSE</a></p>
+<h2 id="核心思路-4"><a href="#核心思路-4" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>将对比学习方式引入句向量表征领域。</p>
+<p><strong>解决方式</strong>：</p>
+<p>引入对比损失的难点在于正样本的构建，该文提出dropout的正样本构建方式。</p>
+<p><strong>无监督SimCSE</strong>：</p>
+<p>Dropout构建正例样本，batch内其他样本作为负样本</p>
+<p><img src="https://pic4.zhimg.com/80/v2-e0e1aab2f104c2e1df6f801d86509987_1440w.webp" alt=""></p>
+<p><strong>有监督SimCSE</strong>：</p>
+<p>句子蕴含任务中同一标签的作为正样本，同一batch的其他样本的是负样本</p>
+<p><img src="https://pic2.zhimg.com/80/v2-330c834b6c87b47cce0e314deefb4ad1_1440w.webp" alt=""></p>
+<h2 id="正例构建方式-1"><a href="#正例构建方式-1" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>Dropout两次产生的数据</p>
+<h2 id="负例构建方式-1"><a href="#负例构建方式-1" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<p><img src="https://pic4.zhimg.com/80/v2-3ab1f8ef586853f48950c102e6c4b23f_1440w.webp" alt=""></p>
+<h1 id="ESimCSE（COLING-2022）"><a href="#ESimCSE（COLING-2022）" class="headerlink" title="ESimCSE（COLING 2022）"></a>ESimCSE（COLING 2022）</h1><p><strong>题目</strong>：ESimCSE: Enhanced Sample Building Method for Contrastive Learning of Unsupervised Sentence Embedding</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2109.04380.pdf">https://arxiv.org/pdf/2109.04380.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/caskcsg/sentemb/tree/main/ESimCSE">https://github.com/caskcsg/sentemb/tree/main/ESimCSE</a></p>
+<h2 id="核心思路-5"><a href="#核心思路-5" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>解决SimCSE的两个问题：</p>
+<ul>
+<li>Dropout构建的正例均是相同长度的，会导致模型认为相同句子长度的句子更相似</li>
+<li>SimCSE增加batchsize，引入更多负例，反而引起效果下降【猜测：更多的负例中，部分与正例接近质量不高】</li>
+</ul>
+<p><img src="https://pic2.zhimg.com/80/v2-941a073e5de189c9b4286d2e92739415_1440w.webp" alt=""><br><strong>核心改动点</strong>：</p>
+<p><strong>正例生成方式</strong>：重复一定单词</p>
+<p><strong>负例生成方式</strong>：动量序列，扩展负样本数量</p>
+<h2 id="正例生成方式"><a href="#正例生成方式" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>重复单词</p>
+<h2 id="负例生成方式"><a href="#负例生成方式" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>动量序列，扩展负样本数量</p>
+<h1 id="DiffCSE（NAACL2022）"><a href="#DiffCSE（NAACL2022）" class="headerlink" title="DiffCSE（NAACL2022）"></a>DiffCSE（NAACL2022）</h1><p><strong>题目</strong>：DiffCSE: Difference-based Contrastive Learning for Sentence Embeddings</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2204.10298.pdf">https://arxiv.org/pdf/2204.10298.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/voidism/DiffCSE">https://github.com/voidism/DiffCSE</a></p>
+<h2 id="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"><a href="#核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）" class="headerlink" title="核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）"></a>核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）</h2><p><strong>出发点</strong>：</p>
+<p>NLP任务中，词语EDA的数据增强方式是敏感变化，dropout方式是 不敏感变化。SimCSE的成功也说明了dropout masks机制来构建正样本，比基于同义词或掩码语言模型的删除或替换等更复杂的增强效果要好得多。“。这一现象也说明，<strong>「直接增强（删除或替换）往往改变句子本身语义」。</strong></p>
+<p><img src="https://pic4.zhimg.com/80/v2-6a25b5c6d3eef374dd84d6f3e712b887_1440w.webp" alt=""><br><img src="https://pic4.zhimg.com/80/v2-74343b4576af98fc90bc171a16f058f3_1440w.webp" alt=""></p>
+<h2 id="正例生成方式-1"><a href="#正例生成方式-1" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-1"><a href="#负例生成方式-1" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><p>通过ELECTRA模型，完成句子改写任务</p>
+<h1 id="PromptBert（EMNLP-2022）"><a href="#PromptBert（EMNLP-2022）" class="headerlink" title="PromptBert（EMNLP 2022）"></a>PromptBert（EMNLP 2022）</h1><p><strong>题目</strong>：PromptBERT: Improving BERT Sentence Embeddings with Prompts</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2201.04337.pdf">https://arxiv.org/pdf/2201.04337.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/kongds/Prompt-BERT">https://github.com/kongds/Prompt-BERT</a></p>
+<h2 id="核心思路-6"><a href="#核心思路-6" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>BERT句向量存在各向异性，并受到词频、字母大小写、子词等影响。</p>
+<p><strong>解决方式</strong>：</p>
+<p>通过Prompt模版，得到句子的表征向量，与CLS、AVG、MAX取表征向量不同，没有用到具体某个词语的信息。</p>
+<p><strong>模版去噪对比学习</strong>：</p>
+<p>通过不同模版产生句子表征向量，构建正样本。为了剔除不同模版的影响，减去纯模版得到的句子表征向量。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-03707325180ec050cf39849c4030e586_1440w.webp" alt=""></p>
+<h2 id="正例构建方式-2"><a href="#正例构建方式-2" class="headerlink" title="正例构建方式"></a>正例构建方式</h2><p>通过不同模版产生的句子表征向量</p>
+<h2 id="负例构建方式-2"><a href="#负例构建方式-2" class="headerlink" title="负例构建方式"></a>负例构建方式</h2><p>同一batch内其他样本</p>
+<h1 id="SNCSE"><a href="#SNCSE" class="headerlink" title="SNCSE"></a>SNCSE</h1><p><strong>题目</strong>：SNCSE: Contrastive Learning for Unsupervised Sentence Embedding with Soft Negative Samples</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2201.05979.pdf">https://arxiv.org/pdf/2201.05979.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/Sense-GVT/SNCSE">https://github.com/Sense-GVT/SNCSE</a></p>
+<h2 id="核心思路-7"><a href="#核心思路-7" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：</p>
+<p>目前的数据增强方法，获取的正样本均极为相似，导致模型存在特征抑制，即<strong>「模型不能区分文本相似度和语义相似度，并更偏向具有相似文本，而不考虑它们之间的实际语义差异」。</strong> 导致模型更多关注的是字面匹配，而非语义匹配。</p>
+<p><strong>解决方式</strong>：</p>
+<p>新增软负例以及双向边际损失，限制样本与软负例相似度到一定范围内。 并利用PromptBert方式获取词向量。</p>
+<p><strong>计算公式</strong>如下：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-6d6852c52edb927f3e6f90a4780360f0_1440w.webp" alt=""></p>
+<p><img src="https://pic2.zhimg.com/80/v2-da3c2a097a0fa631f88a913dccadd541_1440w.webp" alt=""></p>
+<h2 id="正例生成方式-2"><a href="#正例生成方式-2" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><p>与SimCSE相同，Dropout产生正例</p>
+<h2 id="负例生成方式-2"><a href="#负例生成方式-2" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>纯负例：batch内其他数据</li>
+<li>软负例：通过spacy进行语法解析，为动词添加否定词前缀。</li>
+</ul>
+<h1 id="EASE（NAACL2022）"><a href="#EASE（NAACL2022）" class="headerlink" title="EASE（NAACL2022）"></a>EASE（NAACL2022）</h1><p><strong>题目</strong>：EASE: Entity-Aware Contrastive Learning of Sentence Embedding</p>
+<p><strong>地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2205.04260.pdf">https://arxiv.org/pdf/2205.04260.pdf</a></p>
+<p><strong>代码</strong>：<a target="_blank" rel="noopener" href="https://github.com/studio-ousia/ease">https://github.com/studio-ousia/ease</a></p>
+<h2 id="核心思路-8"><a href="#核心思路-8" class="headerlink" title="核心思路"></a>核心思路</h2><p><strong>出发点</strong>：实体是一个句子的重要部分，可以作为一个句子的指示器，通过学习实体与句子之间的差异，可以为句子向量的学习提供额外信息。</p>
+<p><strong>解决方式</strong>：通过维基百科的实体超链接引入实体信息。</p>
+<p><strong>损失函数</strong>：实体句子对比损失+自监督对比损失</p>
+<h2 id="正例生成方式-3"><a href="#正例生成方式-3" class="headerlink" title="正例生成方式"></a>正例生成方式</h2><ul>
+<li><strong>实体正例</strong>：维基百科超链接实体。(为了提高实体质量，仅保留超链接实体出现次数超过10次的实体。)</li>
+<li><strong>样本正例</strong>：与SimCSE相同，Dropout产生正例</li>
+</ul>
+<h2 id="负例生成方式-3"><a href="#负例生成方式-3" class="headerlink" title="负例生成方式"></a>负例生成方式</h2><ul>
+<li>实体负例：<br>负例实体需要与正例实体具有相同的类型；<br>负例实体不能与正例实体出现在同一维基百科页面中。<br>随机在满足上诉条件的候选实体中选择一个实体作为硬负例数据，构建（句子，正例实体，负例实体）的triple数据。</li>
+<li>样本负例：batch内其他数据</li>
+</ul>
+<h1 id="TODO"><a href="#TODO" class="headerlink" title="TODO"></a>TODO</h1><ul>
+<li>在中文数据集上，验证各方法效果</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/06/25/2022-06-25-NLP技能树学习路线-（一）路线总览/" rel="bookmark">NLP技能树学习路线-（一）路线总览.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/" rel="bookmark">一文梳理NLP主要模型发展脉络.md</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/08/07/2022-08-07-详解LSTM与梯度消失/" rel="bookmark">公式向-完美解释梯度消失与LSTM.md</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2022/11/05/2022-11-05-%E8%BF%9B%E5%87%BB%EF%BC%81BERT%E5%8F%A5%E5%90%91%E9%87%8F%E8%A1%A8%E5%BE%81/" title="进击！BERT句向量表征.md">https://447428054.github.io/2022/11/05/2022-11-05-进击！BERT句向量表征/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/%E5%8F%A5%E5%90%91%E9%87%8F/" rel="tag"><i class="fa fa-tag"></i> 句向量</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/09/04/2022-09-04-Pytorch%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E7%9A%84%E5%A4%9A%E7%A7%8D%E6%89%93%E5%BC%80%E6%96%B9%E5%BC%8F/" rel="prev" title="Pytorch多机多卡的多种打开方式">
+      <i class="fa fa-chevron-left"></i> Pytorch多机多卡的多种打开方式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/07/2022-12-07-%E3%80%90%E5%BE%8B%E5%B8%88%E5%87%BD%E8%AD%A6%E5%91%8A%E3%80%91-ChatGPT%E4%BB%A5%E9%B8%A1%E4%BD%A0%E5%A4%AA%E7%BE%8E%E4%B8%BB%E9%A2%98%E5%86%99%E5%B0%8F%E8%AF%B4/" rel="next" title="【律师函警告】-ChatGPT以鸡你太美主题写小说.md">
+      【律师函警告】-ChatGPT以鸡你太美主题写小说.md <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sentence-Bert%EF%BC%88EMNLP-2019%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Sentence-Bert（EMNLP 2019）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF"><span class="nav-number">2.1.</span> <span class="nav-text">核心思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BERT-flow%EF%BC%88EMNLP-2020%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">BERT-flow（EMNLP 2020）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-1"><span class="nav-number">3.1.</span> <span class="nav-text">核心思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BERT-whitening"><span class="nav-number">4.</span> <span class="nav-text">BERT-whitening</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-2"><span class="nav-number">4.1.</span> <span class="nav-text">核心思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConSERT%EF%BC%88ACL-2021%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">ConSERT（ACL 2021）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-3"><span class="nav-number">5.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">5.2.</span> <span class="nav-text">正例构建方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">5.3.</span> <span class="nav-text">负例构建方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SimCSE%EF%BC%88EMNLP-2021%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">SimCSE（EMNLP 2021）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-4"><span class="nav-number">6.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F-1"><span class="nav-number">6.2.</span> <span class="nav-text">正例构建方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F-1"><span class="nav-number">6.3.</span> <span class="nav-text">负例构建方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ESimCSE%EF%BC%88COLING-2022%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">ESimCSE（COLING 2022）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-5"><span class="nav-number">7.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F"><span class="nav-number">7.2.</span> <span class="nav-text">正例生成方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F"><span class="nav-number">7.3.</span> <span class="nav-text">负例生成方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DiffCSE%EF%BC%88NAACL2022%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">DiffCSE（NAACL2022）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%86%E6%95%8F%E6%84%9F%E5%8F%98%E5%8C%96%E4%BD%9C%E4%B8%BA%E8%B4%9F%E4%BE%8B%EF%BC%8C%E9%9D%9E%E6%95%8F%E6%84%9F%E5%8F%98%E5%8C%96%E7%9A%84dropout%E4%BD%9C%E4%B8%BA%E6%AD%A3%E4%BE%8B%EF%BC%89"><span class="nav-number">8.1.</span> <span class="nav-text">核心思路（将敏感变化作为负例，非敏感变化的dropout作为正例）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-1"><span class="nav-number">8.2.</span> <span class="nav-text">正例生成方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-1"><span class="nav-number">8.3.</span> <span class="nav-text">负例生成方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PromptBert%EF%BC%88EMNLP-2022%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">PromptBert（EMNLP 2022）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-6"><span class="nav-number">9.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F-2"><span class="nav-number">9.2.</span> <span class="nav-text">正例构建方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E6%9E%84%E5%BB%BA%E6%96%B9%E5%BC%8F-2"><span class="nav-number">9.3.</span> <span class="nav-text">负例构建方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SNCSE"><span class="nav-number">10.</span> <span class="nav-text">SNCSE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-7"><span class="nav-number">10.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-2"><span class="nav-number">10.2.</span> <span class="nav-text">正例生成方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-2"><span class="nav-number">10.3.</span> <span class="nav-text">负例生成方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EASE%EF%BC%88NAACL2022%EF%BC%89"><span class="nav-number">11.</span> <span class="nav-text">EASE（NAACL2022）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%80%9D%E8%B7%AF-8"><span class="nav-number">11.1.</span> <span class="nav-text">核心思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-3"><span class="nav-number">11.2.</span> <span class="nav-text">正例生成方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E4%BE%8B%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F-3"><span class="nav-number">11.3.</span> <span class="nav-text">负例生成方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TODO"><span class="nav-number">12.</span> <span class="nav-text">TODO</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="复刻ChatGPT语言模型系列-（一）基座模型选取">
+<meta property="og:url" content="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GnffTU.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/0hYelu.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/4hwtIC.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/jkMmBZ.png">
+<meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1683538503448-c26ff2b5-6bff-4dfb-aa2b-9b65c4202da0.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/glm.gif">
+<meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1681433605204-bc6414c4-f028-4ded-952b-f6c712c07cf0.png">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wqrnAr.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/zNXvlX.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WcZoK6.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/tFzNz9.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/d8h2ky.png">
+<meta property="article:published_time" content="2023-05-07T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-08T14:24:36.150Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GnffTU.png">
+
+<link rel="canonical" href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>复刻ChatGPT语言模型系列-（一）基座模型选取 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          复刻ChatGPT语言模型系列-（一）基座模型选取
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-05-08 00:00:00 / 修改时间：22:24:36" itemprop="dateCreated datePublished" datetime="2023-05-08T00:00:00+08:00">2023-05-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>6.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>6 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：</p>
+<ul>
+<li>复刻ChatGPT语言模型系列-（一）基座模型选取</li>
+<li>复刻ChatGPT语言模型系列-（二）参数高效微调</li>
+<li>复刻ChatGPT语言模型系列-（三）指令学习微调</li>
+<li>复刻ChatGPT语言模型系列-（四）文本生成解码</li>
+<li>复刻ChatGPT语言模型系列-（五）强化学习RLHF</li>
+<li>复刻ChatGPT语言模型系列-（六）LLM模型评估</li>
+</ul>
+<p>在本系列的第一篇博文中，我们将会探讨如何选取一个好的预训练语言模型作为基座。选择一个优秀的基座模型非常重要，因为它会直接影响到后续模型的训练和性能表现。乱花渐欲迷人眼，目前社区涌现出许多优秀的大模型，这让我们选择起来十分困难。因此，本文将介绍并分析这些大模型，从中选择出适合作为基座的模型。我们将深入探究这些模型的特点和性能，并分析其优缺点。本文旨在为大家提供选取基座模型的参考意见，帮助大家更好地复刻ChatGPT语言模型。</p>
+<p>以下是目前已经开放的基座模型清单，本文将专注介绍已开源模型，而其他模型则请读者自行了解。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">模型名称</th>
+<th style="text-align:center">发布时间</th>
+<th style="text-align:center">发布机构</th>
+<th style="text-align:center">语言</th>
+<th style="text-align:center">参数规模</th>
+<th style="text-align:center">Tokens规模</th>
+<th style="text-align:center">模型结构</th>
+<th style="text-align:center">是否开源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">T5</td>
+<td style="text-align:center">2019-10</td>
+<td style="text-align:center">Google</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">13B</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">T5-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">GPT-3</td>
+<td style="text-align:center">2020-05</td>
+<td style="text-align:center">OpenAI</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">175B</td>
+<td style="text-align:center">300B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">CPM1</td>
+<td style="text-align:center">2021-03</td>
+<td style="text-align:center">Tsinghua</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">2.6B</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">LaMDA</td>
+<td style="text-align:center">2021-05</td>
+<td style="text-align:center">Google</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">137B</td>
+<td style="text-align:center">2.8T</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">CPM2</td>
+<td style="text-align:center">2021-07</td>
+<td style="text-align:center">Tsinghua</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">11B/198B(MoE)</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">Encoder-Decoder</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">Jurassic</td>
+<td style="text-align:center">2021-08</td>
+<td style="text-align:center">AI21</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">178B</td>
+<td style="text-align:center">300B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">MT-NLG</td>
+<td style="text-align:center">2021-10</td>
+<td style="text-align:center">Microsoft,  NVIDIA</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">530B</td>
+<td style="text-align:center">270B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">ERNIE 3.0</td>
+<td style="text-align:center">2021-12</td>
+<td style="text-align:center">Baidu</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">260B</td>
+<td style="text-align:center">300B</td>
+<td style="text-align:center">Multi-task</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">Gopher</td>
+<td style="text-align:center">2021-12</td>
+<td style="text-align:center">DeepMind</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">280B</td>
+<td style="text-align:center">300B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">Chinchilla</td>
+<td style="text-align:center">2022-04</td>
+<td style="text-align:center">DeepMind</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">70B</td>
+<td style="text-align:center">1.4T</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">PaLM</td>
+<td style="text-align:center">2022-04</td>
+<td style="text-align:center">Google</td>
+<td style="text-align:center">多语言</td>
+<td style="text-align:center">540B</td>
+<td style="text-align:center">780B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">x</td>
+</tr>
+<tr>
+<td style="text-align:center">OPT</td>
+<td style="text-align:center">2022-05</td>
+<td style="text-align:center">Meta</td>
+<td style="text-align:center">英</td>
+<td style="text-align:center">125M-175B</td>
+<td style="text-align:center">180B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">BLOOM</td>
+<td style="text-align:center">2022-07</td>
+<td style="text-align:center">BigScience</td>
+<td style="text-align:center">多语言</td>
+<td style="text-align:center">176B</td>
+<td style="text-align:center">366B</td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">GLM-130B</td>
+<td style="text-align:center">2022-08</td>
+<td style="text-align:center">Tsinghua</td>
+<td style="text-align:center">中、英</td>
+<td style="text-align:center">130B</td>
+<td style="text-align:center">400B</td>
+<td style="text-align:center">GLM-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">Wenzhong</td>
+<td style="text-align:center">2022-09</td>
+<td style="text-align:center">IDEA</td>
+<td style="text-align:center">中</td>
+<td style="text-align:center">3.5B</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">GPT-style</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">LLaMA</td>
+<td style="text-align:center">2023-02</td>
+<td style="text-align:center">Meta</td>
+<td style="text-align:center">多语言</td>
+<td style="text-align:center">7B-65 B</td>
+<td style="text-align:center">1.4T</td>
+<td style="text-align:center">GPT-sryle</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">MOSS</td>
+<td style="text-align:center">2023-04</td>
+<td style="text-align:center">FUDAN</td>
+<td style="text-align:center">中、英</td>
+<td style="text-align:center">16B</td>
+<td style="text-align:center">700B</td>
+<td style="text-align:center">GPT-sryle</td>
+<td style="text-align:center">√</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>参考链接：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/614766286">https://zhuanlan.zhihu.com/p/614766286</a><br><span id="more"></span></p>
+<h1 id="微调模型"><a href="#微调模型" class="headerlink" title="微调模型"></a>微调模型</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>模型名称</th>
+<th>发布时间</th>
+<th>发布机构</th>
+<th>语言</th>
+<th>模态</th>
+<th>参数规模</th>
+<th>基础模型</th>
+<th>是否开源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-3.5</td>
+<td>2021-06</td>
+<td>OpenAI</td>
+<td>多语言</td>
+<td>文本</td>
+<td>175B</td>
+<td>GPT-3</td>
+<td>x</td>
+</tr>
+<tr>
+<td>FLAN</td>
+<td>2021-09</td>
+<td>Google</td>
+<td>英</td>
+<td>文本</td>
+<td>137B</td>
+<td>LaMDA</td>
+<td>x</td>
+</tr>
+<tr>
+<td>T0</td>
+<td>2021-10</td>
+<td>Hugging Face</td>
+<td>英</td>
+<td>文本</td>
+<td>13B</td>
+<td>T5</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Flan-PaLM</td>
+<td>2022-10</td>
+<td>Google</td>
+<td>多语言</td>
+<td>文本</td>
+<td>540B</td>
+<td>PaLM</td>
+<td>x</td>
+</tr>
+<tr>
+<td>BLOOMZ</td>
+<td>2022-11</td>
+<td>Hugging Face</td>
+<td>多语言</td>
+<td>文本</td>
+<td>176B</td>
+<td>BLOOM</td>
+<td>√</td>
+</tr>
+<tr>
+<td>mT0</td>
+<td>2022-11</td>
+<td>Hugging Face</td>
+<td>多语言</td>
+<td>文本</td>
+<td>13B</td>
+<td>mT5</td>
+<td>√</td>
+</tr>
+<tr>
+<td>ChatGPT</td>
+<td>2022-11</td>
+<td>OpenAI</td>
+<td>多语言</td>
+<td>文本</td>
+<td>173B</td>
+<td>GPT3.5</td>
+<td>x</td>
+</tr>
+<tr>
+<td>Alpaca</td>
+<td>2023-3-14</td>
+<td>StandFord</td>
+<td>英</td>
+<td>文本</td>
+<td>7B</td>
+<td>LLaMA</td>
+<td>√</td>
+</tr>
+<tr>
+<td>ChatGLM</td>
+<td>2023-3-14</td>
+<td>Tsinghua</td>
+<td>中、英</td>
+<td>文本</td>
+<td>{:[6B],[130B]:}</td>
+<td>GLM</td>
+<td>√</td>
+</tr>
+<tr>
+<td>GPT-4</td>
+<td>2023-3-14</td>
+<td>OpenAI</td>
+<td>多语言</td>
+<td>文本、图像</td>
+<td>√</td>
+<td>GPT-4</td>
+<td>x</td>
+</tr>
+<tr>
+<td>ERNIE Bot</td>
+<td>2023-3-15</td>
+<td>Baidu</td>
+<td>中</td>
+<td>文本、图像</td>
+<td>260B√</td>
+<td>ERNIE</td>
+<td>x</td>
+</tr>
+<tr>
+<td>Bard</td>
+<td>2023-3-21</td>
+<td>Google</td>
+<td>英</td>
+<td>文本</td>
+<td>137B</td>
+<td>LaMDA</td>
+<td>x</td>
+</tr>
+<tr>
+<td>MOSS</td>
+<td>2023-4</td>
+<td>FUDAN</td>
+<td>中、英</td>
+<td>文本</td>
+<td>16B</td>
+<td>CodeGen</td>
+<td>√</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="CPM"><a href="#CPM" class="headerlink" title="CPM"></a>CPM</h1><p>CPM模型是由智源、清华开发的一种基于大规模中文训练数据进行生成式预训练的中文预训练语言模型。该模型具有26亿个参数和100GB中文训练数据，是目前最大的中文预训练语言模型之一。CPM模型在各种中文自然语言处理任务中表现出色，包括对话、文章生成、填空测试和语言理解等任务。</p>
+<p><strong>论文标题</strong>：CPM: A large-scale generative Chinese Pre-trained language model</p>
+<p><strong>论文地址</strong>：<a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S266665102100019X">CPM: A large-scale generative Chinese Pre-trained language model - ScienceDirect</a></p>
+<p><strong>模型结构</strong>：基于Transformer的自回归模型，GPT类结构；</p>
+<p><strong>训练数据</strong>：100G中文语料；</p>
+<p><strong>改动点</strong>：较GPT3采用更大的batch_size。</p>
+<h1 id="OPT"><a href="#OPT" class="headerlink" title="OPT"></a>OPT</h1><p>OPT-175B是Meta AI在2022年5月3日发布的一款开放模型，是模型参数超过千亿级别的开放模型之一。相比于GPT-3，该模型更加开放便于访问，并在以下五个方面表现出其开放性：</p>
+<ol>
+<li><p>论文：该模型提供了某些能力可能存在的证明，并揭示可以建立在此基础上的一般思想。</p>
+</li>
+<li><p>API访问：该模型允许研究人员探索和评估现有基础模型的能力和局限性，例如推理和偏差。</p>
+</li>
+<li><p>模型权重：研究人员可以使用该模型的权重来逐步改进现有模型、开发更深入的可解释技术和更有效的微调方法。</p>
+</li>
+<li><p>训练数据：该模型让研究人员更好地理解训练数据在模型行为中的作用，例如情境学习从何而来。</p>
+</li>
+<li><p>计算：该模型允许研究人员尝试新的架构、培训目标/程序、进行数据集消融，并在不同领域开发全新的模型。虽然这种方法具有最大的理解和改进潜力，但也相当昂贵。</p>
+</li>
+</ol>
+<p>作为一个大规模的语言模型，OPT-175B具有超过1750亿个参数，是目前为止最大的语言模型之一。该模型通过在公开可用的数据集上进行训练，允许更多的社区参与了解这项基础新技术。为了保持完整性并防止滥用，Meta AI将在非商业许可下发布他们的模型，以专注于研究用例。该模型的访问权限将授予学术研究者、政府机构、民间社会和学术界组织的人员，以及世界各地的工业研究实验室。</p>
+<p><strong>项目地址</strong>：<a target="_blank" rel="noopener" href="https://github.com/facebookresearch/metaseq" title="https://github.com/facebookresearch/metaseq">GitHub - facebookresearch/metaseq: Repo for external large-scale work</a></p>
+<p><strong>论文地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2205.01068.pdf">https://arxiv.org/pdf/2205.01068.pdf</a></p>
+<p><strong>模型结构：</strong> Decoder Only</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Model</th>
+<th style="text-align:center">#L</th>
+<th style="text-align:center">#H</th>
+<th style="text-align:center">d_model</th>
+<th style="text-align:center">LR</th>
+<th style="text-align:center">Batch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">125M</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">768</td>
+<td style="text-align:center">6.0 e-4</td>
+<td style="text-align:center">0.5M</td>
+</tr>
+<tr>
+<td style="text-align:center">350M</td>
+<td style="text-align:center">24</td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">1024</td>
+<td style="text-align:center">3.0 e-4</td>
+<td style="text-align:center">0.5M</td>
+</tr>
+<tr>
+<td style="text-align:center">1.3B</td>
+<td style="text-align:center">24</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">2048</td>
+<td style="text-align:center">2.0 e-4</td>
+<td style="text-align:center">1M</td>
+</tr>
+<tr>
+<td style="text-align:center">2.7B</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">2560</td>
+<td style="text-align:center">1.6 e-4</td>
+<td style="text-align:center">1M</td>
+</tr>
+<tr>
+<td style="text-align:center">6.7B</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">32</td>
+<td style="text-align:center">4096</td>
+<td style="text-align:center">1.2 e-4</td>
+<td style="text-align:center">2M</td>
+</tr>
+<tr>
+<td style="text-align:center">13B</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">5120</td>
+<td style="text-align:center">1.0 e-4</td>
+<td style="text-align:center">4M</td>
+</tr>
+<tr>
+<td style="text-align:center">30B</td>
+<td style="text-align:center">48</td>
+<td style="text-align:center">56</td>
+<td style="text-align:center">7168</td>
+<td style="text-align:center">1.0 e-4</td>
+<td style="text-align:center">4M</td>
+</tr>
+<tr>
+<td style="text-align:center">66B</td>
+<td style="text-align:center">64</td>
+<td style="text-align:center">72</td>
+<td style="text-align:center">9216</td>
+<td style="text-align:center">0.8 e-4</td>
+<td style="text-align:center">2M</td>
+</tr>
+<tr>
+<td style="text-align:center">175B</td>
+<td style="text-align:center">96</td>
+<td style="text-align:center">96</td>
+<td style="text-align:center">12288</td>
+<td style="text-align:center">1.2 e-4</td>
+<td style="text-align:center">2M</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>训练过程：</strong></p>
+<p>OPT与GPT3的训练过程比较如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>GPU</th>
+<th>FLOPs</th>
+<th>days</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OPT</td>
+<td>1024 80G A100</td>
+<td>√4.30E+23</td>
+<td>33</td>
+</tr>
+<tr>
+<td>GPT3</td>
+<td>10,000 32G V100</td>
+<td>√3.14E+23</td>
+<td>14.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Meta将OPT系列模型的训练过程记录在logbook中，地址如下：<a target="_blank" rel="noopener" href="https://github.com/facebookresearch/metaseq/blob/main/projects/OPT/chronicles/README.md">metaseq/README.md at main · facebookresearch/metaseq · GitHub</a>。这个logbook主要记录了作者训练OPT系列模型的辛酸历程，包括遇到的一些问题、讨论分析以及解决方法。</p>
+<p>有兴趣的可以仔细阅读原文，或者<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/617492983">OPT logbook：训练大规模语言模型的一些经验</a>。</p>
+<p>总结如下，Meta主要遇到收敛/数值稳定性问题、机器故障问题。</p>
+<ul>
+<li><p>面对收敛/数值稳定性问题：Meta主要采取降低学习率、参照成熟框架设置参数、切换激活函数的方法；</p>
+</li>
+<li><p>面对机器故障问题：Meta主要开发监控、自动化工具进行监测。</p>
+</li>
+</ul>
+<h1 id="LLAMA"><a href="#LLAMA" class="headerlink" title="LLAMA"></a>LLAMA</h1><p><code>LLaMA</code>（Large Language Model Meta AI），由 Meta AI 发布的一个开放且高效的大型基础语言模型，共有 <code>7B</code>、<code>13B</code>、<code>33B</code>、<code>65B</code>（650 亿）四种版本。其数据集来源都是公开数据集，无任何定制数据集，保证了其工作与开源兼容和可复现，整个训练数据集在 token 化之后大约包含 1.4T 的 token。</p>
+<p>关于模型性能，LLaMA 的性能非常优异：具有 130 亿参数的 LLaMA 模型「在大多数基准上」可以<strong>胜过</strong> GPT-3（ 参数量达 1750 亿），而且可以在单块 V100 GPU 上运行；而最大的 650 亿参数的 LLaMA 模型可以媲美谷歌的 Chinchilla-70B 和 PaLM-540B。</p>
+<p>关于训练集，其来源都是公开数据集，无任何定制数据集，保证了其工作与开源兼容和可复现。整个训练数据集在 token 化之后大约包含 1.4T 的 token。其中，LLaMA-65B 和 LLaMA-33B 是在 1.4万亿个 <code>token</code> 上训练的，而最小的模型 LLaMA-7B 是在 1万亿个 token 上训练的。</p>
+<p><strong>论文标题</strong>：LLaMA: Open and Efficient Foundation Language Models</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2302.13971.pdf">https://arxiv.org/pdf/2302.13971.pdf</a></p>
+<p><strong>模型结构</strong>：</p>
+<ul>
+<li>PreLayerNorm-RMSNorm-<a target="_blank" rel="noopener" href="https://proceedings.neurips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf">Root Mean Square Layer Normalization</a></li>
+<li>ROPE旋转位置编码（替换绝对/相对位置编码）</li>
+<li>SwiGLU激活函数（替换ReLU）-<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2002.05202v1.pdf">GLU Variants Improve Transformer</a></li>
+</ul>
+<p><strong>改动点</strong>：</p>
+<p>过了1T的Token：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2203.15556.pdf">过去的研究</a>发现最好的性能不是在最大的模型上，而是在过了更多token的模型上；</p>
+<blockquote>
+<p>与OpenAI提出大模型缩放法则不同的是，DeepMind认为当前许多大模型是训练不充分的；</p>
+<p>OpenAI在《Scaling Laws for Neural Language Models》中，指出<strong>在给定计算量的时候，模型性能的提升主要在于增加参数规模而不是增加数据量；</strong></p>
+<p>DeepMind在《Training Compute-Optimal Large Language Models》中，指出<strong>在每条曲线的最小值的左侧，模型太小了——在较少数据上训练的较大模型将是一种改进。在每条曲线的最小值的右侧，模型太大——在更多数据上训练的较小模型将是一种改进。最好的模型处于最小值。</strong></p>
+</blockquote>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/GnffTU.png" alt="GnffTU"></p>
+<h1 id="BLOOM"><a href="#BLOOM" class="headerlink" title="BLOOM"></a>BLOOM</h1><p>BLOOM 是 BigScience（一个围绕研究和创建超大型语言模型的开放协作研讨会）中数百名研究人员合作设计和构建的 176B 参数开源大语言模型，同时，还开源了BLOOM-560M、BLOOM-1.1B、BLOOM-1.7B、BLOOM-3B、BLOOM-7.1B 其他五个参数规模相对较小的模型。BLOOM 是一种 decoder-only 的 Transformer 语言模型，它是在 ROOTS 语料库上训练的，该数据集包含 46 种自然语言和 13 种编程语言（总共 59 种）的数百个数据来源。</p>
+<p><strong>论文标题</strong>：BLOOM: A 176B-Parameter Open-Access Multilingual Language Model</p>
+<p><strong>论文链接</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2211.05100.pdf">https://arxiv.org/pdf/2211.05100.pdf</a></p>
+<p><strong>模型结构</strong>：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/0hYelu.png" alt="0hYelu"></p>
+<p>核心介绍：</p>
+<ol>
+<li><p>基于Megatron-LM GPT2模型开发，模型结构为Decoder-only类型；</p>
+</li>
+<li><p><strong>ALiBi Positional Embeddings</strong>。它允许外推比训练模型的输入序列更长的输入序列，同时有助于加速训练收敛。因此，即使训练时使用长度为 2048 的序列，模型也可以在推理过程中处理更长的序列。思路来源于： <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2108.12409">Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation</a>；</p>
+</li>
+<li><p><strong>Embedding LayerNorm</strong>。在 embedding 层之后立即添加额外的归一化层（<code>layer norm</code> 层）。这个方法来源于 bitsandbytes^17库 (Dettmers et al., 2022)，作者的实验发现这样可以显著提高训练的稳定性。另外，模型最终的训练是在  <code>bfloat16</code> 下进行的。思路来源于：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2110.02861">8-bit Optimizers via Block-wise Quantization</a></p>
+</li>
+</ol>
+<p>同时开发人员也记录了项目的开发过程：<a target="_blank" rel="noopener" href="https://huggingface.co/blog/zh/bloom-megatron-deepspeed">千亿参数开源大模型 BLOOM 背后的技术</a>，关键信息如下：</p>
+<ol>
+<li><p>基于<strong>Megatron-DeepSpeed</strong> 实现了 <strong>3D 并行</strong>以允许大模型以非常有效的方式进行训练。包括数据并行 (Data Parallelism，DP)、张量并行 (Tensor Parallelism，TP)、流水线并行 (Pipeline Parallelism，PP)。</p>
+</li>
+<li><p><strong>用 FP16 训练巨型 LLM 模型是一个禁忌</strong>。FP16会产生精度溢出，使用BF16进行训练。</p>
+</li>
+<li><p><strong>CUDA 融合核函数</strong>。为了快速高效地训练 BLOOM，有必要使用 Megatron-LM 提供的几个自定义 CUDA 融合核函数。特别地，有一个 LayerNorm 的融合核函数以及用于融合缩放、掩码和 softmax 这些操作的各种组合的核函数。Bias Add 也通过 PyTorch 的 JIT 功能与 GeLU 融合。这些操作都是瓶颈在内存的，因此将它们融合在一起以达到最大化每次显存读取后的计算量非常重要。因此，例如，在执行瓶颈在内存的 GeLU 操作时同时执行 Bias Add，运行时间并不会增加。这些核函数都可以在 <a target="_blank" rel="noopener" href="https://github.com/NVIDIA/Megatron-LM">Megatron-LM repository</a> 代码库 中找到。</p>
+</li>
+<li><p><strong>硬件故障</strong>也颇有挑战。</p>
+</li>
+</ol>
+<h1 id="WenZhong"><a href="#WenZhong" class="headerlink" title="WenZhong"></a>WenZhong</h1><p>闻仲语言模型出自IDEA研究院的封神榜模型系列，专注于生成任务，提供了多个不同参数量的生成模型，例如GPT2等。</p>
+<p>Fengshenbang-LM(封神榜大模型)是IDEA研究院认知计算与自然语言研究中心主导的大模型开源体系，成为中文AIGC和认知智能的基础设施。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/4hwtIC.jpg" alt="4hwtIC"></p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/IDEA-CCNL/Fengshenbang-LM">GitHub - IDEA-CCNL/Fengshenbang-LM: Fengshenbang-LM(封神榜大模型)是IDEA研究院认知计算与自然语言研究中心主导的大模型开源体系，成为中文AIGC和认知智能的基础设施。</a></p>
+<h1 id="GLM"><a href="#GLM" class="headerlink" title="GLM"></a>GLM</h1><p>GLM-130B 是清华大学与智谱AI共同研制的一个开放的双语（英汉）双向密集预训练语言模型，拥有 1300亿个参数，使用通用语言模型（<a href="https://link.zhihu.com/√target=https%3A//github.com/THUDM/GLM">General Language Model， GLM</a>）的算法进行预训练。 2022年11月，斯坦福大学大模型中心对全球30个主流大模型进行了全方位的评测，<strong>GLM-130B 是亚洲唯一入选的大模型</strong>。GLM-130B 在广泛流行的英文基准测试中性能明显优于 GPT-3 175B(davinci)，而对 OPT-175B 和 BLOOM-176B 没有观察到性能优势，它还在相关基准测试中性能始终显著优于最大的中文语言模型 ERNIE 3.0 Titan 260B。GLM-130B 无需后期训练即可达到 INT4 量化，且几乎没有性能损失；更重要的是，它能够在 4×RTX 3090 (24G) 或 8×RTX 2080 Ti (11G) GPU 上有效推理，是使用 100B 级模型最实惠的 GPU 需求。</p>
+<h2 id="GLM介绍"><a href="#GLM介绍" class="headerlink" title="GLM介绍"></a>GLM介绍</h2><p><strong>论文标题</strong>：GLM: General Language Model Pretraining with Autoregressive Blank Infilling</p>
+<p><strong>论文地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2103.10360v2.pdf">https://arxiv.org/pdf/2103.10360v2.pdfhttps://arxiv.org/pdf/2103.10360v2.pdf</a></p>
+<p><strong>训练目标</strong>：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/jkMmBZ.png" alt="jkMmBZ"></p>
+<script type="math/tex; mode=display">
+\max _\theta \mathbb{E}_{\boldsymbol{z} \sim Z_m}\left[\sum_{i=1}^m \log p_\theta\left(\boldsymbol{s}_{z_i} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}\right)\right]</script><script type="math/tex; mode=display">
+\begin{aligned}
+& p_\theta\left(\boldsymbol{s}_i \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}\right) \\
+= & \prod_{j=1}^{l_i} p\left(s_{i, j} \mid \boldsymbol{x}_{\text {corrupt }}, \boldsymbol{s}_{\boldsymbol{z}_{<i}}, \boldsymbol{s}_{i,<j}\right) \end{aligned}</script><p><strong>模型结构</strong>：</p>
+<ul>
+<li>改变层归一化、残差网络结构的顺序（避免出现数值错误）</li>
+<li>新增线性层输出结果</li>
+<li>使用GeLUs激活函数替代ReLU</li>
+</ul>
+<p><strong>微调方式</strong>：</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1683538503448-c26ff2b5-6bff-4dfb-aa2b-9b65c4202da0.png" alt=""></p>
+<ul>
+<li>对于分类任务，对于token分类，就使用目标token的表示；对于序列分类那就是使用cls的表示。</li>
+<li>对于生成任务，partB 部分直接换成 mask 即可。</li>
+</ul>
+<p><strong>讨论分析</strong>：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>BERT</th>
+<th>XLNET</th>
+<th>Encoder-Decoder</th>
+<th>UniLM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BERT中不能很好处理连续的多个token; mask token是独立的，不能捕捉mask token之间的依赖关系。</td>
+<td>xlnet使用了双流的注意力机制，改变了transformer的结构，增加了耗时。</td>
+<td>使用了两个transformer模型实现了单向和双向注意力，加入token来识别mask span，浪费模型能力；训练和微调不一致。</td>
+<td>在自编码框架下使用了mask来统一单双向的注意力。对于生成任务来说，还是不够高效。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>与bert对比</strong><br>bert是自编码模型，预测mask的字符。因为模型中的mask token是独立的，bert不能捕捉mask token之间的依赖性。bert的另一个缺点是不能预测多个连续的mask token，尤其是待预测长度未知情况下。</p>
+<p><strong>与xlnet的对比</strong><br>都是自回归的模型。xlnet需要知道预测token的长度；使用双流注意力机制解决了信息泄漏的问题，改变了transfomer的结构，增加了耗时；xlnet决定一个token是否被独立预测。</p>
+<p><strong>与编码解码模型对比</strong><br>T5也是处理的空白填充的任务目标，但是GLM使用了单个的transformer编码器学习单向和双向的注意力。通过共享参数使参数比编码解码模型更有效。T5在编码和解码阶段使用不同的位置编码，使用哨兵标记来识别不同的mask跨度，哨兵标记造成了模型能力的浪费和预训练微调的不一致性。</p>
+<p><strong>与UniLM对比</strong><br>UniLM是通过在自编码框架下改变在双向，单向，互相之间的attention mask来统一预训练目标；由于自编码模型的独立假设，自回归模型不能完全捕捉当前token对于前面token的依赖。对于微调下游任务来说，自编码会比自回归更加低效。</p>
+<h2 id="GLM130B"><a href="#GLM130B" class="headerlink" title="GLM130B"></a><strong>GLM130B</strong></h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/glm.gif" alt="glm"></p>
+<ul>
+<li>130B的原因是该大小能够在一个A100服务器(40G*8)上进行推理</li>
+<li>千亿模型训练的问题：硬件故障、梯度爆炸、内存溢出、3D并行、无法恢复优化器状态、TCP通信阻塞</li>
+<li>[MASK]、[gMASK]分别用作短文本、长文本生成</li>
+<li>结构优化点：RoPE、DeepNorm、GeLU</li>
+<li>预训练：95%的MASK自回归任务、5%的多任务指令学习(T0、DeepStruct)</li>
+<li>400B的Token，但是据估计130B模型需要4T的Token</li>
+<li>GLM-130B FP16-需要260G显存存储模型权重</li>
+</ul>
+<h2 id="UniLM"><a href="#UniLM" class="headerlink" title="UniLM"></a>UniLM</h2><p>许多人指出GLM和UniLM的模型结构非常相似。下面将对UniLM的模型结构进行详细介绍。</p>
+<p>UniLM<strong>是微软研究院在Bert的基础上，最新产出的预训练语言模型，被称为统一预训练语言模型</strong>。 它可以完成单向、序列到序列和双向预测任务，可以说是结合了AR和AE两种语言模型的优点，Unilm在抽象摘要、生成式问题回答和语言生成数据集的抽样领域取得了最优秀的成绩。</p>
+<p><strong>论文标题</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.03197.pdf">Unified Language Model Pre-training for Natural Language Understanding and Generation</a></p>
+<p><strong>论文地址</strong>：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1905.03197.pdf">https://arxiv.org/pdf/1905.03197.pdf</a></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1681433605204-bc6414c4-f028-4ded-952b-f6c712c07cf0.png" alt=""></p>
+<p><strong>预训练阶段</strong>：</p>
+<ol>
+<li><p>输入：Token Embedding、Position Embedding、Segment Embedding（区分任务目标）</p>
+</li>
+<li><p>预训练目标：随机掩码[MASK]语言模型+NSP</p>
+</li>
+<li><p>单向语言模型：predict the masked token of “x1x2 [MASK] x4”, only tokens x1, x2 and itself can be used.</p>
+</li>
+<li><p>双向语言模型：predict the masked token of “x1x2 [MASK] x4”, all tokens can be used.</p>
+</li>
+<li><p>Seq2Seq语言模型： given source segment t1t2 and its target segment t3t4t5, we feed input “[SOS] t1 t2 [EOS] t3 t4 t5 [EOS]” into the model. While both t1 and t2 have access to the first four tokens, including [SOS] and [EOS], t4 can only attend to the first six tokens.</p>
+</li>
+<li><p>训练过程：1/3训练双向语言模型；1/3训练Seq2Seq语言模型；1/6训练从左到右单向语言模型；1/6训练从右到左单向语言模型；BERT-Large作为初始化模型；15%概率掩码，80%为[MASK]，10%为随机Token，10%保持不变</p>
+</li>
+</ol>
+<p><strong>微调阶段</strong>：</p>
+<ol>
+<li>NLU任务：类似于BERT，取[SOS]表征句子输入</li>
+<li>NLG任务：“[SOS] S1 [EOS] S2 [EOS]”. The model is fine-tuned by masking some percentage of tokens in the target sequence at random, and learning to recover the masked words. EOS也会被MASK</li>
+</ol>
+<h1 id="MOSS"><a href="#MOSS" class="headerlink" title="MOSS"></a>MOSS</h1><p>MOSS是一个支持中英双语和多种插件的开源对话语言模型，<code>moss-moon</code>系列模型具有160亿参数，在FP16精度下可在单张A100/A800或两张3090显卡运行，在INT4/8精度下可在单张3090显卡运行。MOSS基座语言模型在约七千亿中英文以及代码单词上预训练得到，后续经过对话指令微调、插件增强学习和人类偏好训练具备多轮对话能力及使用多种插件的能力。</p>
+<p>以下根据<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/596908242/answer/2994534005">知乎回答</a>总结MOSS的训练过程：</p>
+<h2 id="MOSS-001-OpenChat-001"><a href="#MOSS-001-OpenChat-001" class="headerlink" title="MOSS 001(OpenChat 001)"></a>MOSS 001(OpenChat 001)</h2><ul>
+<li><p><strong>数据来源</strong>：从OpenAI的论文附录里扒了一些它们API收集到的user prompt，然后用类似Self-Instruct的思路用text-davinci-003去扩展出大约40万对话数据。</p>
+</li>
+<li><p><strong>基座模型</strong>：16B基座（CodeGen）</p>
+</li>
+<li><p><strong>实验结果</strong>：一月份的OpenChat 001就已经具备了指令遵循能力和多轮能力，而且还惊喜的发现它具有很强的跨语言对齐能力，它的基座预训练语料中几乎不存在中文，但是却可以理解中文并用英文回答。</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/wqrnAr.jpg" alt="wqrnAr"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/zNXvlX.jpg" alt="zNXvlX"></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WcZoK6.jpg" alt="WcZoK6"></p>
+<h2 id="MOSS-002"><a href="#MOSS-002" class="headerlink" title="MOSS 002"></a>MOSS 002</h2><ul>
+<li><p><strong>优化点</strong>：OpenChat 001不具备中文能力，不知道关于自己的信息（比如名字、能力等），且安全性较低</p>
+</li>
+<li><p><strong>数据来源</strong>：一方面加入了约30B中文token继续训练基座，另一方面也加入了大量中英文<a target="_blank" rel="noopener" href="https://www.zhihu.com/search√q=helpfulness&amp;search_source=Entity&amp;hybrid_search_source=Entity&amp;hybrid_search_extra=%7B%22sourceType%22%3A%22answer%22%2C%22sourceId%22%3A2994534005%7D">helpfulness</a>, honesty, harmlessness对话数据，这部分数据共计116万条对话，目前也全部已在huggingface开源：<a target="_blank" rel="noopener" href="https://huggingface.co/datasets/fnlp/moss-002-sft-data">fnlp/moss-002-sft-data · Datasets at Hugging Face</a></p>
+</li>
+</ul>
+<h2 id="MOSS-003"><a href="#MOSS-003" class="headerlink" title="MOSS 003"></a>MOSS 003</h2><ul>
+<li><p><strong>优化点1</strong>：继续加大中文语料的预训练，截止目前MOSS 003的基座语言模型已经在100B中文token上进行了训练，总训练token数量达到700B，其中还包含约300B代码。</p>
+</li>
+<li><p><strong>优化点2</strong>：在开放内测后，我们也收集了一些用户数据，我们发现真实中文世界的用户意图和OpenAI InstructGPT论文中披露的user prompt分布有较大差异（这不仅与用户来自的国家差异有关，也跟产品上线时间有关，早期产品采集的数据中存在大量对抗性和测试性输入），于是我们以这部分真实数据作为seed重新生成了约110万常规对话数据，涵盖更细粒度的helpfulness数据和更广泛的harmlessness数据。此外，还构造了约30万插件增强的对话数据，目前已包含搜索引擎、文生图、计算器、方程求解等。</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/tFzNz9.jpg" alt="tFzNz9"></p>
+<h1 id="基座模型选取"><a href="#基座模型选取" class="headerlink" title="基座模型选取"></a>基座模型选取</h1><p>基于训练一个中文ChatGPT模型的出发点，需要选用具备<strong>中文支持性高、模型参数量大且已开源</strong>的基座模型。我们的候选项包括GLM、LLAMA、MOSS、BLOOM、CPM、闻仲模型，接下来将在这些候选项中进行比较，以确定最终选项。</p>
+<ul>
+<li><p>首先是CPM模型，其训练语料中，文章、对话语料居多，模型参数量较少，微调后的模型泛化性较差，生成结果与对话风格较大；</p>
+</li>
+<li><p>另外，闻仲模型，模型参数量同样较小；</p>
+</li>
+<li><p>接下来，LLAMA模型，尽管该模型在英文支持性方面表现不错，但据统计其Tokenizer中仅包括约700个中文字符，中文支持性较差；</p>
+</li>
+<li><p>BLOOM模型虽然支持多语言，但是其中文语料仅占16%，这意味着其可能无法提供足够的中文知识；</p>
+</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/d8h2ky.png" alt="d8h2ky"></p>
+<ul>
+<li>GLM模型则是支持中英文双语的130B模型，是亚洲唯一入选斯坦福大模型评测的模型。GLM模型在中文支持性和模型参数量方面表现出色，此外，该模型已开源，可以为我们提供强大的基座模型。</li>
+</ul>
+<p>综上所述，GLM模型是复刻中文ChatGPT的一个较优基座模型选择。</p>
+<p>当然目前也有不少基于其他基座模型的工作，比如：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ymcui/Chinese-LLaMA-Alpaca">GitHub - ymcui/Chinese-LLaMA-Alpaca: 中文LLaMA&amp;Alpaca大语言模型+本地CPU/GPU部署 (Chinese LLaMA &amp; Alpaca LLMs)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/LianjiaTech/BELLE">GitHub - LianjiaTech/BELLE: BELLE: Be Everyone’s Large Language model Engine（开源中文对话大模型）</a></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本文着重探讨如何选取一个好的预训练语言模型作为基座，最终选择在中文支持性和模型参数量方面表现出色的GLM模型。后续系列包括：</p>
+<ul>
+<li>复刻ChatGPT语言模型系列-（二）参数高效微调</li>
+<li>复刻ChatGPT语言模型系列-（三）指令学习微调</li>
+<li>复刻ChatGPT语言模型系列-（四）文本生成解码</li>
+<li>复刻ChatGPT语言模型系列-（五）强化学习RLHF</li>
+<li>复刻ChatGPT语言模型系列-（六）LLM模型评估</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/" rel="bookmark">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2022/01/20/2022-01-20-解析NLP中的对抗训练/" rel="bookmark">解析NLP竞赛中的提分点-对抗训练</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="复刻ChatGPT语言模型系列-（一）基座模型选取">https://447428054.github.io/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" rel="prev" title="从语言模型到ChatGPT：大型语言模型的发展和应用">
+      <i class="fa fa-chevron-left"></i> 从语言模型到ChatGPT：大型语言模型的发展和应用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" rel="next" title="复刻ChatGPT语言模型系列-（四）文本生成解码">
+      复刻ChatGPT语言模型系列-（四）文本生成解码 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">微调模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPM"><span class="nav-number">3.</span> <span class="nav-text">CPM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OPT"><span class="nav-number">4.</span> <span class="nav-text">OPT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LLAMA"><span class="nav-number">5.</span> <span class="nav-text">LLAMA</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BLOOM"><span class="nav-number">6.</span> <span class="nav-text">BLOOM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WenZhong"><span class="nav-number">7.</span> <span class="nav-text">WenZhong</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GLM"><span class="nav-number">8.</span> <span class="nav-text">GLM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GLM%E4%BB%8B%E7%BB%8D"><span class="nav-number">8.1.</span> <span class="nav-text">GLM介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GLM130B"><span class="nav-number">8.2.</span> <span class="nav-text">GLM130B</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UniLM"><span class="nav-number">8.3.</span> <span class="nav-text">UniLM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MOSS"><span class="nav-number">9.</span> <span class="nav-text">MOSS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MOSS-001-OpenChat-001"><span class="nav-number">9.1.</span> <span class="nav-text">MOSS 001(OpenChat 001)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MOSS-002"><span class="nav-number">9.2.</span> <span class="nav-text">MOSS 002</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MOSS-003"><span class="nav-number">9.3.</span> <span class="nav-text">MOSS 003</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96"><span class="nav-number">10.</span> <span class="nav-text">基座模型选取</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

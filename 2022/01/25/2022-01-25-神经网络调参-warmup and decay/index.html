@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t&#x3D;\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络调参-warmup and decay">
+<meta property="og:url" content="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t&#x3D;\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-5d6ffb22059ddf3da93bac83c02482a6_1440w.webp">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-9440892a277639a91c2468e66ad65072_1440w.webp">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.webp">
+<meta property="article:published_time" content="2022-01-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-02-12T12:00:17.129Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="warmup">
+<meta property="article:tag" content="decay">
+<meta property="article:tag" content="学习率">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg">
+
+<link rel="canonical" href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>神经网络调参-warmup and decay | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          神经网络调参-warmup and decay
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-25 00:00:00" itemprop="dateCreated datePublished" datetime="2022-01-25T00:00:00+08:00">2022-01-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-02-12 20:00:17" itemprop="dateModified" datetime="2023-02-12T20:00:17+08:00">2023-02-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">深度学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t=\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg" alt=""><br><span id="more"></span></p>
+<h1 id="warmup-and-decay"><a href="#warmup-and-decay" class="headerlink" title="warmup and decay"></a>warmup and decay</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Warmup and Decay是模型训练过程中，一种学习率（learning rate）的调整策略。</p>
+<p>Warmup是在ResNet论文中提到的一种学习率预热的方法，它在训练开始的时候先选择使用一个较小的学习率，训练了一些epoches或者steps(比如4个epoches,10000steps),再修改为预先设置的学习来进行训练。</p>
+<p>同理，Decay是学习率衰减方法，它指定在训练到一定epoches或者steps后，按照线性或者余弦函数等方式，将学习率降低至指定值。一般，使用Warmup and Decay，学习率会遵循从小到大，再减小的规律。</p>
+<h2 id="为什么要warmup"><a href="#为什么要warmup" class="headerlink" title="为什么要warmup"></a>为什么要warmup</h2><p>这里引用知乎：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/338066667/answer/771252708的讨论：">https://www.zhihu.com/question/338066667/answer/771252708的讨论：</a><br><strong>SGD训练中常见的方式是初始较大的学习率，然后衰减为小的学习率，而warmup是先以较小的学习率上升到初始学习率，然后再衰减到小的学习率上，那么为什么warmup有效。</strong></p>
+<h3 id="直观上解释"><a href="#直观上解释" class="headerlink" title="直观上解释"></a>直观上解释</h3><p>深层网络随机初始化差异较大，如果一开始以较大的学习率，初始学习带来的偏差在后续学习过程中难以纠正。</p>
+<p>训练刚开始时梯度更新较大，若学习率设置较大则更新的幅度较大，该类型与传统学习率先大后小方式不同的原因在于起初浅层网络幅度大的更新并不会导致方向错误。</p>
+<h3 id="理论上解释"><a href="#理论上解释" class="headerlink" title="理论上解释"></a>理论上解释</h3><p><strong>warmup带来的优点包含：</strong></p>
+<ul>
+<li>缓解模型在初期对mini-batch过拟合的现象</li>
+<li>保持模型深层的稳定性</li>
+</ul>
+<p><strong>给出三个论文中的结论：</strong></p>
+<ol>
+<li>当batch大小增加时，学习率也可以成倍增加</li>
+<li>限制大batch训练的是高学习率带来的训练不稳定性</li>
+<li>warmup主要限制深层的权重变化，并且冻结深层权重的变化可以取得相似的效果</li>
+</ol>
+<h4 id="batch与学习率大小的关系"><a href="#batch与学习率大小的关系" class="headerlink" title="batch与学习率大小的关系"></a>batch与学习率大小的关系</h4><p>假设现在模型已经train到第t步，权重为$w_t$，我们有k个mini-batch，每个mini-batch大小为n，记为$\mathcal{B}_{1:k}$ 。下面我们来看，以学习率 $\eta$训k次 $\mathcal{B}_{1:k}$ 和以学习率 $\hat{\eta}$ 一次训练$\mathcal{B}$时学习率的关系。</p>
+<p>假设我们用的是SGD，那么训k次后我们可以得到：</p>
+<script type="math/tex; mode=display">
+w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t+j}\right)</script><p>如果我们一次训练就可以得到：</p>
+<script type="math/tex; mode=display">
+\hat{w}_{t+1}=w_{t}-\hat{\eta} \frac{1}{k n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\left(x, w_{t}\right)</script><p>其中$w_{t+k}$与$\hat{w}_{t+1}$代表按上述方式训练k次与1次，完成参数更新后的参数。显然，这两个是不一样的。但如果我们假设$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$，那么令$\hat{\eta}=k\eta $就可以保证 <script type="math/tex">\hat{w}_{t+1} \approx w_{t+k}</script> 。那么，在什么时候 $\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$ 可能不成立呢？[1]告诉我们有两种情况：</p>
+<ul>
+<li>在训练的开始阶段，模型权重迅速改变</li>
+<li>Mini-batch 大小较小，样本方差较大</li>
+</ul>
+<p>第一种情况，模型初始参数分布取决于初始化方式，初始数据对于模型都是初次修正，所以梯度更新较大，若一开始以较大的学习率学习，易对数据造成过拟合，需要经过之后更多轮的训练进行修正。</p>
+<p>第二种情况，在训练的过程中，如果有mini-batch内的数据分布方差特别大，这会导致模型学习剧烈波动，使其学得的权重很不稳定，这在训练初期最为明显，最后期较为缓解。</p>
+<p>针对上述两种情况，并不能简单的成倍增长学习率$\hat{\eta}=k\eta$,因为此时不符合$\nabla l\left(x, w_{t}\right) \approx \nabla l\left(x, w_{t+j}\right)$假设。此时要么更改学习率增长方式[warmup]，要么解决这两种情况[数据预处理以减小样本方差]。</p>
+<h4 id="warmup与模型学习的稳定性"><a href="#warmup与模型学习的稳定性" class="headerlink" title="warmup与模型学习的稳定性"></a>warmup与模型学习的稳定性</h4><p>该部分通过一些论文实验结果，推断有了warmup之后模型能够学习的更稳定。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-5d6ffb22059ddf3da93bac83c02482a6_1440w.webp" alt=""></p>
+<p><strong>上图表示有了warmup之后，模型能够学习的更加稳定。</strong></p>
+<p><img src="https://pic3.zhimg.com/80/v2-9440892a277639a91c2468e66ad65072_1440w.webp" alt=""></p>
+<p><strong>上图b，c表示有了warmup之后，模型最后几层的相似性增加，避免模型不稳定的改变。</strong></p>
+<h1 id="学习率衰减策略"><a href="#学习率衰减策略" class="headerlink" title="学习率衰减策略"></a>学习率衰减策略</h1><h2 id="可视化代码"><a href="#可视化代码" class="headerlink" title="可视化代码"></a>可视化代码</h2><p><strong>下列各种学习率衰减策略均采用warmup，为了图片反应的更加直观：起始学习率设置为1，warmup 步数为20，总步数为100。通常warmup步数可以设置为总步数的10%，参照BERT的经验策略。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># -*- coding: utf-8 -*-</span><br><span class="line"># author： JMXGODLZZ</span><br><span class="line"># datetime： 2022/1/23 下午7:10 </span><br><span class="line"># ide： PyCharm</span><br><span class="line">import keras</span><br><span class="line">import tensorflow as tf</span><br><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">from learningrateSchedules import get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_cosine_with_hard_restarts_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_polynomial_decay_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_step_schedule_with_warmup</span><br><span class="line">from learningrateSchedules import get_exp_schedule_with_warmup</span><br><span class="line">init_lr = 1</span><br><span class="line">warmupsteps = 20</span><br><span class="line">totalsteps = 100</span><br><span class="line"></span><br><span class="line">lrs = get_linear_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_warm_lrs = get_cosine_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">cos_hard_warm_lrs = get_cosine_with_hard_restarts_schedule_with_warmup(1, warmupsteps, totalsteps, 2)</span><br><span class="line">poly_warm_lrs = get_polynomial_decay_schedule_with_warmup(1, warmupsteps, totalsteps, 0, 5)</span><br><span class="line">step_warm_lrs = get_step_schedule_with_warmup(1, warmupsteps, totalsteps)</span><br><span class="line">exp_warm_lrs = get_exp_schedule_with_warmup(1, warmupsteps, totalsteps, 0.9)</span><br><span class="line">x = list(range(totalsteps))</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(x, lrs, label=&#x27;linear_warmup&#x27;, color=&#x27;k&#x27;)</span><br><span class="line">plt.plot(x, cos_warm_lrs, label=&#x27;cosine_warmup&#x27;, color=&#x27;b&#x27;)</span><br><span class="line">plt.plot(x, cos_hard_warm_lrs, label=&#x27;cosine_cy2_warmup&#x27;, color=&#x27;g&#x27;)</span><br><span class="line">plt.plot(x, poly_warm_lrs, label=&#x27;polynomial_warmup_pw5&#x27;, color=&#x27;r&#x27;)</span><br><span class="line">plt.plot(x, step_warm_lrs, label=&#x27;step_warmup&#x27;, color=&#x27;purple&#x27;)</span><br><span class="line">plt.plot(x, exp_warm_lrs, label=&#x27;exp_warmup&#x27;, color=&#x27;orange&#x27;)</span><br><span class="line">plt.xlabel(&#x27;steps&#x27;)</span><br><span class="line">plt.ylabel(&#x27;learning rate&#x27;)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><img src="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.webp" alt=""></p>
+<h2 id="指数衰减学习率"><a href="#指数衰减学习率" class="headerlink" title="指数衰减学习率"></a>指数衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">def get_exp_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, gamma, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps)</span><br><span class="line">        return pow(gamma, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="余弦衰减学习率"><a href="#余弦衰减学习率" class="headerlink" title="余弦衰减学习率"></a>余弦衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">def get_cosine_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: float = 0.5, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, after a warmup period during which it increases linearly between 0 and the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`float`, `optional`, defaults to 0.5):</span><br><span class="line">            The number of waves in the cosine schedule (the defaults is to just decrease from the max value to 0</span><br><span class="line">            following a half-cosine).</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * float(num_cycles) * 2.0 * progress)))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="线性衰减学习率"><a href="#线性衰减学习率" class="headerlink" title="线性衰减学习率"></a>线性衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">def get_linear_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        return max(</span><br><span class="line">            0.0, float(num_training_steps - current_step) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        )</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="阶梯衰减学习率"><a href="#阶梯衰减学习率" class="headerlink" title="阶梯衰减学习率"></a>阶梯衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">def get_step_schedule_with_warmup(learning_rate, num_warmup_steps, num_training_steps, last_epoch=-1):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases linearly from the initial lr set in the optimizer to 0, after</span><br><span class="line">    a warmup period during which it increases linearly from 0 to the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        stepmi = (current_step - num_warmup_steps) // 20 + 1</span><br><span class="line">        return pow(0.5, stepmi)</span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="多项式衰减学习率"><a href="#多项式衰减学习率" class="headerlink" title="多项式衰减学习率"></a>多项式衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">def get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps, num_training_steps, lr_end=1e-7, power=1.0, last_epoch=-1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases as a polynomial decay from the initial lr set in the</span><br><span class="line">    optimizer to end lr defined by `lr_end`, after a warmup period during which it increases linearly from 0 to the</span><br><span class="line">    initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        lr_end (:obj:`float`, `optional`, defaults to 1e-7):</span><br><span class="line">            The end LR.</span><br><span class="line">        power (:obj:`float`, `optional`, defaults to 1.0):</span><br><span class="line">            Power factor.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Note: `power` defaults to 1.0 as in the fairseq implementation, which in turn is based on the original BERT</span><br><span class="line">    implementation at</span><br><span class="line">    https://github.com/google-research/bert/blob/f39e881b169b9d53bea03d2d341b31707a6c052b/optimization.py#L37</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line"></span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    lr_init = learning_rate</span><br><span class="line">    if not (lr_init &gt; lr_end):</span><br><span class="line">        raise ValueError(f&quot;lr_end (&#123;lr_end&#125;) must be be smaller than initial lr (&#123;lr_init&#125;)&quot;)</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step: int):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        elif current_step &gt; num_training_steps:</span><br><span class="line">            return lr_end / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line">        else:</span><br><span class="line">            lr_range = lr_init - lr_end</span><br><span class="line">            decay_steps = num_training_steps - num_warmup_steps</span><br><span class="line">            pct_remaining = 1 - (current_step - num_warmup_steps) / decay_steps</span><br><span class="line">            decay = lr_range * pct_remaining ** power + lr_end</span><br><span class="line">            return decay / lr_init  # as LambdaLR multiplies by lr_init</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h2 id="余弦循环衰减学习率"><a href="#余弦循环衰减学习率" class="headerlink" title="余弦循环衰减学习率"></a>余弦循环衰减学习率</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">def get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">    learning_rate, num_warmup_steps: int, num_training_steps: int, num_cycles: int = 1, last_epoch: int = -1</span><br><span class="line">):</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">    Create a schedule with a learning rate that decreases following the values of the cosine function between the</span><br><span class="line">    initial lr set in the optimizer to 0, with several hard restarts, after a warmup period during which it increases</span><br><span class="line">    linearly between 0 and the initial lr set in the optimizer.</span><br><span class="line"></span><br><span class="line">    Args:</span><br><span class="line">        optimizer (:class:`~torch.optim.Optimizer`):</span><br><span class="line">            The optimizer for which to schedule the learning rate.</span><br><span class="line">        num_warmup_steps (:obj:`int`):</span><br><span class="line">            The number of steps for the warmup phase.</span><br><span class="line">        num_training_steps (:obj:`int`):</span><br><span class="line">            The total number of training steps.</span><br><span class="line">        num_cycles (:obj:`int`, `optional`, defaults to 1):</span><br><span class="line">            The number of hard restarts to use.</span><br><span class="line">        last_epoch (:obj:`int`, `optional`, defaults to -1):</span><br><span class="line">            The index of the last epoch when resuming training.</span><br><span class="line"></span><br><span class="line">    Return:</span><br><span class="line">        :obj:`torch.optim.lr_scheduler.LambdaLR` with the appropriate schedule.</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def lr_lambda(current_step):</span><br><span class="line">        if current_step &lt; num_warmup_steps:</span><br><span class="line">            return float(current_step) / float(max(1, num_warmup_steps))</span><br><span class="line">        progress = float(current_step - num_warmup_steps) / float(max(1, num_training_steps - num_warmup_steps))</span><br><span class="line">        if progress &gt;= 1.0:</span><br><span class="line">            return 0.0</span><br><span class="line">        return max(0.0, 0.5 * (1.0 + math.cos(math.pi * ((float(num_cycles) * progress) % 1.0))))</span><br><span class="line"></span><br><span class="line">    lrs = []</span><br><span class="line">    for current_step in range(num_training_steps):</span><br><span class="line">        cur_lr = lr_lambda(current_step) * learning_rate</span><br><span class="line">        lrs.append(cur_lr)</span><br><span class="line">    return lrs</span><br></pre></td></tr></table></figure>
+<h1 id="学习率衰减实现"><a href="#学习率衰减实现" class="headerlink" title="学习率衰减实现"></a>学习率衰减实现</h1><h2 id="Pytorch学习率策略"><a href="#Pytorch学习率策略" class="headerlink" title="Pytorch学习率策略"></a>Pytorch学习率策略</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">if args.scheduler == &quot;constant_schedule&quot;:</span><br><span class="line">    scheduler = get_constant_schedule(optimizer)</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;constant_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_constant_schedule_with_warmup(</span><br><span class="line">        optimizer, num_warmup_steps=args.warmup_steps</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;linear_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_linear_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;cosine_with_hard_restarts_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_cosine_with_hard_restarts_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        num_cycles=args.cosine_schedule_num_cycles,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">elif args.scheduler == &quot;polynomial_decay_schedule_with_warmup&quot;:</span><br><span class="line">    scheduler = get_polynomial_decay_schedule_with_warmup(</span><br><span class="line">        optimizer,</span><br><span class="line">        num_warmup_steps=args.warmup_steps,</span><br><span class="line">        num_training_steps=t_total,</span><br><span class="line">        lr_end=args.polynomial_decay_schedule_lr_end,</span><br><span class="line">        power=args.polynomial_decay_schedule_power,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">else:</span><br><span class="line">    raise ValueError(&quot;&#123;&#125; is not a valid scheduler.&quot;.format(args.scheduler))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="keras学习率策略"><a href="#keras学习率策略" class="headerlink" title="keras学习率策略"></a>keras学习率策略</h2><ul>
+<li>Keras提供了四种衰减策略分别是ExponentialDecay(指数衰减)、 PiecewiseConstantDecay(分段常数衰减) 、 PolynomialDecay(多项式衰减)和InverseTimeDecay(逆时间衰减)。只要在Optimizer中指定衰减策略，一行代码就能实现，在以下方法一中详细介绍。</li>
+<li>如果想要自定义学习率的衰减，有第二种方法，更加灵活，需要使用callbacks来实现动态、自定义学习率衰减策略，方法二中将详细介绍。</li>
+<li>如果两种方法同时使用，默认优先使用第二种，第一种方法将被忽略。</li>
+</ul>
+<h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><h4 id="指数衰减"><a href="#指数衰减" class="headerlink" title="指数衰减"></a>指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lr_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(</span><br><span class="line">    initial_learning_rate=1e-2,</span><br><span class="line">    decay_steps=10000,</span><br><span class="line">    decay_rate=0.96)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="分段衰减"><a href="#分段衰减" class="headerlink" title="分段衰减"></a>分段衰减</h4><p>[0~1000]的steps，学习率为1.0,[10001～9000]的steps，学习率为0.5，其他steps，学习率为0.1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">step = tf.Variable(0, trainable=False)</span><br><span class="line">boundaries = [1000, 10000]</span><br><span class="line">values = [1.0, 0.5, 0.1]</span><br><span class="line">learning_rate_fn = tf.keras.optimizers.schedules.PiecewiseConstantDecay(boundaries, values)</span><br><span class="line">lr_scheduler = learning_rate_fn(step)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="多项式衰减"><a href="#多项式衰减" class="headerlink" title="多项式衰减"></a>多项式衰减</h4><p>在10000步中从0.1衰减到0.001，使用开根式( power=0.5)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">start_lr = 0.1</span><br><span class="line">end_lr = 0.001</span><br><span class="line">decay_steps = 10000</span><br><span class="line">lr_scheduler = tf.keras.optimizers.schedules.PolynomialDecay(</span><br><span class="line">    start_lr,</span><br><span class="line">    decay_steps,</span><br><span class="line">    end_lr,</span><br><span class="line">    power=0.5)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h4 id="逆时间衰减"><a href="#逆时间衰减" class="headerlink" title="逆时间衰减"></a>逆时间衰减</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">initial_lr = 0.1</span><br><span class="line">decay_steps = 1.0</span><br><span class="line">decay_rate = 0.5</span><br><span class="line">lr_scheduler = keras.optimizers.schedules.InverseTimeDecay(</span><br><span class="line">  initial_lr, decay_steps, decay_rate)</span><br><span class="line">optimizer = tf.keras.optimizers.SGD(learning_rate=lr_scheduler)</span><br></pre></td></tr></table></figure>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><h4 id="自定义指数衰减"><a href="#自定义指数衰减" class="headerlink" title="自定义指数衰减"></a>自定义指数衰减</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 第一步：自定义指数衰减策略</span><br><span class="line">def step_decay(epoch):</span><br><span class="line">    init_lr = 0.1</span><br><span class="line">    drop=0.5</span><br><span class="line">    epochs_drop=10</span><br><span class="line">    if epoch&lt;100:</span><br><span class="line">        return init_lr</span><br><span class="line">    else:</span><br><span class="line">        return init_lr*pow(drop,floor(1+epoch)/epochs_drop)</span><br><span class="line">        </span><br><span class="line"># ……</span><br><span class="line"># 第二步：用LearningRateScheduler封装学习率衰减策略</span><br><span class="line">lr_callback = LearningRateScheduler(step_decay)</span><br><span class="line"># 第三步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
+<h4 id="动态修改学习率"><a href="#动态修改学习率" class="headerlink" title="动态修改学习率"></a>动态修改学习率</h4><p>ReduceLROnPlateau(monitor=’val_acc’, mode=’max’,min_delta=0.1,factor=0.2,patience=5, min_lr=0.001)</p>
+<p>训练集连续patience个epochs的val_acc小于min_delta时，学习率将会乘以factor。mode可以选择max或者min，根据monitor的选择而灵活设定。min_lr是学习率的最低值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 第一步：ReduceLROnPlateau定义学习动态变化策略</span><br><span class="line">reduce_lr_callback = ReduceLROnPlateau(monitor=&#x27;val_acc&#x27;, factor=0.2,patience=5, min_lr=0.001)</span><br><span class="line"># 第二步：加入callbacks</span><br><span class="line">model = KerasClassifier(build_fn = create_model,epochs=200,batch_size=5,verbose=1,callbacks=[checkpoint,reduce_lr_callback])</span><br><span class="line">model.fit(X,Y)</span><br></pre></td></tr></table></figure>
+<h3 id="Keras学习率回显代码"><a href="#Keras学习率回显代码" class="headerlink" title="Keras学习率回显代码"></a>Keras学习率回显代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def get_lr_metric(optimizer):</span><br><span class="line">    def lr(y_true, y_pred):</span><br><span class="line">        return optimizer.lr</span><br><span class="line">    return lr</span><br><span class="line"> </span><br><span class="line">x = Input((50,))</span><br><span class="line">out = Dense(1, activation=&#x27;sigmoid&#x27;)(x)</span><br><span class="line">model = Model(x, out)</span><br><span class="line"> </span><br><span class="line">optimizer = Adam(lr=0.001)</span><br><span class="line">lr_metric = get_lr_metric(optimizer)</span><br><span class="line">model.compile(loss=&#x27;binary_crossentropy&#x27;, optimizer=optimizer, metrics=[&#x27;acc&#x27;, lr_metric])</span><br><span class="line"> </span><br><span class="line"># reducing the learning rate by half every 2 epochs</span><br><span class="line">cbks = [LerningRateScheduler(lambda epoch: 0.001 * 0.5 ** (epoch // 2)),</span><br><span class="line">        TensorBoard(write_graph=False)]</span><br><span class="line">X = np.random.rand(1000, 50)</span><br><span class="line">Y = np.random.randint(2, size=1000)</span><br><span class="line">model.fit(X, Y, epochs=10, callbacks=cbks)</span><br></pre></td></tr></table></figure>
+<h1 id="分层学习率设置"><a href="#分层学习率设置" class="headerlink" title="分层学习率设置"></a>分层学习率设置</h1><p>有时候我们需要为模型中不同层设置不同学习率大小，比如微调预训练模型时，预训练层数设置较小的学习率进行学习，而其他层以正常大小进行学习。这里给出苏神给出的keras实现，其通过参数变换实现调整学习率的目的：</p>
+<p>梯度下降公式如下：</p>
+<script type="math/tex; mode=display">
+\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-1}</script><p>考虑变换$\boldsymbol{\theta}=\lambda \boldsymbol{\phi}$,其中λ是一个固定的标量，<strong>ϕ</strong>也是参数。现在来优化<strong>ϕ</strong>，相应的更新公式为：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}\boldsymbol{\phi}_{n+1}=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\lambda\boldsymbol{\phi}_{n})}{\partial \boldsymbol{\phi}_n}\\ 
+=&\boldsymbol{\phi}_{n}-\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\frac{\partial \boldsymbol{\theta}_{n}}{\partial \boldsymbol{\phi}_n}\\ 
+=&\boldsymbol{\phi}_{n}-\lambda\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\end{aligned}</script><p>然后通过链式求导法则，再上述等式两边同时乘以λ：</p>
+<script type="math/tex; mode=display">
+\lambda\boldsymbol{\phi}_{n+1}=\lambda\boldsymbol{\phi}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\quad\Rightarrow\quad\boldsymbol{\theta}_{n+1}=\boldsymbol{\theta}_{n}-\lambda^2\alpha \frac{\partial L(\boldsymbol{\theta}_{n})}{\partial \boldsymbol{\theta}_n}\label{eq:sgd-2}</script><blockquote>
+<p>在SGD优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了$\lambda^2\alpha$。</p>
+<p>不过，在自适应学习率优化器（比如RMSprop、Adam等），情况有点不一样，因为自适应学习率使用梯度（作为分母）来调整了学习率，抵消了一个λ</p>
+<p>在RMSprop、Adam等自适应学习率优化器中，如果做参数变换<strong>θ</strong>=λ<strong>ϕ</strong>，那么等价的结果是学习率从α变成了λα。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">import keras.backend as K</span><br><span class="line"></span><br><span class="line">class SetLearningRate:</span><br><span class="line">    &quot;&quot;&quot;层的一个包装，用来设置当前层的学习率</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    def __init__(self, layer, lamb, is_ada=False):</span><br><span class="line">        self.layer = layer</span><br><span class="line">        self.lamb = lamb # 学习率比例</span><br><span class="line">        self.is_ada = is_ada # 是否自适应学习率优化器</span><br><span class="line"></span><br><span class="line">    def __call__(self, inputs):</span><br><span class="line">        with K.name_scope(self.layer.name):</span><br><span class="line">            if not self.layer.built:</span><br><span class="line">                input_shape = K.int_shape(inputs)</span><br><span class="line">                self.layer.build(input_shape)</span><br><span class="line">                self.layer.built = True</span><br><span class="line">                if self.layer._initial_weights is not None:</span><br><span class="line">                    self.layer.set_weights(self.layer._initial_weights)</span><br><span class="line">        for key in [&#x27;kernel&#x27;, &#x27;bias&#x27;, &#x27;embeddings&#x27;, &#x27;depthwise_kernel&#x27;, &#x27;pointwise_kernel&#x27;, &#x27;recurrent_kernel&#x27;, &#x27;gamma&#x27;, &#x27;beta&#x27;]:</span><br><span class="line">            if hasattr(self.layer, key):</span><br><span class="line">                weight = getattr(self.layer, key)</span><br><span class="line">                if self.is_ada:</span><br><span class="line">                    lamb = self.lamb # 自适应学习率优化器直接保持lamb比例</span><br><span class="line">                else:</span><br><span class="line">                    lamb = self.lamb**0.5 # SGD（包括动量加速），lamb要开平方</span><br><span class="line">                K.set_value(weight, K.eval(weight) / lamb) # 更改初始化</span><br><span class="line">                setattr(self.layer, key, weight * lamb) # 按比例替换</span><br><span class="line">        return self.layer(inputs)</span><br><span class="line"> </span><br><span class="line">x_in = Input(shape=(None,))</span><br><span class="line">x = x_in</span><br><span class="line"></span><br><span class="line"># 默认情况下是x = Embedding(100, 1000, weights=[word_vecs])(x)</span><br><span class="line"># 下面这一句表示：后面将会用自适应学习率优化器，并且Embedding层以总体的十分之一的学习率更新。</span><br><span class="line"># word_vecs是预训练好的词向量</span><br><span class="line">x = SetLearningRate(Embedding(100, 1000, weights=[word_vecs]), 0.1, True)(x)</span><br><span class="line"></span><br><span class="line"># 后面部分自己想象了～</span><br><span class="line">x = LSTM(100)(x)</span><br><span class="line"></span><br><span class="line">model = Model(x_in, x)</span><br><span class="line">model.compile(loss=&#x27;mse&#x27;, optimizer=&#x27;adam&#x27;) # 用自适应学习率优化器优化</span><br></pre></td></tr></table></figure>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://jishuin.proginn.com/p/763bfbd51f6b">https://jishuin.proginn.com/p/763bfbd51f6b</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/338066667/answer/771252708">https://www.zhihu.com/question/338066667/answer/771252708</a></p>
+<p><a target="_blank" rel="noopener" href="https://kexue.fm/archives/6418">https://kexue.fm/archives/6418</a></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/" title="神经网络调参-warmup and decay">https://447428054.github.io/2022/01/25/2022-01-25-神经网络调参-warmup and decay/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/warmup/" rel="tag"><i class="fa fa-tag"></i> warmup</a>
+              <a href="/tags/decay/" rel="tag"><i class="fa fa-tag"></i> decay</a>
+              <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%8E%87/" rel="tag"><i class="fa fa-tag"></i> 学习率</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/20/2022-01-20-%E8%A7%A3%E6%9E%90NLP%E4%B8%AD%E7%9A%84%E5%AF%B9%E6%8A%97%E8%AE%AD%E7%BB%83/" rel="prev" title="解析NLP竞赛中的提分点-对抗训练">
+      <i class="fa fa-chevron-left"></i> 解析NLP竞赛中的提分点-对抗训练
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/20/2022-03-20-%E9%A2%84%E8%AE%AD%E7%BB%83%E5%AE%9E%E6%88%98/" rel="next" title="不要停止预训练实战-Roberta与Albert">
+      不要停止预训练实战-Roberta与Albert <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#warmup-and-decay"><span class="nav-number">2.</span> <span class="nav-text">warmup and decay</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">2.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81warmup"><span class="nav-number">2.2.</span> <span class="nav-text">为什么要warmup</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E8%A7%82%E4%B8%8A%E8%A7%A3%E9%87%8A"><span class="nav-number">2.2.1.</span> <span class="nav-text">直观上解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%E4%B8%8A%E8%A7%A3%E9%87%8A"><span class="nav-number">2.2.2.</span> <span class="nav-text">理论上解释</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#batch%E4%B8%8E%E5%AD%A6%E4%B9%A0%E7%8E%87%E5%A4%A7%E5%B0%8F%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">batch与学习率大小的关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#warmup%E4%B8%8E%E6%A8%A1%E5%9E%8B%E5%AD%A6%E4%B9%A0%E7%9A%84%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">warmup与模型学习的稳定性</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%A1%B0%E5%87%8F%E7%AD%96%E7%95%A5"><span class="nav-number">3.</span> <span class="nav-text">学习率衰减策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BB%A3%E7%A0%81"><span class="nav-number">3.1.</span> <span class="nav-text">可视化代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.2.</span> <span class="nav-text">指数衰减学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%99%E5%BC%A6%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.3.</span> <span class="nav-text">余弦衰减学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.4.</span> <span class="nav-text">线性衰减学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B6%E6%A2%AF%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.5.</span> <span class="nav-text">阶梯衰减学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8F%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.6.</span> <span class="nav-text">多项式衰减学习率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%99%E5%BC%A6%E5%BE%AA%E7%8E%AF%E8%A1%B0%E5%87%8F%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">3.7.</span> <span class="nav-text">余弦循环衰减学习率</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%A1%B0%E5%87%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">学习率衰减实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pytorch%E5%AD%A6%E4%B9%A0%E7%8E%87%E7%AD%96%E7%95%A5"><span class="nav-number">4.1.</span> <span class="nav-text">Pytorch学习率策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#keras%E5%AD%A6%E4%B9%A0%E7%8E%87%E7%AD%96%E7%95%A5"><span class="nav-number">4.2.</span> <span class="nav-text">keras学习率策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80"><span class="nav-number">4.2.1.</span> <span class="nav-text">方法一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E8%A1%B0%E5%87%8F"><span class="nav-number">4.2.1.1.</span> <span class="nav-text">指数衰减</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E6%AE%B5%E8%A1%B0%E5%87%8F"><span class="nav-number">4.2.1.2.</span> <span class="nav-text">分段衰减</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8F%E8%A1%B0%E5%87%8F"><span class="nav-number">4.2.1.3.</span> <span class="nav-text">多项式衰减</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%86%E6%97%B6%E9%97%B4%E8%A1%B0%E5%87%8F"><span class="nav-number">4.2.1.4.</span> <span class="nav-text">逆时间衰减</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="nav-number">4.2.2.</span> <span class="nav-text">方法二</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E6%95%B0%E8%A1%B0%E5%87%8F"><span class="nav-number">4.2.2.1.</span> <span class="nav-text">自定义指数衰减</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BF%AE%E6%94%B9%E5%AD%A6%E4%B9%A0%E7%8E%87"><span class="nav-number">4.2.2.2.</span> <span class="nav-text">动态修改学习率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keras%E5%AD%A6%E4%B9%A0%E7%8E%87%E5%9B%9E%E6%98%BE%E4%BB%A3%E7%A0%81"><span class="nav-number">4.2.3.</span> <span class="nav-text">Keras学习率回显代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%AD%A6%E4%B9%A0%E7%8E%87%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">分层学习率设置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/03/12/%E4%BB%8E%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%88%B0ChatGPT%EF%BC%9A%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%8F%91%E5%B1%95%E5%92%8C%E5%BA%94%E7%94%A8/" title="2023&#x2F;03&#x2F;12&#x2F;从语言模型到ChatGPT：大型语言模型的发展和应用&#x2F;">从语言模型到ChatGPT：大型语言模型的发展和应用</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">200k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:02</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

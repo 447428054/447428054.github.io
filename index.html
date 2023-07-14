@@ -221,10 +221,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2023-07-01 00:00:00 / 修改时间：10:43:52" itemprop="dateCreated datePublished" datetime="2023-07-01T00:00:00+08:00">2023-07-01</time>
+              <time title="创建时间：2023-07-01 00:00:00" itemprop="dateCreated datePublished" datetime="2023-07-01T00:00:00+08:00">2023-07-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-07-14 23:36:18" itemprop="dateModified" datetime="2023-07-14T23:36:18+08:00">2023-07-14</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -263,7 +269,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>9.7k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -282,40 +288,55 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>在上一篇文章<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/636812912">LLM训练指南：Token及模型参数准备</a>中，我们详细探讨了如何为预训练模型确定合适的大小和数据集规模，从而提高模型的性能表现。在本文中，我们将在前文的基础上，讨论如何在给定的参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过这些分析，希望能为您在实际应用中的模型训练提供更多的指导和帮助。</p>
+          <h1 id="引言">引言</h1>
+<p>在上一篇文章<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/636812912">LLM训练指南：Token及模型参数准备</a>中，我们详细探讨了如何为预训练模型确定合适的大小和数据集规模，从而提高模型的性能表现。在本文中，我们将在前文的基础上，讨论如何在给定的参数量和训练Token数的条件下，合理设置模型参数、估算训练过程中的计算量以及预测训练所需的时间。通过这些分析，希望能为您在实际应用中的模型训练提供更多的指导和帮助。</p>
 <p>本文得出的结论如下，详细过程见下文分析：</p>
 <p><strong>模型参数量：</strong></p>
-<script type="math/tex; mode=display">
-N=n_{layer}(d_{model}3d_{attn}+d_{attn}d_{model}+2d_{model}d_{ff})=2d_{model}n_{layer}(2d_{attn}+d_{ff})</script><p><strong>训练计算量：</strong></p>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
+N=n_{layer}(d_{model}3d_{attn}+d_{attn}d_{model}+2d_{model}d_{ff})=2d_{model}n_{layer}(2d_{attn}+d_{ff})
+\]</span></p>
+<p><strong>训练计算量：</strong></p>
+<p><span class="math display">\[
 \begin{aligned}
-C_{forward}&=2n_{layer}(d_{model}3d_{attn}+n_{ctx}d_{model}+d_{attn}d_{model}+2d_{model}d_{ff}) \\
-&=4d_{model}n_{layer}(2d_{attn}+d_{ff})+2n_{layer}n_{ctx}d_{model} \\
-&=2N+2n_{layer}n_{ctx}d_{model}
-\end{aligned}</script><p><strong>训练显存占用：</strong></p>
-<p><strong>假设模型参数为$\Phi$以AdamW优化器和混合精度训练进行模型训练为例：</strong></p>
+C_{forward}&amp;=2n_{layer}(d_{model}3d_{attn}+n_{ctx}d_{model}+d_{attn}d_{model}+2d_{model}d_{ff}) \\
+&amp;=4d_{model}n_{layer}(2d_{attn}+d_{ff})+2n_{layer}n_{ctx}d_{model} \\
+&amp;=2N+2n_{layer}n_{ctx}d_{model}
+\end{aligned}
+\]</span></p>
+<p><strong>训练显存占用：</strong></p>
+<p><strong>假设模型参数为<span class="math inline">\(\Phi\)</span>以AdamW优化器和混合精度训练进行模型训练为例：</strong></p>
 <p>显存占用情况如下：</p>
-<ol>
+<ol type="1">
 <li>模型参数：</li>
 </ol>
-<script type="math/tex; mode=display">
-2\Phi</script><ol>
+<p><span class="math display">\[
+2\Phi
+\]</span></p>
+<ol start="2" type="1">
 <li>模型梯度：</li>
 </ol>
-<script type="math/tex; mode=display">
-2\Phi</script><ol>
+<p><span class="math display">\[
+2\Phi
+\]</span></p>
+<ol start="3" type="1">
 <li>优化器状态：</li>
 </ol>
-<script type="math/tex; mode=display">
-4\Phi(参数)+4\Phi(动量)+4\Phi(方差)</script><ol>
+<p><span class="math display">\[
+4\Phi(参数)+4\Phi(动量)+4\Phi(方差)
+\]</span></p>
+<ol start="4" type="1">
 <li>中间激活值：</li>
 </ol>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
 n_{layer}(14*batch*n_{ctx}d_{model}+4*batch*n_{ctx}d_{ff}+\
-   8*batch*n_{heads}*n_{ctx}d_{attn}+5*batch*n_{heads}*n_{ctx}n_{ctx}</script><p><strong>训练时间：</strong></p>
-<script type="math/tex; mode=display">
-训练时间 \approx \frac{8 * token训练数 * 模型参数量}{GPU数量 * GPU峰值flops * GPU利用率}</script><p>文章结构如下：</p>
-<p><img src="img_1.png" alt="img_1.png"><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1687830387173-c2176c26-c711-4f3c-be9c-de1c211bb19f.png" alt=""></p>
+   8*batch*n_{heads}*n_{ctx}d_{attn}+5*batch*n_{heads}*n_{ctx}n_{ctx}
+\]</span></p>
+<p><strong>训练时间：</strong></p>
+<p><span class="math display">\[
+训练时间 \approx \frac{8 * token训练数 * 模型参数量}{GPU数量 * GPU峰值flops * GPU利用率}
+\]</span></p>
+<p>文章结构如下：</p>
+<p><img src="img_1.png" alt="img_1.png" /><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1687830387173-c2176c26-c711-4f3c-be9c-de1c211bb19f.png" /></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/#more" rel="contents">

@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t&#x3D;\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="神经网络调参-warmup and decay">
-<meta property="og:url" content="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/index.html">
+<meta property="og:url" content="https://jmxgodlz.xyz/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/index.html">
 <meta property="og:site_name" content="JMX Blog">
 <meta property="og:description" content="前言本文将介绍神经网络调参技巧：warmup，decay。反向传播主要完成参数更新：$\theta_t&#x3D;\theta_{t-1}-\alpha * g_t$，其中$\alpha$为学习率，$g_t$为梯度更新量，而warmup、decay就是调整$\alpha$的方式，优化器决定梯度更新的方式即$g_t$的计算方式。衰减方式如下图所示：">
 <meta property="og:locale" content="zh_CN">
@@ -40,7 +40,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://pic2.zhimg.com/80/v2-e33b13a40632425c6e9ec680d13bcf29_1440w.jpg">
 
-<link rel="canonical" href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
+<link rel="canonical" href="https://jmxgodlz.xyz/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
 
 
 <script id="page-configurations">
@@ -211,7 +211,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jmx.png">
@@ -419,7 +419,7 @@ w_{t+k}=w_{t}-\eta \frac{1}{n} \sum_{j<k} \sum_{x \in \mathcal{B}_{j}} \nabla l\
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/" title="神经网络调参-warmup and decay">https://447428054.github.io/2022/01/25/2022-01-25-神经网络调参-warmup and decay/</a>
+    <a href="https://jmxgodlz.xyz/2022/01/25/2022-01-25-%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E8%B0%83%E5%8F%82-warmup%20and%20decay/" title="神经网络调参-warmup and decay">https://jmxgodlz.xyz/2022/01/25/2022-01-25-神经网络调参-warmup and decay/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

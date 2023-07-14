@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="引言在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。 本文得出的结论如下，详细过程见下文分析： 预训练模型表现影响因素：  模型表现强依赖于模型规模(模型参数量N(Em">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LLM训练指南-Token及模型参数准备">
-<meta property="og:url" content="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/index.html">
+<meta property="og:url" content="https://jmxgodlz.xyz/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/index.html">
 <meta property="og:site_name" content="JMX Blog">
 <meta property="og:description" content="引言在当今AI领域，大型预训练语言模型已成为一种关键技术，推动了自然语言处理领域的进步。本文旨在提供一个辅助指南，如何准备预训练模型大小、数据集大小，以及帮助读者了解如何提升预训练模型的表现。本文将分析模型表现的依赖因素，以及预训练Token是否需要重复和SFT模型所需数据量等问题。 本文得出的结论如下，详细过程见下文分析： 预训练模型表现影响因素：  模型表现强依赖于模型规模(模型参数量N(Em">
 <meta property="og:locale" content="zh_CN">
@@ -56,7 +56,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/6g7mxD.png">
 
-<link rel="canonical" href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
+<link rel="canonical" href="https://jmxgodlz.xyz/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
 
 
 <script id="page-configurations">
@@ -227,7 +227,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jmx.png">
@@ -885,7 +885,7 @@ N_{o p t}(C)=G\left(\frac{C}{6}\right)^a, \quad D_{o p t}(C)=G^{-1}\left(\frac{C
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="LLM训练指南-Token及模型参数准备">https://447428054.github.io/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/</a>
+    <a href="https://jmxgodlz.xyz/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="LLM训练指南-Token及模型参数准备">https://jmxgodlz.xyz/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

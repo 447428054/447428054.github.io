@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"447428054.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～  下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一文梳理NLP主要模型发展脉络.md">
-<meta property="og:url" content="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/index.html">
+<meta property="og:url" content="https://jmxgodlz.xyz/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/index.html">
 <meta property="og:site_name" content="JMX Blog">
 <meta property="og:description" content="前言本文根据笔者所学知识，对NLP主要模型的发展脉络作梳理，目的在于了解主流技术的前世今生，如有理解错误的地方，麻烦指正～  下面将依次介绍RNN、LSTM、GRU、Encoder-Deocder、Transformer、BERT设计的出发点，模型结构不作详细介绍。">
 <meta property="og:locale" content="zh_CN">
@@ -37,7 +37,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://pic1.zhimg.com/80/v2-4f13c1d7a7fda98d177c406106177c98_1440w.jpg">
 
-<link rel="canonical" href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
+<link rel="canonical" href="https://jmxgodlz.xyz/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
 
 
 <script id="page-configurations">
@@ -208,7 +208,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jmx.png">
@@ -307,7 +307,7 @@
 <h1 id="RNN"><a href="#RNN" class="headerlink" title="RNN"></a>RNN</h1><p>自然语言处理的数据类型多为文本类型，文本数据的上下文关系具有较强的序列特征。同时，RNN模型具有“上一时刻输出作为下一时刻的输入”的特征，该特征能够很好的处理序列数据。因此，RNN模型相较于其他模型，更适合处理自然语言处理任务。</p>
 <p>当待处理序列长度较长时，RNN模型在反向传播的过程中，受链式求导法则的影响，当求导过程导数过小或过大时，会导致梯度消失或梯度爆炸。</p>
 <h1 id="LSTM"><a href="#LSTM" class="headerlink" title="LSTM"></a>LSTM</h1><p>RNN模型的权重矩阵在时间维度上是共享的。LSTM相较于RNN模型，通过引入门控机制，缓解梯度消失，那么<strong>LSTM如何避免梯度消失？</strong></p>
-<p>这里给出几个关键结论，详细分析见<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2022/08/07/2022-08-07-详解LSTM与梯度消失/#more">详解LSTM与梯度消失</a>。</p>
+<p>这里给出几个关键结论，详细分析见<a href="https://jmxgodlz.xyz/2022/08/07/2022-08-07-详解LSTM与梯度消失/#more">详解LSTM与梯度消失</a>。</p>
 <ul>
 <li><p>RNN模型在时间维度共享参数矩阵，因此RNN模型总的梯度等于各时间的梯度之和，$g=\sum{g_t}$。</p>
 </li>
@@ -358,7 +358,7 @@
 </ul>
 <p>与CNN、RNN模型不同， Transformer 模型是一种灵活的架构，对输入数据的结构无限制，因此适合在大规模数据上进行预训练，但该点也带来了Transformer模型在小规模数据集上泛化性差的问题。改进方法包括引入结构偏差或正则化，对大规模未标记数据进行预训练等。</p>
 <h1 id="BERT"><a href="#BERT" class="headerlink" title="BERT"></a>BERT</h1><h3 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h3><p>首先，BERT模型参照GPT模型，采样预训练-微调两阶段的训练方式。但是，与GPT使用Transformer解码器部分不同，BERT为了充分利用上下文信息，使用Transformer编码器部分作为模型结构。</p>
-<h3 id="训练任务"><a href="#训练任务" class="headerlink" title="训练任务"></a>训练任务</h3><p>如果BERT与GPT同样使用语言模型作为学习任务，则模型存在标签泄露的问题【一个词的上下文包含了另一个词的预测目标】。因此为了利用上下文信息，BERT提出MLM掩码语言模型任务，通过上下文预测遮盖词，MLM有关介绍可见-<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2022/05/30/2022-05-30-不要停止预训练实战(二">不要停止预训练实战(二)-一日看尽MLM</a>-一日看尽MLM/#more)。</p>
+<h3 id="训练任务"><a href="#训练任务" class="headerlink" title="训练任务"></a>训练任务</h3><p>如果BERT与GPT同样使用语言模型作为学习任务，则模型存在标签泄露的问题【一个词的上下文包含了另一个词的预测目标】。因此为了利用上下文信息，BERT提出MLM掩码语言模型任务，通过上下文预测遮盖词，MLM有关介绍可见-<a href="https://jmxgodlz.xyz/2022/05/30/2022-05-30-不要停止预训练实战(二">不要停止预训练实战(二)-一日看尽MLM</a>-一日看尽MLM/#more)。</p>
 <h3 id="改进点"><a href="#改进点" class="headerlink" title="改进点"></a>改进点</h3><p>针对Transformer结构及预训练方式，BERT模型仍存在以下改进点：</p>
 <ul>
 <li><p>训练方式：针对掩码方式与多任务训练方式进行改进，调整NSP训练任务与掩码的方式</p>
@@ -373,7 +373,7 @@
 </li>
 </ul>
 <p><img src="https://pic2.zhimg.com/80/v2-b90f773588e3119ca7c8ff505ed52785_1440w.webp" alt=""></p>
-<p>BERT模型未来发展方向主要包含：更大更深的模型、多模态、跨语言、小样本、模型蒸馏，有关讨论可见-<a target="_blank" rel="noopener" href="https://jmxgodlz.xyz/2021/12/31/2021-12-31-2022预训练的下一步是什么/">2022预训练的下一步是什么</a></p>
+<p>BERT模型未来发展方向主要包含：更大更深的模型、多模态、跨语言、小样本、模型蒸馏，有关讨论可见-<a href="https://jmxgodlz.xyz/2021/12/31/2021-12-31-2022预训练的下一步是什么/">2022预训练的下一步是什么</a></p>
 <h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2106.04554.pdf">https://arxiv.org/pdf/2106.04554.pdf</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/34878706">https://www.zhihu.com/question/34878706</a></p>
 
@@ -425,7 +425,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://447428054.github.io/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/" title="一文梳理NLP主要模型发展脉络.md">https://447428054.github.io/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/</a>
+    <a href="https://jmxgodlz.xyz/2022/07/31/2022-07-31-%E4%B8%80%E6%96%87%E6%A2%B3%E7%90%86NLP%E4%B8%BB%E8%A6%81%E6%A8%A1%E5%9E%8B%E5%8F%91%E5%B1%95%E8%84%89%E7%BB%9C/" title="一文梳理NLP主要模型发展脉络.md">https://jmxgodlz.xyz/2022/07/31/2022-07-31-一文梳理NLP主要模型发展脉络/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！

@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引言开篇引用一下苏神博客的介绍，对于Transformer模型来说，位置编码的加入是必不可少的，因为纯粹的Attention模块是无法捕捉输入顺序的，即无法区分不同位置的Token。为此我们大体有两个选择：1、想办法将位置信息融入到输入中，这构成了绝对位置编码的一般做法；2、想办法微调一下Attention结构，使得它有能力分辨不同位置的Token，这构成了相对位置编码的一般做法。虽然说起来主要就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推">
+<meta property="og:url" content="https://jmxgodlz.xyz/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="引言开篇引用一下苏神博客的介绍，对于Transformer模型来说，位置编码的加入是必不可少的，因为纯粹的Attention模块是无法捕捉输入顺序的，即无法区分不同位置的Token。为此我们大体有两个选择：1、想办法将位置信息融入到输入中，这构成了绝对位置编码的一般做法；2、想办法微调一下Attention结构，使得它有能力分辨不同位置的Token，这构成了相对位置编码的一般做法。虽然说起来主要就">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5Fbfrp.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WDETFB.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/X68KT7.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/m27sYq.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ew7GsN.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rw6ceQ.jpg">
+<meta property="article:published_time" content="2023-07-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-07-22T11:57:46.340Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg">
+
+<link rel="canonical" href="https://jmxgodlz.xyz/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-07-22 00:00:00 / 修改时间：19:57:46" itemprop="dateCreated datePublished" datetime="2023-07-22T00:00:00+08:00">2023-07-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>22 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>开篇引用一下苏神博客的介绍，对于Transformer模型来说，位置编码的加入是必不可少的，因为纯粹的Attention模块是无法捕捉输入顺序的，即无法区分不同位置的Token。为此我们大体有两个选择：1、想办法将位置信息融入到输入中，这构成了<strong>绝对位置编码</strong>的一般做法；2、想办法微调一下Attention结构，使得它有能力分辨不同位置的Token，这构成了<strong>相对位置编码</strong>的一般做法。虽然说起来主要就是绝对位置编码和相对位置编码两大类，但每一类其实又能衍生出各种各样的变种，为此研究人员可算是煞费苦心、绞尽脑汁了，此外还有一些不按套路出牌的位置编码。</p>
+<p>事实上，目前许多常用的大型语言模型，如ChatGLM和LLAMA，都已经采用了RoPE作为其核心组件。在本博客中，我们将深入探讨RoPE旋转位置编码的原理并一步步引导你从理论到实践。首先，我们将详细介绍RoPE的理论推导过程，以帮助你更好地理解其背后的数学原理。接下来，我们将介绍ChatGLM/LLAMA的RoPE代码实现，展示如何将这一理论应用于实际场景。最后，我们将探讨如何针对RoPE编码，进行长度外推。</p>
+<p>文章结构如下：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg" alt="文章结构"></p>
+<span id="more"></span>
+<h1 id="RoPE介绍"><a href="#RoPE介绍" class="headerlink" title="RoPE介绍"></a>RoPE介绍</h1><p>博客链接：<a href="https://link.zhihu.com/?target=https%3A//spaces.ac.cn/archives/8265">Transformer升级之路：2、博采众长的旋转式位置编码 - 科学空间|Scientific Spaces</a></p>
+<p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2104.09864.pdf">https://arxiv.org/pdf/2104.09864.pdf</a></p>
+<h2 id="理论推导"><a href="#理论推导" class="headerlink" title="理论推导"></a>理论推导</h2><p><strong>目的：通过绝对位置编码的方式实现相对位置编码</strong></p>
+<p>假设通过下述运算给Attention的$q,k$向量添加绝对位置信息,以位于m的q向量$q_m$，位于n的k向量$k_n$为例：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\tilde{\boldsymbol{q}}_m = \boldsymbol{f}(\boldsymbol{q}, m), \quad\tilde{\boldsymbol{k}}_n = \boldsymbol{f}(\boldsymbol{k}, n)\end{equation}</script><p>通过$f(\cdot,pos)$运算，$\tilde{q_m} , \tilde{k_n}$就具备了位置m，n的绝对位置信息。Attention的核心操作是内积，为了使内积后的计算结果带有二者的相对位置信息，假设存在下列关系：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\langle\boldsymbol{f}(\boldsymbol{q}, m), \boldsymbol{f}(\boldsymbol{k}, n)\rangle = g(\boldsymbol{q},\boldsymbol{k},m-n)\end{equation}</script><p>因此，目前需要求解符合该恒等式的解。求解过程需要一些初始条件，存在的假设条件如下：</p>
+<script type="math/tex; mode=display">
+\boldsymbol{f}(\boldsymbol{q}, 0)=\boldsymbol{q}</script><script type="math/tex; mode=display">
+\boldsymbol{f}(\boldsymbol{k}, 0)=\boldsymbol{k}</script><p>借助复数来针对该恒等式求解，复数的内积计算公式如下：</p>
+<script type="math/tex; mode=display">
+\langle\boldsymbol{q},\boldsymbol{k}\rangle=\text{Re}[\boldsymbol{q}\boldsymbol{k}^*]</script><p>Re[]代表复数的实部，因此式二转变为：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\text{Re}[\boldsymbol{f}(\boldsymbol{q}, m)\boldsymbol{f}^*(\boldsymbol{k}, n)] = g(\boldsymbol{q},\boldsymbol{k},m-n)\end{equation}</script><p>通过复数的指数形式进行表示，关于复数的指数形式知识如下（高中极坐标知识）：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5Fbfrp.jpg" alt="极坐标"></p>
+<p>极坐标长度$r$,角度$\theta$，当我们有复数极坐标$(r,\theta)$时，可以得到直角坐标$(rcos\theta,rsin\theta)$，即该复数为$rcos\theta+rsin\theta*i$,复数的复指数表示如下：</p>
+<script type="math/tex; mode=display">
+e^{i\theta}=cos\theta+isin\theta</script><p>有了上述知识，可得：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{aligned}
+\boldsymbol{f}(\boldsymbol{q}, m) =&\, R_f (\boldsymbol{q}, m)e^{\text{i}\Theta_f(\boldsymbol{q}, m)} \\
+\boldsymbol{f}(\boldsymbol{k}, n) =&\, R_f (\boldsymbol{k}, n)e^{\text{i}\Theta_f(\boldsymbol{k}, n)} \\
+\boldsymbol{g}(\boldsymbol{q}, \boldsymbol{k}, m-n) =&\, R_g (\boldsymbol{q}, \boldsymbol{k}, m-n)e^{\text{i}\Theta_g(\boldsymbol{q}, \boldsymbol{k}, m-n)} \\
+\end{aligned}\end{equation}</script><p>其中$R_f$表示极坐标长度r，$\Theta_f$表示角度，将式四代入式三，得到方程组如下：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{aligned}
+R_f (\boldsymbol{q}, m) R_f (\boldsymbol{k}, n) =&\, R_g (\boldsymbol{q}, \boldsymbol{k}, m-n) \\
+\Theta_f (\boldsymbol{q}, m) - \Theta_f (\boldsymbol{k}, n) =&\, \Theta_g (\boldsymbol{q}, \boldsymbol{k}, m-n)
+\end{aligned}\end{equation}</script><p>这个时候需要根据我们的假设条件，代入特定值进行方程组求解。将m=n，代入上述方程组得到：</p>
+<script type="math/tex; mode=display">
+\begin{equation}R_f (\boldsymbol{q}, m) R_f (\boldsymbol{k}, m) = R_g (\boldsymbol{q}, \boldsymbol{k}, 0) = R_f (\boldsymbol{q}, 0) R_f (\boldsymbol{k}, 0) = \Vert \boldsymbol{q}\Vert \Vert \boldsymbol{k}\Vert\end{equation}</script><script type="math/tex; mode=display">
+\begin{equation}\Theta_f (\boldsymbol{q}, m) - \Theta_f (\boldsymbol{k}, m) = \Theta_g (\boldsymbol{q}, \boldsymbol{k}, 0) = \Theta_f (\boldsymbol{q}, 0) - \Theta_f (\boldsymbol{k}, 0) = \Theta (\boldsymbol{q}) - \Theta (\boldsymbol{k})\end{equation}</script><p>根据式6可以得到假设：</p>
+<script type="math/tex; mode=display">
+R_f (\boldsymbol{q}, m)=\Vert \boldsymbol{q}\Vert, R_f (\boldsymbol{k}, m)=\Vert \boldsymbol{k}\Vert</script><p>即极坐标长度不依赖于位置m。</p>
+<p>根据式7进行移位，可以得到：</p>
+<script type="math/tex; mode=display">
+\Theta_f (\boldsymbol{q}, m) - \Theta (\boldsymbol{q}) = \Theta_f (\boldsymbol{k}, m) - \Theta (\boldsymbol{k})</script><p>因此$\Theta_f (\boldsymbol{q}, m)-\Theta_f (\boldsymbol{q})$应该是一个只与m相关，与q无关函数，记为$\varphi(m)$，因此得到：</p>
+<script type="math/tex; mode=display">
+\Theta_f (\boldsymbol{q}, m) = \Theta (\boldsymbol{q}) + \varphi(m)</script><p>接着代入$n=m-1$，整理得到公式如下：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{aligned} \Theta_f (\boldsymbol{q}, m) - \Theta_f (\boldsymbol{k}, m-1) &=\, \Theta_g (\boldsymbol{q}, \boldsymbol{k}, 1) \\
+\varphi(m) - \varphi(m-1) &= \Theta_g (\boldsymbol{q}, \boldsymbol{k}, 1) + \Theta (\boldsymbol{k}) - \Theta (\boldsymbol{q})
+\end{aligned} \end{equation}</script><p>$\varphi(m) - \varphi(m-1)$与m无关，即$\varphi(m)$是一个等差数列，设右边的值为$\theta$，则可以得到解：</p>
+<script type="math/tex; mode=display">
+\varphi(m) =m\theta</script><p>综上所述，已经求解得到满足式2的函数变化$f(x,pos)$,其复数表示的长度和幅角分别为:</p>
+<script type="math/tex; mode=display">
+R_f (\boldsymbol{q}, m)=\Vert \boldsymbol{q}\Vert, R_f (\boldsymbol{k}, m)=\Vert \boldsymbol{k}\Vert</script><script type="math/tex; mode=display">
+\varphi(m) =m\theta</script><script type="math/tex; mode=display">
+\Theta_f (\boldsymbol{q}, m) = \Theta (\boldsymbol{q}) + m\theta</script><h2 id="应用形式"><a href="#应用形式" class="headerlink" title="应用形式"></a>应用形式</h2><p>有了上述的推导，我们得到二维情况下ROPE的复数表示：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\boldsymbol{f}(\boldsymbol{q}, m) = R_f (\boldsymbol{q}, m)e^{\text{i}\Theta_f(\boldsymbol{q}, m)}
+= \Vert q\Vert e^{\text{i}(\Theta(\boldsymbol{q}) + m\theta)} = \boldsymbol{q} e^{\text{i}m\theta}\end{equation}</script><p>根据复数乘法的几何意义，上式对应着将原q向量进行旋转。</p>
+<blockquote>
+<p>设复数二维向量为 z = x + yi，其中 x 和 y 分别为实部和虚部，i 是虚数单位（i^2 = -1）。给定一个旋转角度 θ，按照逆时针方向旋转向量 z。旋转后的向量 z’ 可以通过以下公式计算：</p>
+<p>z’ = z <em> (cos(θ) + i </em> sin(θ))</p>
+<p>这里，cos(θ) 和 sin(θ) 分别表示角度 θ 的余弦和正弦值。</p>
+<p>将 z 和 (cos(θ) + i * sin(θ)) 相乘，可以得到：</p>
+<p>z’ = (x <em> cos(θ) - y </em> sin(θ)) + i <em> (x </em> sin(θ) + y * cos(θ))</p>
+<p>因此，旋转后的向量 z’ 的实部和虚部分别为：</p>
+<p>x’ = x <em> cos(θ) - y </em> sin(θ)<br>y’ = x <em> sin(θ) + y </em> cos(θ)</p>
+<p>这就是二维向量旋转角度的公式。</p>
+</blockquote>
+<p>式9用矩阵乘法表示如下：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\boldsymbol{f}(\boldsymbol{q}, m) =\begin{pmatrix}\cos m\theta & -\sin m\theta\\ \sin m\theta & \cos m\theta\end{pmatrix} \begin{pmatrix}q_0 \\ q_1\end{pmatrix}\end{equation}</script><p>由于内积满足线性叠加性，因此任意偶数维的RoPE，我们都可以表示为二维情形的拼接，即:</p>
+<script type="math/tex; mode=display">
+\begin{equation}\scriptsize{\underbrace{\begin{pmatrix}
+\cos m\theta_0 & -\sin m\theta_0 & 0 & 0 & \cdots & 0 & 0 \\
+\sin m\theta_0 & \cos m\theta_0 & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & \cos m\theta_1 & -\sin m\theta_1 & \cdots & 0 & 0 \\
+0 & 0 & \sin m\theta_1 & \cos m\theta_1 & \cdots & 0 & 0 \\
+\vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & \cdots & \cos m\theta_{d/2-1} & -\sin m\theta_{d/2-1} \\
+0 & 0 & 0 & 0 & \cdots & \sin m\theta_{d/2-1} & \cos m\theta_{d/2-1} \\
+\end{pmatrix}}_{\boldsymbol{\mathcal{R}}_m} \begin{pmatrix}q_0 \\ q_1 \\ q_2 \\ q_3 \\ \vdots \\ q_{d-2} \\ q_{d-1}\end{pmatrix}}\end{equation}</script><p>因此给位置为m的向量q乘上矩阵$\boldsymbol{\mathcal{R}}_m$、位置为n的向量k乘上矩阵$\boldsymbol{\mathcal{R}}_n$，用变换后的Q,K序列做Attention，那么Attention就自动包含相对位置信息了，因为成立恒等式：</p>
+<script type="math/tex; mode=display">
+\begin{equation}(\boldsymbol{\mathcal{R}}_m \boldsymbol{q})^{\top}(\boldsymbol{\mathcal{R}}_n \boldsymbol{k}) = \boldsymbol{q}^{\top} \boldsymbol{\mathcal{R}}_m^{\top}\boldsymbol{\mathcal{R}}_n \boldsymbol{k} = \boldsymbol{q}^{\top} \boldsymbol{\mathcal{R}}_{n-m} \boldsymbol{k}\end{equation}</script><p>值得指出的是，$\boldsymbol{\mathcal{R}}_m$是一个正交矩阵，它不会改变向量的模长，因此通常来说它不会改变原模型的稳定性。此外由于矩阵的稀疏性，直接用矩阵乘法来实现会很浪费算力，推荐通过下述方式来实现RoPE：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{pmatrix}q_0 \\ q_1 \\ q_2 \\ q_3 \\ \vdots \\ q_{d-2} \\ q_{d-1}
+\end{pmatrix}\otimes\begin{pmatrix}\cos m\theta_0 \\ \cos m\theta_0 \\ \cos m\theta_1 \\ \cos m\theta_1 \\ \vdots \\ \cos m\theta_{d/2-1} \\ \cos m\theta_{d/2-1}
+\end{pmatrix} + \begin{pmatrix}-q_1 \\ q_0 \\ -q_3 \\ q_2 \\ \vdots \\ -q_{d-1} \\ q_{d-2}
+\end{pmatrix}\otimes\begin{pmatrix}\sin m\theta_0 \\ \sin m\theta_0 \\ \sin m\theta_1 \\ \sin m\theta_1 \\ \vdots \\ \sin m\theta_{d/2-1} \\ \sin m\theta_{d/2-1}
+\end{pmatrix}\end{equation}</script><p>其中$\otimes$表示逐位对应相乘。</p>
+<p>有了上面这个计算公式，此时还差一步，就是$\theta$的取值。</p>
+<h2 id="远程衰减"><a href="#远程衰减" class="headerlink" title="远程衰减"></a>远程衰减</h2><p>远程衰减性：</p>
+<blockquote>
+<p>在自然语言处理中，Transformer 模型使用位置编码（Positional Encoding）来捕获输入序列中的单词之间的位置关系。因为 Transformer 的自注意力机制（Self-Attention Mechanism）是对位置无关的，它无法直接理解词之间的顺序。通过向输入的词嵌入向量（Word Embedding Vector）中添加位置编码，可以为模型提供关于单词在序列中的位置信息。</p>
+<p>远程衰减性（Distant Decay）是指位置编码应能捕获到序列中相隔较远的单词之间的关系，即相隔较远的单词之间的位置编码相似度应较低。这有助于模型更好地理解和区分序列中的词序关系。具备远程衰减性的位置编码可以使模型学习到更多的长距离依赖关系，从而提高模型的性能。</p>
+<p>例如，在使用正弦和余弦函数的位置编码方法中，不同位置的词的位置编码是通过正弦和余弦函数生成的。这种方法可以捕获到不同位置之间的关系，并且具有良好的远程衰减性。当两个位置的编码相差较大时，它们的相似度较低，这有助于模型区分这些位置。而当两个位置相隔较近时，它们的相似度较高，这有助于模型理解它们之间的关系。总之，位置编码需要具备远程衰减性以帮助模型捕获序列中的位置信息和长距离依赖关系。</p>
+</blockquote>
+<p>RoPE形式上和Sinusoidal位置编码有点相似，只不过Sinusoidal位置编码是加性的，而RoPE可以视为乘性的。在θ的选择上，我们同样沿用了Sinusoidal位置编码的方案，即：</p>
+<script type="math/tex; mode=display">
+\theta_i = 10000^{-2i/d}</script><p>将q，k两两分组（实部、虚部）后，加上RoPE的内积用复数乘法表示为：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+(\boldsymbol{\mathcal{R}}_m \boldsymbol{q})^{\top}(\boldsymbol{\mathcal{R}}_n \boldsymbol{k}) = \text{Re}\left[\sum_{i=0}^{d/2-1}\boldsymbol{q}_{[2i:2i+1]}\boldsymbol{k}_{[2i:2i+1]}^* e^{\text{i}(m-n)\theta_i}\right]\end{equation}</script><p>给定下列假设条件：</p>
+<script type="math/tex; mode=display">
+h_i = \boldsymbol{q}_{[2i:2i+1]}\boldsymbol{k}_{[2i:2i+1]}^*, S_j = \sum\limits_{i=0}^{j-1} e^{\text{i}(m-n)\theta_i}</script><script type="math/tex; mode=display">
+h_{d/2}=0,S_0=0</script><p>通过Abel变换（分布求和法）可以得到：</p>
+<p><strong>Abel变换公式</strong>如下：</p>
+<script type="math/tex; mode=display">
+设 \left\{a_n\right\} 和 \left\{b_n\right\} 是两个实数列 , 记 A_k=\sum_{i=1}^k a_i, 则有
+\\
+\sum_{k=1}^n a_k b_k=A_n b_n+\sum_{k=1}^{n-1} A_k\left(b_k-b_{k+1}\right)</script><script type="math/tex; mode=display">
+\begin{equation}\sum_{i=0}^{d/2-1}\boldsymbol{q}_{[2i:2i+1]}\boldsymbol{k}_{[2i:2i+1]}^* e^{\text{i}(m-n)\theta_i} = \sum_{i=0}^{d/2-1} h_i (S_{i
++1} - S_i) = -\sum_{i=0}^{d/2-1} S_{i+1}(h_{i+1} - h_i)\end{equation}</script><p>所以需要找一个确定的上界来衡量该式的上界范围：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\begin{aligned}
+\left|\sum_{i=0}^{d/2-1}\boldsymbol{q}_{[2i:2i+1]}\boldsymbol{k}_{[2i:2i+1]}^* e^{\text{i}(m-n)\theta_i}\right| =&\, \left|\sum_{i=0}^{d/2-1} S_{i+1}(h_{i+1} - h_i)\right| \\
+\leq&\, \sum_{i=0}^{d/2-1} |S_{i+1}| |h_{i+1} - h_i| \\
+\leq&\, \left(\max_i |h_{i+1} - h_i|\right)\sum_{i=0}^{d/2-1} |S_{i+1}|
+\end{aligned}\end{equation}</script><p>因此，我们将考察下列公式随着相对距离的变化情况作为衰减性的体现：</p>
+<script type="math/tex; mode=display">
+\frac{1}{d/2}\sum\limits_{i=1}^{d/2} |S_i|</script><p>衰减变化如图所示，随着相对距离的增加，向量内积结果在减小：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WDETFB.jpg" alt="ROPE远程衰减"></p>
+<h2 id="代码讲解"><a href="#代码讲解" class="headerlink" title="代码讲解"></a>代码讲解</h2><h3 id="ChatGLM"><a href="#ChatGLM" class="headerlink" title="ChatGLM"></a>ChatGLM</h3><p>主要调用区域代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">if self.position_encoding_2d:</span><br><span class="line">q1, q2 = query_layer.chunk(2, dim=(query_layer.ndim - 1))</span><br><span class="line">k1, k2 = key_layer.chunk(2, dim=(key_layer.ndim - 1))</span><br><span class="line">cos, sin = self.rotary_emb(q1, seq_len=position_ids.max() + 1)</span><br><span class="line">position_ids, block_position_ids = position_ids[:, 0, :].transpose(0, 1).contiguous(), \</span><br><span class="line">position_ids[:, 1, :].transpose(0, 1).contiguous()</span><br><span class="line">q1, k1 = apply_rotary_pos_emb_index(q1, k1, cos, sin, position_ids)</span><br><span class="line">q2, k2 = apply_rotary_pos_emb_index(q2, k2, cos, sin, block_position_ids)</span><br><span class="line">query_layer = torch.concat([q1, q2], dim=(q1.ndim - 1))</span><br><span class="line">key_layer = torch.concat([k1, k2], dim=(k1.ndim - 1))</span><br><span class="line">else:</span><br><span class="line">position_ids = position_ids.transpose(0, 1)</span><br><span class="line">cos, sin = self.rotary_emb(value_layer, seq_len=position_ids.max() + 1)</span><br><span class="line"># [seq_len, batch, num_attention_heads, hidden_size_per_attention_head]</span><br><span class="line">query_layer, key_layer = apply_rotary_pos_emb_index(query_layer, key_layer, cos, sin, position_ids)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>query_layer的维度为：[seq, batch, heads, head_dim]</p>
+</li>
+<li><p>key_layer的维度为：[seq, batch, heads, head_dim]</p>
+</li>
+<li><p>position_ids的维度为：[batch, 2, seq]</p>
+</li>
+</ul>
+<p>以2D位置编码来说，流程如下：</p>
+<ol>
+<li><p>将query_layer按照最后隐藏层维度，拆分两份，得到q1，q2向量，在下面与两个不同的位置向量进行旋转位置编码计算；</p>
+</li>
+<li><p>将key_layer按照最后隐藏层维度，拆分两份，得到k1，k2向量，在下面与两个不同的位置向量进行旋转位置编码计算；</p>
+</li>
+<li><p>针对给定长度，计算旋转矩阵cos、sin；</p>
+</li>
+<li><p>从positionid拆分得到论文提到的两种位置编码向量；</p>
+</li>
+<li><p>针对q1、k1融入position_ids的位置信息；</p>
+</li>
+<li><p>针对q2、k2融入block_position_ids的位置信息；</p>
+</li>
+<li><p>将融入position_ids信息的q1向量与融入block_position_ids信息的q2向量拼接；</p>
+</li>
+<li><p>将融入position_ids信息的k1向量与融入block_position_ids信息的k2向量拼接；</p>
+</li>
+</ol>
+<h4 id="旋转矩阵计算"><a href="#旋转矩阵计算" class="headerlink" title="旋转矩阵计算"></a>旋转矩阵计算</h4><p>下面详细介绍旋转矩阵的计算方式：</p>
+<blockquote>
+<p>cos, sin = self.rotary_emb(q1, seq_len=position_ids.max() + 1)</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">class RotaryEmbedding(torch.nn.Module):</span><br><span class="line">def __init__(self, dim, base=10000, precision=torch.half, learnable=False):</span><br><span class="line">super().__init__()</span><br><span class="line">inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))</span><br><span class="line">inv_freq = inv_freq.half()</span><br><span class="line">self.learnable = learnable</span><br><span class="line">if learnable:</span><br><span class="line">self.inv_freq = torch.nn.Parameter(inv_freq)</span><br><span class="line">self.max_seq_len_cached = None</span><br><span class="line">else:</span><br><span class="line">self.register_buffer(&#x27;inv_freq&#x27;, inv_freq)</span><br><span class="line">self.max_seq_len_cached = None</span><br><span class="line">self.cos_cached = None</span><br><span class="line">self.sin_cached = None</span><br><span class="line">self.precision = precision</span><br><span class="line"></span><br><span class="line">def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict, missing_keys, unexpected_keys,</span><br><span class="line">error_msgs):</span><br><span class="line">pass</span><br><span class="line"></span><br><span class="line">def forward(self, x, seq_dim=1, seq_len=None):</span><br><span class="line">if seq_len is None:</span><br><span class="line">seq_len = x.shape[seq_dim]</span><br><span class="line">if self.max_seq_len_cached is None or (seq_len &gt; self.max_seq_len_cached):</span><br><span class="line">self.max_seq_len_cached = None if self.learnable else seq_len</span><br><span class="line">t = torch.arange(seq_len, device=x.device, dtype=self.inv_freq.dtype)</span><br><span class="line">freqs = torch.einsum(&#x27;i,j-&gt;ij&#x27;, t, self.inv_freq)</span><br><span class="line"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span><br><span class="line">emb = torch.cat((freqs, freqs), dim=-1).to(x.device)</span><br><span class="line">if self.precision == torch.bfloat16:</span><br><span class="line">emb = emb.float()</span><br><span class="line"></span><br><span class="line"># [sx, 1 (b * np), hn]</span><br><span class="line">cos_cached = emb.cos()[:, None, :]</span><br><span class="line">sin_cached = emb.sin()[:, None, :]</span><br><span class="line">if self.precision == torch.bfloat16:</span><br><span class="line">cos_cached = cos_cached.bfloat16()</span><br><span class="line">sin_cached = sin_cached.bfloat16()</span><br><span class="line">if self.learnable:</span><br><span class="line">return cos_cached, sin_cached</span><br><span class="line">self.cos_cached, self.sin_cached = cos_cached, sin_cached</span><br><span class="line">return self.cos_cached[:seq_len, ...], self.sin_cached[:seq_len, ...]</span><br><span class="line"></span><br><span class="line">def _apply(self, fn):</span><br><span class="line">if self.cos_cached is not None:</span><br><span class="line">self.cos_cached = fn(self.cos_cached)</span><br><span class="line">if self.sin_cached is not None:</span><br><span class="line">self.sin_cached = fn(self.sin_cached)</span><br><span class="line">return super()._apply(fn)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>inv_freq = 1. / (base ** (torch.arange(0, dim, 2).float() / dim))</code>对应公式：$\theta_i = 10000^{-2i/d}$；</p>
+</li>
+<li><p><code>t = torch.arange(seq_len, device=x.device, dtype=self.inv_freq.dtype)</code>对应拿到所有位置对应的ID；</p>
+</li>
+<li><p><code>freqs = torch.einsum(&#39;i,j-&gt;ij&#39;, t, self.inv_freq)</code>对应$m\theta$；</p>
+</li>
+<li><p><code>emb = torch.cat((freqs, freqs), dim=-1).to(x.device)</code>将$m\theta$拼接两次，对应复数的实部和虚部；</p>
+</li>
+<li><p><code>cos_cached = emb.cos()[:, None, :]</code>计算得到$cos(m\theta)$；</p>
+</li>
+<li><p><code>sin_cached = emb.sin()[:, None, :]</code>计算得到$sin(m\theta)$；</p>
+</li>
+</ul>
+<h4 id="旋转位置编码计算"><a href="#旋转位置编码计算" class="headerlink" title="旋转位置编码计算"></a>旋转位置编码计算</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">def rotate_half(x):</span><br><span class="line">x1, x2 = x[..., :x.shape[-1] // 2], x[..., x.shape[-1] // 2:]</span><br><span class="line">return torch.cat((-x2, x1), dim=x1.ndim - 1) # dim=-1 triggers a bug in earlier torch versions</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@torch.jit.script</span><br><span class="line">def apply_rotary_pos_emb_index(q, k, cos, sin, position_id):</span><br><span class="line"># position_id: [sq, b], q, k: [sq, b, np, hn], cos: [sq, 1, hn] -&gt; [sq, b, 1, hn]</span><br><span class="line">cos, sin = F.embedding(position_id, cos.squeeze(1)).unsqueeze(2), \</span><br><span class="line">F.embedding(position_id, sin.squeeze(1)).unsqueeze(2)</span><br><span class="line">q, k = (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k) * sin)</span><br><span class="line">return q, k</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>cos, sin = F.embedding(position_id, cos.squeeze(1)).unsqueeze(2),
+F.embedding(position_id, sin.squeeze(1)).unsqueeze(2)</code>根据位置ID获取到对应的$cos(m\theta)、sin(m\theta)$；</p>
+</li>
+<li><p><code>(q * cos)</code>对应式13的左半部分；</p>
+</li>
+<li><p><code>(rotate_half(q) * sin)</code>对应式13的右半部分，rotate_half将输入的后半部分取负数，对应可以看式13的实部公式；</p>
+</li>
+</ul>
+<h3 id="ChatGLM2"><a href="#ChatGLM2" class="headerlink" title="ChatGLM2"></a>ChatGLM2</h3><p>主要调用区域代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># Rotary positional embeddings</span><br><span class="line">rotary_pos_emb = self.rotary_pos_emb(self.seq_length) # (seq_len, n_elem // 2, 2)</span><br><span class="line"></span><br><span class="line">if position_ids is not None:</span><br><span class="line">rotary_pos_emb = rotary_pos_emb[position_ids]</span><br><span class="line">else:</span><br><span class="line">rotary_pos_emb = rotary_pos_emb[None, :seq_length]</span><br><span class="line"></span><br><span class="line">rotary_pos_emb = rotary_pos_emb.transpose(0, 1).contiguous() # n_elem // 2， seqlen, 2</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if rotary_pos_emb is not None:</span><br><span class="line">query_layer = apply_rotary_pos_emb(query_layer, rotary_pos_emb)</span><br><span class="line">key_layer = apply_rotary_pos_emb(key_layer, rotary_pos_emb)</span><br></pre></td></tr></table></figure>
+<p>主要流程与ChatGLM1略微不同：</p>
+<ol>
+<li><p>根据句子长度生成旋转矩阵；</p>
+</li>
+<li><p>根据输入的位置ID，获取旋转矩阵中的向量；</p>
+</li>
+<li><p>针对query_layer和2中rotary_pos_emb计算旋转位置编码；</p>
+</li>
+<li><p>针对key_layer和2中rotary_pos_emb计算旋转位置编码；</p>
+</li>
+</ol>
+<h4 id="旋转矩阵计算-1"><a href="#旋转矩阵计算-1" class="headerlink" title="旋转矩阵计算"></a>旋转矩阵计算</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">class RotaryEmbedding(nn.Module):</span><br><span class="line">def __init__(self, dim, original_impl=False, device=None, dtype=None):</span><br><span class="line">super().__init__()</span><br><span class="line">inv_freq = 1.0 / (10000 ** (torch.arange(0, dim, 2, device=device, dtype=dtype) / dim))</span><br><span class="line">self.register_buffer(&quot;inv_freq&quot;, inv_freq)</span><br><span class="line">self.dim = dim</span><br><span class="line">self.original_impl = original_impl</span><br><span class="line"></span><br><span class="line">def forward_impl(</span><br><span class="line">self, seq_len: int, n_elem: int, dtype: torch.dtype, device: torch.device, base: int = 10000</span><br><span class="line">):</span><br><span class="line">&quot;&quot;&quot;Enhanced Transformer with Rotary Position Embedding.</span><br><span class="line"></span><br><span class="line">Derived from: https://github.com/labmlai/annotated_deep_learning_paper_implementations/blob/master/labml_nn/</span><br><span class="line">transformers/rope/__init__.py. MIT License:</span><br><span class="line">https://github.com/labmlai/annotated_deep_learning_paper_implementations/blob/master/license.</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line"># $\Theta = &#123;\theta_i = 10000^&#123;\frac&#123;2(i-1)&#125;&#123;d&#125;&#125;, i \in [1, 2, ..., \frac&#123;d&#125;&#123;2&#125;]&#125;$</span><br><span class="line">theta = 1.0 / (base ** (torch.arange(0, n_elem, 2, dtype=dtype, device=device) / n_elem))</span><br><span class="line"></span><br><span class="line"># Create position indexes `[0, 1, ..., seq_len - 1]`</span><br><span class="line">seq_idx = torch.arange(seq_len, dtype=dtype, device=device)</span><br><span class="line"></span><br><span class="line"># Calculate the product of position index and $\theta_i$</span><br><span class="line">idx_theta = torch.outer(seq_idx, theta).float()</span><br><span class="line"></span><br><span class="line">cache = torch.stack([torch.cos(idx_theta), torch.sin(idx_theta)], dim=-1)</span><br><span class="line"></span><br><span class="line"># this is to mimic the behaviour of complex32, else we will get different results</span><br><span class="line">if dtype in (torch.float16, torch.bfloat16, torch.int8):</span><br><span class="line">cache = cache.bfloat16() if dtype == torch.bfloat16 else cache.half()</span><br><span class="line">return cache</span><br><span class="line"></span><br><span class="line">def forward(self, max_seq_len, offset=0):</span><br><span class="line">return self.forward_impl(</span><br><span class="line">max_seq_len, self.dim, dtype=self.inv_freq.dtype, device=self.inv_freq.device</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>theta = 1.0 / (base ** (torch.arange(0, n_elem, 2, dtype=dtype, device=device) / n_elem))</code>对应公式：$\theta_i = 10000^{-2i/d}$；</p>
+</li>
+<li><p><code>seq_idx = torch.arange(seq_len, dtype=dtype, device=device)</code>对应拿到所有位置对应的ID；</p>
+</li>
+<li><p><code>idx_theta = torch.outer(seq_idx, theta).float()</code>对应$m\theta$；</p>
+</li>
+<li><p><code>cache = torch.stack([torch.cos(idx_theta), torch.sin(idx_theta)], dim=-1)</code>对应$cos(m\theta),sin(m\theta)$；</p>
+</li>
+</ul>
+<h4 id="旋转位置编码计算-1"><a href="#旋转位置编码计算-1" class="headerlink" title="旋转位置编码计算"></a>旋转位置编码计算</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">@torch.jit.script</span><br><span class="line">def apply_rotary_pos_emb(x: torch.Tensor, rope_cache: torch.Tensor) -&gt; torch.Tensor:</span><br><span class="line"># x: [sq, b, np, hn]， rope_cache:[dim, seq, 2]</span><br><span class="line"></span><br><span class="line">sq, b, np, hn = x.size(0), x.size(1), x.size(2), x.size(3)</span><br><span class="line"></span><br><span class="line">rot_dim = rope_cache.shape[-2] * 2</span><br><span class="line"></span><br><span class="line">x, x_pass = x[..., :rot_dim], x[..., rot_dim:]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># truncate to support variable sizes</span><br><span class="line">rope_cache = rope_cache[:sq]</span><br><span class="line">xshaped = x.reshape(sq, -1, np, rot_dim // 2, 2)</span><br><span class="line">rope_cache = rope_cache.view(sq, -1, 1, xshaped.size(3), 2)</span><br><span class="line">x_out2 = torch.stack(</span><br><span class="line">[</span><br><span class="line">xshaped[..., 0] * rope_cache[..., 0] - xshaped[..., 1] * rope_cache[..., 1],</span><br><span class="line">xshaped[..., 1] * rope_cache[..., 0] + xshaped[..., 0] * rope_cache[..., 1],</span><br><span class="line">],</span><br><span class="line">-1,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">x_out2 = x_out2.flatten(3)</span><br><span class="line">return torch.cat((x_out2, x_pass), dim=-1)</span><br></pre></td></tr></table></figure>
+<p>值得一提的是，ChatGLM2中只采用一种位置编码，因此只针对<strong>输入的前半部分维度</strong>融入旋转位置编码信息。</p>
+<ul>
+<li><p><code>x, x_pass = x[..., :rot_dim], x[..., rot_dim:]</code>将输入根据隐藏层维度，拆分得到两部分，只针对前部分x计算旋转位置信息；</p>
+</li>
+<li><p><code>rope_cache[..., 0]</code>对应$cos(m\theta)$，<code>rope_cache[..., 1]</code>对应$sin(m\theta)$；</p>
+</li>
+<li><p><code>xshaped[..., 0] * rope_cache[..., 0] - xshaped[..., 1] * rope_cache[..., 1]</code>对应复数的实部$q_0<em>cos(m\theta)-q_1</em>sin(m\theta)$；</p>
+</li>
+<li><p><code>xshaped[..., 1] * rope_cache[..., 0] + xshaped[..., 0] * rope_cache[..., 1]</code>对应复数的虚部$q_1<em>cos(m\theta)+q_0</em>sin(m\theta)$；</p>
+</li>
+<li><p><code>torch.cat((x_out2, x_pass), dim=-1)</code>将x和x_pass拼接，还原输入向量，此时还原后的向量，前半部分融入了相对位置信息</p>
+</li>
+</ul>
+<h3 id="LLAMA"><a href="#LLAMA" class="headerlink" title="LLAMA"></a>LLAMA</h3><p>LLAMA涉及旋转位置编码的代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">def precompute_freqs_cis(dim: int, end: int, theta: float = 10000.0):</span><br><span class="line">freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))</span><br><span class="line">t = torch.arange(end, device=freqs.device) # type: ignore</span><br><span class="line">freqs = torch.outer(t, freqs).float() # type: ignore</span><br><span class="line">freqs_cis = torch.polar(torch.ones_like(freqs), freqs) # complex64</span><br><span class="line">return freqs_cis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def reshape_for_broadcast(freqs_cis: torch.Tensor, x: torch.Tensor):</span><br><span class="line">ndim = x.ndim</span><br><span class="line">assert 0 &lt;= 1 &lt; ndim</span><br><span class="line">assert freqs_cis.shape == (x.shape[1], x.shape[-1])</span><br><span class="line">shape = [d if i == 1 or i == ndim - 1 else 1 for i, d in enumerate(x.shape)]</span><br><span class="line">return freqs_cis.view(*shape)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def apply_rotary_emb(</span><br><span class="line">xq: torch.Tensor,</span><br><span class="line">xk: torch.Tensor,</span><br><span class="line">freqs_cis: torch.Tensor,</span><br><span class="line">) -&gt; Tuple[torch.Tensor, torch.Tensor]:</span><br><span class="line">xq_ = torch.view_as_complex(xq.float().reshape(*xq.shape[:-1], -1, 2))</span><br><span class="line">xk_ = torch.view_as_complex(xk.float().reshape(*xk.shape[:-1], -1, 2))</span><br><span class="line">freqs_cis = reshape_for_broadcast(freqs_cis, xq_)</span><br><span class="line">xq_out = torch.view_as_real(xq_ * freqs_cis).flatten(3)</span><br><span class="line">xk_out = torch.view_as_real(xk_ * freqs_cis).flatten(3)</span><br><span class="line">return xq_out.type_as(xq), xk_out.type_as(xk)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">self.freqs_cis = precompute_freqs_cis(</span><br><span class="line">self.params.dim // self.params.n_heads, self.params.max_seq_len * 2</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">………………</span><br><span class="line">xq = xq.view(bsz, seqlen, self.n_local_heads, self.head_dim)</span><br><span class="line">xk = xk.view(bsz, seqlen, self.n_local_heads, self.head_dim)</span><br><span class="line">xv = xv.view(bsz, seqlen, self.n_local_heads, self.head_dim)</span><br><span class="line"></span><br><span class="line">xq, xk = apply_rotary_emb(xq, xk, freqs_cis=freqs_cis)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>生成旋转矩阵；</p>
+</li>
+<li><p>计算旋转位置编码</p>
+</li>
+</ul>
+<h4 id="旋转矩阵计算-2"><a href="#旋转矩阵计算-2" class="headerlink" title="旋转矩阵计算"></a>旋转矩阵计算</h4><ul>
+<li><p><code>freqs = 1.0 / (theta ** (torch.arange(0, dim, 2)[: (dim // 2)].float() / dim))</code>，同ChatGLM分析一样，对应公式：$\theta_i = 10000^{-2i/d}$；</p>
+</li>
+<li><p><code>t = torch.arange(end, device=freqs.device) # type: ignore</code>,对应拿到所有位置对应的ID；</p>
+</li>
+<li><p><code>freqs = torch.outer(t, freqs).float() # type: ignore</code>对应$m\theta$；</p>
+</li>
+<li><p><code>freqs_cis = torch.polar(torch.ones_like(freqs), freqs)</code>对应$cos(m\theta),sin(m\theta)$；</p>
+</li>
+</ul>
+<blockquote>
+<p>torch.polar(abs,angle)利用一个绝对数值和一个角度值，在极坐标构建一个复数张量：</p>
+<script type="math/tex; mode=display">
+abs*cos(angle)+abs*sin(angle)i</script></blockquote>
+<h4 id="旋转位置编码计算-2"><a href="#旋转位置编码计算-2" class="headerlink" title="旋转位置编码计算"></a>旋转位置编码计算</h4><blockquote>
+<p>前置接口知识：</p>
+<p>1）torch.view_as_complex</p>
+<p>把一个tensor转为复数形式，要求这个tensor的最后一个维度形状为2。</p>
+<p>torch.view_as_complex(torch.Tensor([[1, 2], [3, 4], [5, 6]]))</p>
+<p>// tensor([1.+2.j, 3.+4.j, 5.+6.j])</p>
+<p>（2）torch.view_as_real<br>把复数tensor变回实数，可以看做是是刚才操作的逆变换。</p>
+<p>torch.view_as_real(torch.view_as_complex(torch.Tensor([[1, 2], [3, 4], [5, 6]])))</p>
+<h1 id="tensor-1-2"><a href="#tensor-1-2" class="headerlink" title="tensor([[1., 2.],"></a>tensor([[1., 2.],</h1><h1 id="3-4"><a href="#3-4" class="headerlink" title="[3., 4.],"></a>[3., 4.],</h1><h1 id="5-6"><a href="#5-6" class="headerlink" title="[5., 6.]])"></a>[5., 6.]])</h1></blockquote>
+<ol>
+<li><p>将q按最后一维切分两个向量，均转成复数形式</p>
+</li>
+<li><p>将k按最后一维切分两个向量，均转成复数形式</p>
+</li>
+<li><p>将freqs_cis转为和输入相同的形状</p>
+</li>
+<li><p>复数乘法:$(x+i<em>y)(cosm\theta+i</em>sinm\theta)$</p>
+</li>
+</ol>
+<h1 id="长度外推"><a href="#长度外推" class="headerlink" title="长度外推"></a>长度外推</h1><h2 id="PI位置插值"><a href="#PI位置插值" class="headerlink" title="PI位置插值"></a>PI位置插值</h2><p>论文名称：EXTENDING CONTEXT WINDOW OF LARGE LANGUAGE MODELS VIA POSITION INTERPOLATION</p>
+<p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2306.15595.pdf">https://arxiv.org/pdf/2306.15595.pdf</a></p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/X68KT7.jpg" alt="X68KT7"></p>
+<p>该文章提出了Position <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=Interpolation&amp;spm=1001.2101.3001.7020">Interpolation</a> (PI)，其能够将基于RoPE的预训练LLM（例如LLaMA模型）的上下文窗口大小扩展到32768，并且<strong>仅需少量的微调</strong>（在1000步中），同时在需要长上下文的各种任务上证明了强大的经验结果 ，包括从Llama 7b到65B的passkey检索，语言建模以及长文档摘要。同时，通过位置插值扩展的模型在其原始上下文窗口内的任务上也<strong>相对较好地保留了质量</strong>。为了实现这一目标，位置插值线性<strong>向下缩放</strong>了输入位置索引以匹配原始的上下文窗口大小，而不是外推超过训练时所用的上下文长度，因为这可能会导致灾难性的较高的注意力分数，从而完全破坏了自注意力机制。</p>
+<p>理论研究表明，插值注意力分数的上界至少比外推的上界小了约600倍，这进一步证明了其稳定性。通过位置插值扩展的模型保留了其原始网络结构，并可以重复使用大多数预先存在的优化和基础架构。</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/m27sYq.jpg" alt="m27sYq"></p>
+<p>我们首先介绍一下论文中介绍位置插值的图：</p>
+<ul>
+<li><p>左半部分为预训练阶段的位置向量范围[0,2048]</p>
+</li>
+<li><p>右上角为长度外推的部分(2048,4096]</p>
+</li>
+<li><p>左下角为位置插值法，将[0,4096]的值降采样到[0,2048]预训练阶段支持的范围</p>
+</li>
+</ul>
+<p>接下来将详细介绍该文章的核心思路、代码实现及理论推导：</p>
+<p><strong>计算公式:</strong></p>
+<p>论文的实现很简单，只需要将对应位置缩放到原先支持的区间([0,2048])内：</p>
+<p>计算公式如下，L为原先支持的长度(如2048)，$L^{‘}$为需要扩展的长度(如4096)：</p>
+<script type="math/tex; mode=display">
+f^{'}(x,m)=f(x, \frac{mL}{L^{'}})</script><p><strong>代码实现：</strong></p>
+<p>我们以2K扩展至8K长度的情况作示例，需要缩放的倍数为4倍，代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">def RotaryEmbedding(torch.nn.Module):</span><br><span class="line">def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):</span><br><span class="line">super().__init__()</span><br><span class="line">inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2).float().to(device) / dim))</span><br><span class="line">self.register_buffer(&quot;inv_freq&quot;, inv_freq)</span><br><span class="line"></span><br><span class="line">max_position_embeddings = 8192</span><br><span class="line"></span><br><span class="line"># Build here to make `torch.jit.trace` work.</span><br><span class="line">self.max_seq_len_cached = max_position_embeddings</span><br><span class="line">t = torch.arange(</span><br><span class="line">self.max_seq_len_cached,</span><br><span class="line">device=self.inv_freq.device,</span><br><span class="line">dtype=self.inv_freq.dtype,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">self.scale = 1 / 4</span><br><span class="line">t *= self.scale</span><br><span class="line"></span><br><span class="line">freqs = torch.einsum(&quot;i,j-&gt;ij&quot;, t, self.inv_freq)</span><br><span class="line"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span><br><span class="line">emb = torch.cat((freqs, freqs), dim=-1)</span><br><span class="line">self.register_buffer(</span><br><span class="line">&quot;cos_cached&quot;, emb.cos()[None, None, :, :], persistent=False</span><br><span class="line">)</span><br><span class="line">self.register_buffer(</span><br><span class="line">&quot;sin_cached&quot;, emb.sin()[None, None, :, :], persistent=False</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>上界推导：</strong></p>
+<p>文中通过证明位置插值的上界小于外推的上界，避免出现灾难性高的注意力分数，证明位置插值具有更高的稳定性。关于相对位置和注意力分数关系的图如下：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ew7GsN.jpg" alt="ew7GsN"></p>
+<ul>
+<li><p>左图中红色曲线为注意力得分拟合曲线，可见基本范围在区间[-1,1]内</p>
+</li>
+<li><p>中间图说明在[0,2048]内，拟合曲线表现很好，超过2048后注意力得分出现灾难性的高，甚至超过8000</p>
+</li>
+<li><p>右图说明内插法要更稳定，整数位置差下的表现是平滑且良好</p>
+</li>
+</ul>
+<p>下面将给出论文的上界推导过程：</p>
+<p>首先给出在远程衰减一节中的相关定义：</p>
+<script type="math/tex; mode=display">
+h_i = \boldsymbol{q}_{[2i:2i+1]}\boldsymbol{k}_{[2i:2i+1]}^*, S_j = \sum\limits_{i=0}^{j-1} e^{\text{i}(m-n)\theta_i}</script><script type="math/tex; mode=display">
+h_{d/2}=0,S_0=0</script><p>注意力打分公式如下：</p>
+<script type="math/tex; mode=display">
+a(s)=\operatorname{Re}\left[\sum_{j=0}^{d / 2-1} h_j e^{\mathrm{i} s \theta_j}\right]</script><p>其中 $\theta_j=$ $c^{-2 j / d}$【这里的c就是底数对应10000，h的定义同上】, 对应注意力得分的上界计算如下： $a(s)$ for $s \in\left[s_1, s_2\right]$ :</p>
+<script type="math/tex; mode=display">
+\left|a(s)-a_{\text {linear }}(s)\right| \leq d\left(\max _j\left|h_j\right|\right) \frac{\left(s-s_1\right)\left(s_2-s\right)}{8 \ln c}</script><p>其中 $a_{\text {linear }}(s)$ 是经过预训练阶段训练的整数点 $a\left(s_1\right)$ 和 $a\left(s_2\right)$ 的线性插值:</p>
+<script type="math/tex; mode=display">
+a_{\text {linear }}(s):=(1-\lambda(s)) a\left(s_1\right)+\lambda(s) a\left(s_2\right), \quad \lambda(s):=\frac{s-s_1}{s_2-s_1}</script><p>对于任意 $s \in\left[s_1, s_2\right]$, $\left(s-s_1\right)\left(s_2-s\right) \leq 1 / 4$. $c=10000$, 因此上界计算成为:</p>
+<script type="math/tex; mode=display">
+\left|a(s)-a_{\text {linear }}(s)\right| \leq \frac{d}{32 \ln c} \max _j\left|h_j\right| \approx \frac{d \max _j\left|h_j\right|}{294.73}</script><p>现在在比较两个上界的大小，RoPE正常的注意力打分上界如下(可见远程衰减小节推导)：</p>
+<script type="math/tex; mode=display">
+|a(s)| \leq\left(\max _j\left|h_j-h_{j+1}\right|\right) \sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right| \leq 2\left(\max _j\left|h_j\right|\right) \sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right|</script><p>其中$A_k(s):=\sum_{j=0}^{k-1} e^{\mathrm{i} s \theta_j}$, $B(s):=\sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right|$, $B(s)/d$与相对位置关系如下图所示：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rw6ceQ.jpg" alt="rw6ceQ"></p>
+<p>对于绝大多数相对位置差s，B(s)均是超过d的，因此插值法的上界至少比外推的RoPE上界小$2 · 294.73 600$,约600倍。</p>
+<script type="math/tex; mode=display">
+\frac{|a(s)|}{\left|a(s)-a_{\text {linear }}(s)\right|} \leq \frac{2\left(\max _j\left|h_j\right|\right) B(s)}{\frac{d \max _j\left|h_j\right|}{294.73}} \approx 600 \frac{B(s)}{d}</script><h2 id="NTK-Aware-Scaled-RoPE"><a href="#NTK-Aware-Scaled-RoPE" class="headerlink" title="NTK-Aware Scaled RoPE"></a>NTK-Aware Scaled RoPE</h2><p>原文链接：<a target="_blank" rel="noopener" href="https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows_llama_models_to_have/">NTK-Aware Scaled RoPE</a></p>
+<p>苏神分析链接：<a target="_blank" rel="noopener" href="https://kexue.fm/archives/9675">Transformer升级之路：10、RoPE是一种β进制编码</a></p>
+<p>在这项工作中，作者针对当前RoPE插值方法的不足，提出了一种改进方案。通过应用神经切线核（NTK）理论，作者发现现有的线性插值方法在处理距离接近的标记时存在局限性。因此，作者设计了一种非线性插值方案，以改变RoPE的基数。这种方法在保持位置信息完整的同时，有效地提高了上下文大小。实验证明，该方法在没有进行模型微调的情况下就能显著减小困惑度，成为一种非常有效的优化策略。作者相信，通过进一步的微调，这个方法的效果将得到更好的提升。</p>
+<p>首先我们复习上文RoPE给出的形式:</p>
+<script type="math/tex; mode=display">
+[cos(m(10000^{-2i/d})), sin(m(10000^{-2i/d}))]</script><p>接下来，看苏神的结论：</p>
+<ol>
+<li><strong>RoPE是一种β进制编码：</strong></li>
+</ol>
+<p>针对10进制数字m，其第i位的β进制表示为：</p>
+<script type="math/tex; mode=display">
+[\frac{m}{\beta^{i-1}}] \ mod \ \beta</script><p>RoPE可以改写为:</p>
+<script type="math/tex; mode=display">
+\left[\cos\left(\frac{m}{\beta^0}\right),\sin\left(\frac{m}{\beta^0}\right),\cos\left(\frac{m}{\beta^1}\right),\sin\left(\frac{m}{\beta^1}\right),\cdots,\cos\left(\frac{m}{\beta^{d/2-1}}\right),\sin\left(\frac{m}{\beta^{d/2-1}}\right)\right]</script><p>其中：</p>
+<script type="math/tex; mode=display">
+\beta=10000^{2/d}</script><ol>
+<li><strong>外推法</strong></li>
+</ol>
+<p>不进行修改，m直接赋值超出范围的</p>
+<ol>
+<li><strong>内插法</strong></li>
+</ol>
+<p>需要扩大k倍，将m换成$m/k$</p>
+<ol>
+<li><strong>进制转换</strong></li>
+</ol>
+<p>需要扩大k倍，将底数10000换成$10000k$</p>
+<p>最后，我们在看一下原作者的推导过程：</p>
+<p>思想：高频外推、低频内插</p>
+<p>引入参数$\lambda$使最低频项和内插保持一致：</p>
+<script type="math/tex; mode=display">
+\begin{equation}\frac{n}{(\beta\lambda)^{d/2-1}} = \frac{n/k}{\beta^{d/2-1}}\end{equation}</script><p>解得：</p>
+<script type="math/tex; mode=display">
+\lambda=k^{2/(d-2)}</script><p>由于d通常较大，λ很接近1，因此高频项也相同：</p>
+<script type="math/tex; mode=display">
+\frac{n}{\beta}=\frac{n}{\beta\lambda}</script><p>实验结果：</p>
+<script type="math/tex; mode=display">
+\begin{array}{c|cc}
+\hline
+\text{测试长度} & 512(\text{训练}) & 4096(\text{重复}) & 4096(\text{不重复})\\
+\hline
+\text{Baseline} & 49.41\% & 24.17\% & 23.16\% \\
+\text{Baseline-}\log n & 49.40\% & 24.60\% & 24.02\% \\
+\hline
+\text{PI-RoPE} & 49.41\% & 15.04\% & 13.54\% \\
+\text{PI-RoPE-}\log n & 49.40\% & 14.99\% & 16.51\% \\
+\hline
+\text{NTK-RoPE} & 49.41\% & 51.28\% & 39.27\% \\
+\text{NTK-RoPE-}\log n & 49.40\% & 61.71\% & 43.75\% \\
+\hline
+\end{array}</script><p>以上报告的都是没有经过长文本微调的结果，其中Baseline就是外推，PI（Positional Interpolation）就是Baseline基础上改内插，NTK-RoPE就是Baseline基础上改NTK-Aware Scaled RoPE。带logn的选项，是指预训练时加入了<a target="_blank" rel="noopener" href="https://kexue.fm/archives/8823">《从熵不变性看Attention的Scale操作》</a>中的scale，考虑这个变体是因为笔者觉得NTK-RoPE虽然解决了RoPE的长度泛化问题，但没有解决注意力不集中问题。</p>
+<p>表格的实验结果完全符合预期：</p>
+<blockquote>
+<p>1、直接外推的效果不大行；</p>
+<p>2、内插如果不微调，效果也很差；</p>
+<p>3、NTK-RoPE不微调就取得了非平凡（但有所下降）的外推结果；</p>
+<p>4、加入logn来集中注意力确实有帮助。</p>
+</blockquote>
+<p>代码实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import transformers</span><br><span class="line"></span><br><span class="line">old_init = transformers.models.llama.modeling_llama.LlamaRotaryEmbedding.__init__</span><br><span class="line">def ntk_scaled_init(self, dim, max_position_embeddings=2048, base=10000, device=None):</span><br><span class="line"></span><br><span class="line">#The method is just these three lines</span><br><span class="line">max_position_embeddings = 16384</span><br><span class="line">a = 8 #Alpha value</span><br><span class="line">base = base * a ** (dim / (dim-2)) #Base change formula</span><br><span class="line"></span><br><span class="line">old_init(self, dim, max_position_embeddings, base, device)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">transformers.models.llama.modeling_llama.LlamaRotaryEmbedding.__init__ = ntk_scaled_init</span><br></pre></td></tr></table></figure>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44826203/article/details/129255185">Meta最新模型LLaMA细节与代码详解_常鸿宇的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://kexue.fm/archives/8265/comment-page-2#comments">https://kexue.fm/archives/8265/comment-page-2#comments</a></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/" rel="bookmark">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/12/31/2021-12-31-2022预训练的下一步是什么/" rel="bookmark">2022预训练的下一步是什么</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://jmxgodlz.xyz/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推">https://jmxgodlz.xyz/2023/07/22/2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" rel="prev" title="LLM训练指南(二):模型参数、计算量、显存、计算时间计算">
+      <i class="fa fa-chevron-left"></i> LLM训练指南(二):模型参数、计算量、显存、计算时间计算
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RoPE%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">RoPE介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC"><span class="nav-number">2.1.</span> <span class="nav-text">理论推导</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">应用形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9C%E7%A8%8B%E8%A1%B0%E5%87%8F"><span class="nav-number">2.3.</span> <span class="nav-text">远程衰减</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%AE%B2%E8%A7%A3"><span class="nav-number">2.4.</span> <span class="nav-text">代码讲解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatGLM"><span class="nav-number">2.4.1.</span> <span class="nav-text">ChatGLM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97"><span class="nav-number">2.4.1.1.</span> <span class="nav-text">旋转矩阵计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E8%AE%A1%E7%AE%97"><span class="nav-number">2.4.1.2.</span> <span class="nav-text">旋转位置编码计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatGLM2"><span class="nav-number">2.4.2.</span> <span class="nav-text">ChatGLM2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97-1"><span class="nav-number">2.4.2.1.</span> <span class="nav-text">旋转矩阵计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E8%AE%A1%E7%AE%97-1"><span class="nav-number">2.4.2.2.</span> <span class="nav-text">旋转位置编码计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LLAMA"><span class="nav-number">2.4.3.</span> <span class="nav-text">LLAMA</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97-2"><span class="nav-number">2.4.3.1.</span> <span class="nav-text">旋转矩阵计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E8%AE%A1%E7%AE%97-2"><span class="nav-number">2.4.3.2.</span> <span class="nav-text">旋转位置编码计算</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tensor-1-2"><span class="nav-number">3.</span> <span class="nav-text">tensor([[1., 2.],</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-4"><span class="nav-number">4.</span> <span class="nav-text">[3., 4.],</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-6"><span class="nav-number">5.</span> <span class="nav-text">[5., 6.]])</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8"><span class="nav-number">6.</span> <span class="nav-text">长度外推</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#PI%E4%BD%8D%E7%BD%AE%E6%8F%92%E5%80%BC"><span class="nav-number">6.1.</span> <span class="nav-text">PI位置插值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NTK-Aware-Scaled-RoPE"><span class="nav-number">6.2.</span> <span class="nav-text">NTK-Aware Scaled RoPE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">7.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="2023&#x2F;07&#x2F;22&#x2F;2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推&#x2F;">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/06/13/2023-06-13-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97-Token%E5%8F%8A%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%87%86%E5%A4%87/" title="2023&#x2F;06&#x2F;13&#x2F;2023-06-13-LLM训练指南-Token及模型参数准备&#x2F;">LLM训练指南-Token及模型参数准备</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/16/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E5%9B%9B%EF%BC%89%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E8%A7%A3%E7%A0%81/" title="2023&#x2F;05&#x2F;16&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码&#x2F;">复刻ChatGPT语言模型系列-（四）文本生成解码</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/05/08/2023-05-08-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%80%EF%BC%89%E5%9F%BA%E5%BA%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%8F%96/" title="2023&#x2F;05&#x2F;08&#x2F;2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取&#x2F;">复刻ChatGPT语言模型系列-（一）基座模型选取</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">224k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">3:24</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

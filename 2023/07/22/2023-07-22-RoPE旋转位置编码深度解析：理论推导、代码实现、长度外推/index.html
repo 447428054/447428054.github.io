@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ew7GsN.jpg">
 <meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rw6ceQ.jpg">
 <meta property="article:published_time" content="2023-07-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-07-22T12:03:41.546Z">
+<meta property="article:modified_time" content="2023-07-22T12:15:50.833Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="ChatGPT">
@@ -237,7 +237,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-07-22 00:00:00 / 修改时间：20:03:41" itemprop="dateCreated datePublished" datetime="2023-07-22T00:00:00+08:00">2023-07-22</time>
+              <time title="创建时间：2023-07-22 00:00:00 / 修改时间：20:15:50" itemprop="dateCreated datePublished" datetime="2023-07-22T00:00:00+08:00">2023-07-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -307,9 +307,7 @@
 <p>开篇引用一下苏神博客的介绍，对于Transformer模型来说，位置编码的加入是必不可少的，因为纯粹的Attention模块是无法捕捉输入顺序的，即无法区分不同位置的Token。为此我们大体有两个选择：1、想办法将位置信息融入到输入中，这构成了<strong>绝对位置编码</strong>的一般做法；2、想办法微调一下Attention结构，使得它有能力分辨不同位置的Token，这构成了<strong>相对位置编码</strong>的一般做法。虽然说起来主要就是绝对位置编码和相对位置编码两大类，但每一类其实又能衍生出各种各样的变种，为此研究人员可算是煞费苦心、绞尽脑汁了，此外还有一些不按套路出牌的位置编码。</p>
 <p>事实上，目前许多常用的大型语言模型，如ChatGLM和LLAMA，都已经采用了RoPE作为其核心组件。在本博客中，我们将深入探讨RoPE旋转位置编码的原理并一步步引导你从理论到实践。首先，我们将详细介绍RoPE的理论推导过程，以帮助你更好地理解其背后的数学原理。接下来，我们将介绍ChatGLM/LLAMA的RoPE代码实现，展示如何将这一理论应用于实际场景。最后，我们将探讨如何针对RoPE编码，进行长度外推。</p>
 <p>文章结构如下：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg" alt="文章结构" /><figcaption aria-hidden="true">文章结构</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg" /></p>
 <span id="more"></span>
 <h1 id="rope介绍">RoPE介绍</h1>
 <p>博客链接：<a href="https://link.zhihu.com/?target=https%3A//spaces.ac.cn/archives/8265">Transformer升级之路：2、博采众长的旋转式位置编码 - 科学空间|Scientific Spaces</a></p>
@@ -340,9 +338,7 @@
 \begin{equation}\text{Re}[\boldsymbol{f}(\boldsymbol{q}, m)\boldsymbol{f}^*(\boldsymbol{k}, n)] = g(\boldsymbol{q},\boldsymbol{k},m-n)\end{equation}
 \]</span></p>
 <p>通过复数的指数形式进行表示，关于复数的指数形式知识如下（高中极坐标知识）：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5Fbfrp.jpg" alt="极坐标" /><figcaption aria-hidden="true">极坐标</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/5Fbfrp.jpg" /></p>
 <p>极坐标长度<span class="math inline">\(r\)</span>,角度<span class="math inline">\(\theta\)</span>，当我们有复数极坐标<span class="math inline">\((r,\theta)\)</span>时，可以得到直角坐标<span class="math inline">\((rcos\theta,rsin\theta)\)</span>，即该复数为<span class="math inline">\(rcos\theta+rsin\theta*i\)</span>,复数的复指数表示如下：</p>
 <p><span class="math display">\[
 e^{i\theta}=cos\theta+isin\theta
@@ -495,9 +491,7 @@ h_{d/2}=0,S_0=0
 \frac{1}{d/2}\sum\limits_{i=1}^{d/2} |S_i|
 \]</span></p>
 <p>衰减变化如图所示，随着相对距离的增加，向量内积结果在减小：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WDETFB.jpg" alt="ROPE远程衰减" /><figcaption aria-hidden="true">ROPE远程衰减</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/WDETFB.jpg" /></p>
 <h2 id="代码讲解">代码讲解</h2>
 <h3 id="chatglm">ChatGLM</h3>
 <p>主要调用区域代码为：</p>
@@ -612,14 +606,10 @@ abs*cos(angle)+abs*sin(angle)i
 <h2 id="pi位置插值">PI位置插值</h2>
 <p>论文名称：EXTENDING CONTEXT WINDOW OF LARGE LANGUAGE MODELS VIA POSITION INTERPOLATION</p>
 <p>论文链接：https://arxiv.org/pdf/2306.15595.pdf</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/X68KT7.jpg" alt="X68KT7" /><figcaption aria-hidden="true">X68KT7</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/X68KT7.jpg" /></p>
 <p>该文章提出了Position <a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=Interpolation&amp;spm=1001.2101.3001.7020">Interpolation</a> (PI)，其能够将基于RoPE的预训练LLM（例如LLaMA模型）的上下文窗口大小扩展到32768，并且<strong>仅需少量的微调</strong>（在1000步中），同时在需要长上下文的各种任务上证明了强大的经验结果 ，包括从Llama 7b到65B的passkey检索，语言建模以及长文档摘要。同时，通过位置插值扩展的模型在其原始上下文窗口内的任务上也<strong>相对较好地保留了质量</strong>。为了实现这一目标，位置插值线性<strong>向下缩放</strong>了输入位置索引以匹配原始的上下文窗口大小，而不是外推超过训练时所用的上下文长度，因为这可能会导致灾难性的较高的注意力分数，从而完全破坏了自注意力机制。</p>
 <p>理论研究表明，插值注意力分数的上界至少比外推的上界小了约600倍，这进一步证明了其稳定性。通过位置插值扩展的模型保留了其原始网络结构，并可以重复使用大多数预先存在的优化和基础架构。</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/m27sYq.jpg" alt="m27sYq" /><figcaption aria-hidden="true">m27sYq</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/m27sYq.jpg" /></p>
 <p>我们首先介绍一下论文中介绍位置插值的图：</p>
 <ul>
 <li><p>左半部分为预训练阶段的位置向量范围[0,2048]</p></li>
@@ -638,9 +628,7 @@ f^{&#39;}(x,m)=f(x, \frac{mL}{L^{&#39;}})
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">def RotaryEmbedding(torch.nn.Module):</span><br><span class="line">def __init__(self, dim, max_position_embeddings=2048, base=10000, device=None):</span><br><span class="line">super().__init__()</span><br><span class="line">inv_freq = 1.0 / (base ** (torch.arange(0, dim, 2).float().to(device) / dim))</span><br><span class="line">self.register_buffer(&quot;inv_freq&quot;, inv_freq)</span><br><span class="line"></span><br><span class="line">max_position_embeddings = 8192</span><br><span class="line"></span><br><span class="line"># Build here to make `torch.jit.trace` work.</span><br><span class="line">self.max_seq_len_cached = max_position_embeddings</span><br><span class="line">t = torch.arange(</span><br><span class="line">self.max_seq_len_cached,</span><br><span class="line">device=self.inv_freq.device,</span><br><span class="line">dtype=self.inv_freq.dtype,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">self.scale = 1 / 4</span><br><span class="line">t *= self.scale</span><br><span class="line"></span><br><span class="line">freqs = torch.einsum(&quot;i,j-&gt;ij&quot;, t, self.inv_freq)</span><br><span class="line"># Different from paper, but it uses a different permutation in order to obtain the same calculation</span><br><span class="line">emb = torch.cat((freqs, freqs), dim=-1)</span><br><span class="line">self.register_buffer(</span><br><span class="line">&quot;cos_cached&quot;, emb.cos()[None, None, :, :], persistent=False</span><br><span class="line">)</span><br><span class="line">self.register_buffer(</span><br><span class="line">&quot;sin_cached&quot;, emb.sin()[None, None, :, :], persistent=False</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><strong>上界推导：</strong></p>
 <p>文中通过证明位置插值的上界小于外推的上界，避免出现灾难性高的注意力分数，证明位置插值具有更高的稳定性。关于相对位置和注意力分数关系的图如下：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ew7GsN.jpg" alt="ew7GsN" /><figcaption aria-hidden="true">ew7GsN</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/ew7GsN.jpg" /></p>
 <ul>
 <li><p>左图中红色曲线为注意力得分拟合曲线，可见基本范围在区间[-1,1]内</p></li>
 <li><p>中间图说明在[0,2048]内，拟合曲线表现很好，超过2048后注意力得分出现灾难性的高，甚至超过8000</p></li>
@@ -675,9 +663,7 @@ a_{\text {linear }}(s):=(1-\lambda(s)) a\left(s_1\right)+\lambda(s) a\left(s_2\r
 |a(s)| \leq\left(\max _j\left|h_j-h_{j+1}\right|\right) \sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right| \leq 2\left(\max _j\left|h_j\right|\right) \sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right|
 \]</span></p>
 <p>其中<span class="math inline">\(A_k(s):=\sum_{j=0}^{k-1} e^{\mathrm{i} s \theta_j}\)</span>, <span class="math inline">\(B(s):=\sum_{k=0}^{d / 2-1}\left|A_{k+1}(s)\right|\)</span>, <span class="math inline">\(B(s)/d\)</span>与相对位置关系如下图所示：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rw6ceQ.jpg" alt="rw6ceQ" /><figcaption aria-hidden="true">rw6ceQ</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/rw6ceQ.jpg" /></p>
 <p>对于绝大多数相对位置差s，B(s)均是超过d的，因此插值法的上界至少比外推的RoPE上界小<span class="math inline">\(2 · 294.73 600\)</span>,约600倍。</p>
 <p><span class="math display">\[
 \frac{|a(s)|}{\left|a(s)-a_{\text {linear }}(s)\right|} \leq \frac{2\left(\max _j\left|h_j\right|\right) B(s)}{\frac{d \max _j\left|h_j\right|}{294.73}} \approx 600 \frac{B(s)}{d}

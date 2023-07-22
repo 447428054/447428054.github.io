@@ -223,7 +223,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-07-22 00:00:00 / 修改时间：20:03:41" itemprop="dateCreated datePublished" datetime="2023-07-22T00:00:00+08:00">2023-07-22</time>
+              <time title="创建时间：2023-07-22 00:00:00 / 修改时间：20:15:50" itemprop="dateCreated datePublished" datetime="2023-07-22T00:00:00+08:00">2023-07-22</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -286,9 +286,7 @@
 <p>开篇引用一下苏神博客的介绍，对于Transformer模型来说，位置编码的加入是必不可少的，因为纯粹的Attention模块是无法捕捉输入顺序的，即无法区分不同位置的Token。为此我们大体有两个选择：1、想办法将位置信息融入到输入中，这构成了<strong>绝对位置编码</strong>的一般做法；2、想办法微调一下Attention结构，使得它有能力分辨不同位置的Token，这构成了<strong>相对位置编码</strong>的一般做法。虽然说起来主要就是绝对位置编码和相对位置编码两大类，但每一类其实又能衍生出各种各样的变种，为此研究人员可算是煞费苦心、绞尽脑汁了，此外还有一些不按套路出牌的位置编码。</p>
 <p>事实上，目前许多常用的大型语言模型，如ChatGLM和LLAMA，都已经采用了RoPE作为其核心组件。在本博客中，我们将深入探讨RoPE旋转位置编码的原理并一步步引导你从理论到实践。首先，我们将详细介绍RoPE的理论推导过程，以帮助你更好地理解其背后的数学原理。接下来，我们将介绍ChatGLM/LLAMA的RoPE代码实现，展示如何将这一理论应用于实际场景。最后，我们将探讨如何针对RoPE编码，进行长度外推。</p>
 <p>文章结构如下：</p>
-<figure>
-<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg" alt="文章结构" /><figcaption aria-hidden="true">文章结构</figcaption>
-</figure>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/C3g4wS.jpg" /></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/#more" rel="contents">

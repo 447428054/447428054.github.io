@@ -4970,8 +4970,8 @@ a_{\text {linear }}(s):=(1-\lambda(s)) a\left(s_1\right)+\lambda(s) a\left(s_2\r
       </tags>
   </entry>
   <entry>
-    <title>RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</title>
-    <url>/2023/07/22/2023-08-23-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8D%87%E7%BA%A7%E4%B8%8E%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%81%93%EF%BC%9AChatGLM%E3%80%81LLAMA%E3%80%81Baichuan%E5%8F%8ALLM%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
+    <title>大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析</title>
+    <url>/2023/08/23/2023-08-23-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8D%87%E7%BA%A7%E4%B8%8E%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%81%93%EF%BC%9AChatGLM%E3%80%81LLAMA%E3%80%81Baichuan%E5%8F%8ALLM%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<h1 id="更新记录">更新记录</h1>
 <ul>
 <li>0911 更新百川2升级之路，核心点：数据量升级至<strong>2.6T</strong>，训练过程引入<strong>NormHead、Max-z</strong>增加训练及推理的稳定性</li>

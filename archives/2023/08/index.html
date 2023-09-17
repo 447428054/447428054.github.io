@@ -20,26 +20,15 @@
     var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建">
-<meta property="og:type" content="article">
-<meta property="og:title" content="中文情感词典的构建">
-<meta property="og:url" content="https://jmxgodlz.xyz/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="JMX Blog">
+<meta property="og:url" content="https://jmxgodlz.xyz/archives/2023/08/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172006936.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172528100.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172807236.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20190228172830315.png">
-<meta property="article:published_time" content="2019-02-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-12-29T06:31:45.413Z">
 <meta property="article:author" content="JMXGODLZZ">
-<meta property="article:tag" content="情感分析">
-<meta property="article:tag" content="情感词典">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20190228172006936.png">
 
-<link rel="canonical" href="https://jmxgodlz.xyz/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/">
+<link rel="canonical" href="https://jmxgodlz.xyz/archives/2023/08/">
 
 
 <script id="page-configurations">
@@ -47,12 +36,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>中文情感词典的构建 | JMX Blog</title>
+  <title>归档 | JMX Blog</title>
   
 
 
@@ -203,204 +192,56 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content archive">
             
 
-    
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/jmx.png">
-      <meta itemprop="name" content="JMXGODLZZ">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="JMX Blog">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          中文情感词典的构建
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-02-28 00:00:00" itemprop="dateCreated datePublished" datetime="2019-02-28T00:00:00+08:00">2019-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-29 14:31:45" itemprop="dateModified" datetime="2021-12-29T14:31:45+08:00">2021-12-29</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">情感分析</span></a>
-                </span>
-            </span>
-
-          
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
   
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        <span class="collection-header">嗯..! 目前共计 29 篇日志。 继续努力。</span>
+      </div>
 
       
-        <p>本文介绍了情感词典的构建方式，文章主要分为：通用情感词典的构建、通用情感词典的扩展、领域情感词典的构建</p>
-<span id="more"></span>
-<blockquote>
-<p>首先，国外英文的情感分析已经取得了很好的效果，得益于英文单词自身分析的便捷性与英文大量的数据集 WordNet。但由于中文的多变性，语义的多重性与数据集的缺乏，使得国内的情感分析暂落后于国外。本文将记录博主在项目中构建情感词典的经验，欢迎大家指正。<br>我们首先将情感词典分为通用情感词典与专用情感词典。</p>
-</blockquote>
-<h1 id="1-通用情感词典的构建"><a href="#1-通用情感词典的构建" class="headerlink" title="1.通用情感词典的构建"></a>1.通用情感词典的构建</h1><p>   通用情感词典的构建主要是通过将目前开源的情感词典整合起来，筛去重复和无用的单词。<br>   目前网上开源的情感词典包含有：知网（HowNet）情感词典、台湾大学（NTSUSD)简体中文情感极性词典、大连理工大学情感词汇本体。<br>   前两个都可以在网上找到，第三个需要到其学校官网申请，说明完用途即可获得。</p>
-<h1 id="2-通用情感词典的扩展"><a href="#2-通用情感词典的扩展" class="headerlink" title="2.通用情感词典的扩展"></a>2.通用情感词典的扩展</h1><p>上述情感词典年代都已经比较久远，所以我们可以采取一定方法对其扩展。这里我们采用的方法是将词典的同义词添加到词典里。<br>我们通过使用哈工大整理的同义词词林来获取词典的同义词，需要一提的是第一版的同义词林年代较为久远，现在也有哈工大整理的同义词林扩展版。<br>使用的链接在这里：<a target="_blank" rel="noopener" href="https://blog.csdn.net/sinat_33741547/article/details/80016713">哈工大同义词林扩展版</a><br>使用代码编写时也可以利用Python的Synonyms库来获取同义词。<br>其已经开源，链接为：<a target="_blank" rel="noopener" href="https://github.com/huyingxi/Synonyms">synonyms</a><br>如：</p>
-<pre><code>import synonyms
-print(&quot;人脸: %s&quot; % (synonyms.nearby(&quot;人脸&quot;)))
-print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
-</code></pre><h1 id="3-领域情感词典的构建"><a href="#3-领域情感词典的构建" class="headerlink" title="3.领域情感词典的构建"></a>3.领域情感词典的构建</h1><p>构建特定领域的情感词典大体有两种方法：基于规则的情感词典构建方法、基于统计的情感词典构建方法。</p>
-<p>基于规则的情感词典方法一般是用句型固定、句式不多变的情况。通过对语料进行句法分析，词性标注等操作，得到语料中常用的句型并将其抽象出来，根据抽象出来的句型模板来对新的语料进行模板匹配，以此来选择出新的语料中的情感词，将其加入到对应的情感词典中。</p>
-<p>基于统计的情感词典构建方法需要利用PMI互信息计算与左右熵来发现所需要的新词。具体方法我们可以添加情感种子词，来计算分好词的语料中各个词语与情感种子词的互信息度与左右熵，再将互信息度与左右熵结合起来，选择出与情感词关联度最高的TopN个词语，将其添加到对应的情感词典。<br>这里可以参考链接<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e9313fd692ef">link</a></p>
-<h3 id="互信息度计算"><a href="#互信息度计算" class="headerlink" title="互信息度计算"></a>互信息度计算</h3><p><img src="https://img-blog.csdnimg.cn/20190228172006936.png" alt="互信息度计算"></p>
-<ul>
-<li>p(x,y)为两个词一起出现的概率</li>
-<li>p(x)为词x出现的概率</li>
-<li>p(y)为词y出现的概率</li>
-</ul>
-<hr>
-<p>具体例子：4G， 上网卡，4G上网卡;如果4G的词频是2,上网卡的词频是10,4G上网卡的词频是1，那么记单单词的总数有N个，双单词的总数有M个，则有下面的公式<br><img src="https://img-blog.csdnimg.cn/20190228172528100.png" alt="具体例子"></p>
-<h3 id="左右熵"><a href="#左右熵" class="headerlink" title="左右熵"></a>左右熵</h3><p>我们这里使用左右熵来衡量主要是想表示预选词的自由程度(4G上网卡为一个预选词），左右熵越大，表示这个词的左边右边的词换的越多，那么它就很有可能是一个单独的词。<br>我们这里的左右熵定义为(以左熵为例):<br><img src="https://img-blog.csdnimg.cn/20190228172807236.png" alt="左熵"><br>这里我们还是举一个具体的例子来理解它<br>假设4G上网卡左右有这么几种搭配<br>[买4G上网卡, 有4G上网卡，有4G上网卡， 丢4G上网卡]<br>那么4G上网卡的左熵为<br><img src="https://img-blog.csdnimg.cn/20190228172830315.png" alt="例子"><br>这里A = [买, 有, 丢]</p>
-<blockquote>
-<p>后面就是具体的实现了，这里的难点就在如何获得这些概率值，就博主看到的用法有：利用搜索引擎获取词汇共现率即p(x,y)、利用语料库获取各个词出现概率</p>
-</blockquote>
-<h2 id="最后我们只需要将这三步获得的情感词典进行整合就可以了"><a href="#最后我们只需要将这三步获得的情感词典进行整合就可以了" class="headerlink" title="最后我们只需要将这三步获得的情感词典进行整合就可以了"></a>最后我们只需要将这三步获得的情感词典进行整合就可以了</h2><p>参考文献：<br><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/e9313fd692ef">python3实现互信息和左右熵的新词发现</a></p>
-
+    <div class="collection-year">
+      <span class="collection-header">2023</span>
     </div>
 
-    
-    
-    
-    <div>
-    
-      <div>
-  
-    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
-      <span>-------- 本文结束 </span>
-      <i class="fa fa-paw"></i>
-      <span> 感谢阅读 --------</span>
-    </div>
-  
-</div>
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
 
-    
-    </div>
-      
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2023-08-23T00:00:00+08:00"
+              content="2023-08-23">
+          08-23
+        </time>
+      </div>
 
-        
+      <div class="post-title">
+          <a class="post-title-link" href="/2023/08/23/2023-08-23-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8D%87%E7%BA%A7%E4%B8%8E%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%81%93%EF%BC%9AChatGLM%E3%80%81LLAMA%E3%80%81Baichuan%E5%8F%8ALLM%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" itemprop="url">
+            <span itemprop="name">大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析</span>
+          </a>
+      </div>
 
-<div>
-<ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者： </strong>JMX
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="https://jmxgodlz.xyz/2019/02/28/2019-02-28-%E4%B8%AD%E6%96%87%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA/" title="中文情感词典的构建">https://jmxgodlz.xyz/2019/02/28/2019-02-28-中文情感词典的构建/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-
-      <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90/" rel="tag"><i class="fa fa-tag"></i> 情感分析</a>
-              <a href="/tags/%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8/" rel="tag"><i class="fa fa-tag"></i> 情感词典</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item"></div>
-      <div class="post-nav-item">
-    <a href="/2019/03/02/2019-03-02-Coursera%20Machine%20Learning%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89Introduction/" rel="next" title="Coursera Machine Learning 学习笔记（一）Introduction">
-      Coursera Machine Learning 学习笔记（一）Introduction <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
+    </header>
   </article>
+
+
+    </div>
+  </div>
   
   
+  
+
   
 
 
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -447,7 +288,6 @@ print(&quot;识别: %s&quot; % (synonyms.nearby(&quot;识别&quot;)))
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA"><span class="nav-number">1.</span> <span class="nav-text">1.通用情感词典的构建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E9%80%9A%E7%94%A8%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%89%A9%E5%B1%95"><span class="nav-number">2.</span> <span class="nav-text">2.通用情感词典的扩展</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E9%A2%86%E5%9F%9F%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E7%9A%84%E6%9E%84%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">3.领域情感词典的构建</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%92%E4%BF%A1%E6%81%AF%E5%BA%A6%E8%AE%A1%E7%AE%97"><span class="nav-number">3.0.1.</span> <span class="nav-text">互信息度计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A6%E5%8F%B3%E7%86%B5"><span class="nav-number">3.0.2.</span> <span class="nav-text">左右熵</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%90%8E%E6%88%91%E4%BB%AC%E5%8F%AA%E9%9C%80%E8%A6%81%E5%B0%86%E8%BF%99%E4%B8%89%E6%AD%A5%E8%8E%B7%E5%BE%97%E7%9A%84%E6%83%85%E6%84%9F%E8%AF%8D%E5%85%B8%E8%BF%9B%E8%A1%8C%E6%95%B4%E5%90%88%E5%B0%B1%E5%8F%AF%E4%BB%A5%E4%BA%86"><span class="nav-number">3.1.</span> <span class="nav-text">最后我们只需要将这三步获得的情感词典进行整合就可以了</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

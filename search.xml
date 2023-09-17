@@ -4969,4 +4969,1122 @@ a_{\text {linear }}(s):=(1-\lambda(s)) a\left(s_1\right)+\lambda(s) a\left(s_2\r
         <tag>ChatGPT</tag>
       </tags>
   </entry>
+  <entry>
+    <title>RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</title>
+    <url>/2023/07/22/2023-08-23-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8D%87%E7%BA%A7%E4%B8%8E%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%81%93%EF%BC%9AChatGLM%E3%80%81LLAMA%E3%80%81Baichuan%E5%8F%8ALLM%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="更新记录">更新记录</h1>
+<ul>
+<li>0911 更新百川2升级之路，核心点：数据量升级至<strong>2.6T</strong>，训练过程引入<strong>NormHead、Max-z</strong>增加训练及推理的稳定性</li>
+</ul>
+<h1 id="引言">引言</h1>
+<p>目前大语言模型在各个领域取得了显著的突破，从ChatGLM、LLAMA到Baichuan等，它们在处理各种自然语言任务时展现出了惊人的性能。然而，随着研究的深入和应用需求的不断扩大，这些大型模型需要不断地进行升级和优化，以满足更高的性能要求和更广泛的应用场景。</p>
+<p>在这个过程中，作为研究者和从业者，我们需要深入探讨：大型模型的升级之路是怎样的？升级过程中面临哪些挑战？又是通过怎样的手段和方法实现升级的？本篇博客旨在对此进行深入探讨，梳理ChatGLM、LLAMA和Baichuan等模型的升级过程，分析其背后的原因，并展示大型模型如何优化实现升级。</p>
+<table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 31%" />
+<col style="width: 23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>模型升级之路</th>
+<th>训练Token数</th>
+<th>序列长度</th>
+<th>算子改进</th>
+<th>核心点</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ChatGLM-&gt;ChatGLM2</td>
+<td>1T-&gt;1.4T</td>
+<td>2K-&gt;8K/32K</td>
+<td>FlashAttention &amp; Multi Query Attention</td>
+<td>Prefix-LM-&gt;Decoder-Only</td>
+</tr>
+<tr class="even">
+<td>LLAMA-&gt;LLAMA2</td>
+<td>1.4T-&gt;2T</td>
+<td>2K-&gt;4K</td>
+<td>-</td>
+<td>更高质量的SFT&amp;RLHF</td>
+</tr>
+<tr class="odd">
+<td>baichuan-&gt;baichuan 13b</td>
+<td>1.2T-&gt;1.4T</td>
+<td>4K(RoPE)-&gt;4K(ALiBi)</td>
+<td>FlashAttention</td>
+<td>参数量升级</td>
+</tr>
+<tr class="even">
+<td>baichuan-&gt;baichuan2</td>
+<td>1.2T-&gt;<strong>2.6T</strong></td>
+<td>4K</td>
+<td>-</td>
+<td>Tokenizer/NormHead/Max-z Loss</td>
+</tr>
+</tbody>
+</table>
+<span id="more"></span>
+<h1 id="chatglm升级之路">ChatGLM升级之路</h1>
+<p>首先对比下ChatGLM升级前后各大榜单结果，ChatGLM-6B较ChatGLM2-6B模型在各个榜单中都取得了近20-30%的提升:</p>
+<h3 id="mmlu">MMLU</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Average</th>
+<th>STEM</th>
+<th>Social Sciences</th>
+<th>Humanities</th>
+<th>Others</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ChatGLM-6B</td>
+<td>40.63</td>
+<td>33.89</td>
+<td>44.84</td>
+<td>39.02</td>
+<td>45.71</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-6B (base)</td>
+<td>47.86</td>
+<td>41.20</td>
+<td>54.44</td>
+<td>43.66</td>
+<td>54.46</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-6B</td>
+<td>45.46</td>
+<td>40.06</td>
+<td>51.61</td>
+<td>41.23</td>
+<td>51.24</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-12B (base)</td>
+<td>56.18</td>
+<td>48.18</td>
+<td>65.13</td>
+<td>52.58</td>
+<td>60.93</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-12B</td>
+<td>52.13</td>
+<td>47.00</td>
+<td>61.00</td>
+<td>46.10</td>
+<td>56.05</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Chat 模型使用 zero-shot CoT (Chain-of-Thought) 的方法测试，Base 模型使用 few-shot answer-only 的方法测试</p>
+</blockquote>
+<h3 id="c-eval">C-Eval</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Average</th>
+<th>STEM</th>
+<th>Social Sciences</th>
+<th>Humanities</th>
+<th>Others</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ChatGLM-6B</td>
+<td>38.9</td>
+<td>33.3</td>
+<td>48.3</td>
+<td>41.3</td>
+<td>38.0</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-6B (base)</td>
+<td>51.7</td>
+<td>48.6</td>
+<td>60.5</td>
+<td>51.3</td>
+<td>49.8</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-6B</td>
+<td>50.1</td>
+<td>46.4</td>
+<td>60.4</td>
+<td>50.6</td>
+<td>46.9</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-12B (base)</td>
+<td>61.6</td>
+<td>55.4</td>
+<td>73.7</td>
+<td>64.2</td>
+<td>59.4</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-12B</td>
+<td>57.0</td>
+<td>52.1</td>
+<td>69.3</td>
+<td>58.5</td>
+<td>53.2</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Chat 模型使用 zero-shot CoT 的方法测试，Base 模型使用 few-shot answer only 的方法测试</p>
+</blockquote>
+<h3 id="gsm8k">GSM8K</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Accuracy</th>
+<th>Accuracy (Chinese)*</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ChatGLM-6B</td>
+<td>4.82</td>
+<td>5.85</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-6B (base)</td>
+<td>32.37</td>
+<td>28.95</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-6B</td>
+<td>28.05</td>
+<td>20.45</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-12B (base)</td>
+<td>40.94</td>
+<td>42.71</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-12B</td>
+<td>38.13</td>
+<td>23.43</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>所有模型均使用 few-shot CoT 的方法测试，CoT prompt 来自 http://arxiv.org/abs/2201.11903</p>
+<p>使用翻译 API 翻译了 GSM8K 中的 500 道题目和 CoT prompt 并进行了人工校对</p>
+</blockquote>
+<h3 id="bbh">BBH</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ChatGLM-6B</td>
+<td>18.73</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-6B (base)</td>
+<td>33.68</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-6B</td>
+<td>30.00</td>
+</tr>
+<tr class="even">
+<td>ChatGLM2-12B (base)</td>
+<td>36.02</td>
+</tr>
+<tr class="odd">
+<td>ChatGLM2-12B</td>
+<td>39.98</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>所有模型均使用 few-shot CoT 的方法测试，CoT prompt 来自 https://github.com/suzgunmirac/BIG-Bench-Hard/tree/main/cot-prompts</p>
+</blockquote>
+<h2 id="chatglm">ChatGLM</h2>
+<p>ChatGLM-6B 是一个开源的、支持中英双语的对话语言模型，基于 <a href="https://github.com/THUDM/GLM">General Language Model (GLM)</a> 架构，具有 62 亿参数。结合模型量化技术，用户可以在消费级的显卡上进行本地部署（INT4 量化级别下最低只需 6GB 显存）。 ChatGLM-6B 使用了和 ChatGPT 相似的技术，针对中文问答和对话进行了优化。经过约 1T 标识符的中英双语训练，辅以监督微调、反馈自助、人类反馈强化学习等技术的加持，62 亿参数的 ChatGLM-6B 已经能生成相当符合人类偏好的回答。</p>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/jkMmBZ.png" alt="jkMmBZ" /><figcaption aria-hidden="true">jkMmBZ</figcaption>
+</figure>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/glm.gif" alt="glm" /><figcaption aria-hidden="true">glm</figcaption>
+</figure>
+<p>相关解析见:<a href="https://zhuanlan.zhihu.com/p/627832567">复刻ChatGPT语言模型系列-（一）基座模型选取</a></p>
+<h2 id="chatglm2">ChatGLM2</h2>
+<p>ChatGLM<strong>2</strong>-6B 是开源中英双语对话模型 <a href="https://github.com/THUDM/ChatGLM-6B">ChatGLM-6B</a> 的第二代版本，在保留了初代模型对话流畅、部署门槛较低等众多优秀特性的基础之上，ChatGLM<strong>2</strong>-6B 引入了如下新特性：</p>
+<ol type="1">
+<li><strong>更强大的性能</strong>：基于 ChatGLM 初代模型的开发经验，我们全面升级了 ChatGLM2-6B 的基座模型。ChatGLM2-6B 使用了 <a href="https://github.com/THUDM/GLM">GLM</a> 的混合目标函数，经过了 1.4T 中英标识符的预训练与人类偏好对齐训练，<a href="https://github.com/THUDM/ChatGLM2-6B#%E8%AF%84%E6%B5%8B%E7%BB%93%E6%9E%9C">评测结果</a>显示，相比于初代模型，ChatGLM2-6B 在 MMLU（+23%）、CEval（+33%）、GSM8K（+571%） 、BBH（+60%）等数据集上的性能取得了大幅度的提升，在同尺寸开源模型中具有较强的竞争力。</li>
+<li><strong>更长的上下文</strong>：基于 <a href="https://github.com/HazyResearch/flash-attention">FlashAttention</a> 技术，我们将基座模型的上下文长度（Context Length）由 ChatGLM-6B 的 2K 扩展到了 32K，并在对话阶段使用 8K 的上下文长度训练。对于更长的上下文，我们发布了 <a href="https://huggingface.co/THUDM/chatglm2-6b-32k">ChatGLM2-6B-32K</a> 模型。<a href="https://github.com/THUDM/LongBench">LongBench</a> 的测评结果表明，在等量级的开源模型中，ChatGLM2-6B-32K 有着较为明显的竞争优势。</li>
+<li><strong>更高效的推理</strong>：基于 <a href="http://arxiv.org/abs/1911.02150">Multi-Query Attention</a> 技术，ChatGLM2-6B 有更高效的推理速度和更低的显存占用：在官方的模型实现下，推理速度相比初代提升了 42%，INT4 量化下，6G 显存支持的对话长度由 1K 提升到了 8K。</li>
+<li><strong>更开放的协议</strong>：ChatGLM2-6B 权重对学术研究<strong>完全开放</strong>，在填写<a href="https://open.bigmodel.cn/mla/form">问卷</a>进行登记后<strong>亦允许免费商业使用</strong>。</li>
+</ol>
+<h2 id="升级过程">升级过程</h2>
+<h3 id="模型结构">模型结构</h3>
+<blockquote>
+<p>模型结构改变:从Prefix-LM回归纯粹的Decoder-Only结构，即SFT过程所有的都通过gMASK在开头进行生成；</p>
+</blockquote>
+<p>代码对比如下:</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692587216707-f7230049-33bf-4607-99d2-934646ca60c5.png" /></p>
+<p>图示如下:</p>
+<p><strong>ChatGLM:</strong></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692588081630-13d74c13-d662-4b01-b19d-5374a47df323.png" /></p>
+<p><strong>ChatGLM2:</strong></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692588092576-afc45fb3-3b6e-4e2d-aaad-966f24b979aa.png" /></p>
+<p><strong>那么这种改变能够带来什么呢</strong>?</p>
+<p>答案就是为模型的<strong>训练效率</strong>带来了极大的提升。</p>
+<p>图片来源:<a href="https://github.com/THUDM/ChatGLM2-6B/issues/16">https://github.com/THUDM/ChatGLM2-6B/issues/16</a></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692588788276-9c07394b-3d2a-460e-8ae7-e9b86358cd59.png" /></p>
+<p>在处理多轮对话的过程中,设有3轮对话,Q1A1，Q2A2，Q3A3，PrefixLM需要构建三条样本:</p>
+<ol type="1">
+<li><p>Q1-&gt;A1</p></li>
+<li><p>Q1A1Q2-&gt;A2</p></li>
+<li><p>Q1A1Q2A2Q3-&gt;A3</p></li>
+</ol>
+<p>而这种数据构建方式带来了严重的数据膨胀问题，影响模型训练的效率。</p>
+<p>相反，Decoder-Only模型则可以利用Causal Mask的特性(每一个Token可以看到前面所有Token的真实输入)，在一条样本中实现多轮对话:</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692588361853-d948887b-3c08-4113-98c9-0c66d147452f.png" /></p>
+<ol type="1">
+<li><p>样本构建:Q1 A1 <eos> Q2 A2 <eos> Q3 A3 <eos></p></li>
+<li><p>Loss计算:只需要计算 A1 <eos> A2 <eos> 和 A3 <eos>部分</p></li>
+</ol>
+<p><strong>再仔细回顾下，对话session级别训练和拆开训练从原理上有啥区别？</strong></p>
+<p>1. session级别训练，效果之一为等价batchsize变大（1个batch可以塞下更多样本），且同一通对话产生的样本在一个bs内。</p>
+<ol start="2" type="1">
+<li>session级别的不同轮次产生的梯度是求平均的，拆开轮次构造训练是求和的，这样除了等价于lr会变大，还会影响不同轮次token权重的分配，另外还会影响norm的计算。</li>
+</ol>
+<p>我们用一个简化地例子定量分析下，我们假设两条训练样本分为 </p>
+<p>1.问：A 答：xx</p>
+<p>2.问: A 答：xx 问: B 答：xx  问: C 答：xx</p>
+<p>则session级别训练影响梯度为 (Ga+(Ga + Gb + Gc)/3 )/2。对 A，B，C影响的权重分别为，2/3 1/6 1/6。</p>
+<p>拆开训练为 (Ga+Ga+ (Ga + Gb)/2 +(Ga + Gb + Gc)/3)/4。对 A，B，C影响的权重分别为，17/24 5/24 1/12。</p>
+<p>从上面的权重分布来看，session级别靠后的轮次影响权重要比拆开更大。这也是更合理的，因为大部分场景下，开场白都是趋同和重复的。</p>
+<h3 id="序列长度">序列长度</h3>
+<blockquote>
+<p>序列长度:预训练模型在32K长度训练，SFT微调模型在8K长度训练；</p>
+</blockquote>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692599097138-24fc2443-f1e4-4dc7-8f23-90173dc99024.png" /></p>
+<p>此外，7月31号智谱AI发布了基于ChatGLM2-6B的基础上微调的针对长上下文优化的大模型ChatGLM<strong>2</strong>-6B-32K，能够更好的处理最多32K长度的上下文。</p>
+<p>此前，ChatGLM2-6B刚发布的时候，官方宣称该模型最高支持32K长上下文输入，但是LM-SYS官方测试显示ChatGLM2-6B在超过8K长度时候表现很糟糕： <a href="https://www.datalearner.com/blog/1051688222070709">支持超长上下文输入的大语言模型评测和总结——ChatGLM2-6B表现惨烈，最强的依然是商业模型GPT-3.5与Claude-1.3</a> 。</p>
+<figure>
+<img src="https://user-images.githubusercontent.com/24487097/250009753-1968b057-8fc7-4d0e-bce4-7b0759009de5.jpeg" alt="44b19765-9203-4f1a-8e6a-b9f4bc3c0874" /><figcaption aria-hidden="true">44b19765-9203-4f1a-8e6a-b9f4bc3c0874</figcaption>
+</figure>
+<p>具体来说，ChatGLM2-6B-32K基于位置插值（Positional Interpolation）的方法对位置编码进行了更新，并在对话阶段使用 32K 的上下文长度训练。在实际的使用中，官方推荐如果上下文长度基本在 <strong>8K 以内</strong>，建议使用<a href="https://www.datalearner.com/ai-models/pretrained-models/ChatGLM2-6B">ChatGLM2-6B</a>；如果需要处理<strong>超过 8K</strong> 的上下文长度，推荐使用ChatGLM2-6B-32K。</p>
+<p>关于位置插值的介绍，可见博客:<a href="https://zhuanlan.zhihu.com/p/645263524">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a></p>
+<h3 id="算子优化">算子优化</h3>
+<blockquote>
+<p>算子优化:Flash Attention、Multi-Query Attention提高训练&amp;推理的速度；</p>
+</blockquote>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692600059334-9525d3af-33a7-426d-b833-c0c73e219b5c.png" /></p>
+<p>本次ChatGLM2-6B上下文从2k扩展到了32k同时也应用了一种叫做 FlashAttention 的技术。flash-attention是一种快速、高效、可扩展的注意力机制，它利用了一种称为哈希感知（hash-aware）的技术，可以根据它们的相似性将输入序列中的元素分配到不同的桶（bucket）中。这样，模型只需要计算桶内元素之间的注意力权重，而不是整个序列。这大大减少了计算量和内存需求，同时保持了较高的精度和表达能力。</p>
+<h1 id="llama升级之路">LLAMA升级之路</h1>
+<p>首先对比下LLAMA升级前后各大榜单结果，LLAMA2较LLAMA模型在各个榜单中取得了近10-30%的提升:</p>
+<h3 id="mmlu-1">MMLU</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Average</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LLAMA-7B</td>
+<td>35.1</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-7B</td>
+<td>45.3</td>
+</tr>
+<tr class="odd">
+<td>LLAMA-13B</td>
+<td>46.9</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-13B</td>
+<td>54.8</td>
+</tr>
+<tr class="odd">
+<td>LLAMA-65B</td>
+<td>63.4</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-70B</td>
+<td>68.9</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gsm8k-1">GSM8K</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Accuracy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>LLAMA-7B</td>
+<td>11.0</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-7B</td>
+<td>14.6</td>
+</tr>
+<tr class="odd">
+<td>LLAMA-13B</td>
+<td>17.8</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-13B</td>
+<td>28.7</td>
+</tr>
+<tr class="odd">
+<td>LLAMA-65B</td>
+<td>50.9</td>
+</tr>
+<tr class="even">
+<td>LLAMA2-70B</td>
+<td>56.8</td>
+</tr>
+</tbody>
+</table>
+<h2 id="llama">LLAMA</h2>
+<p><code>LLaMA</code>（Large Language Model Meta AI），由 Meta AI 发布的一个开放且高效的大型基础语言模型，共有 <code>7B</code>、<code>13B</code>、<code>33B</code>、<code>65B</code>（650 亿）四种版本。其数据集来源都是公开数据集，无任何定制数据集，保证了其工作与开源兼容和可复现，整个训练数据集在 token 化之后大约包含 1.4T 的 token。</p>
+<p>关于模型性能，LLaMA 的性能非常优异：具有 130 亿参数的 LLaMA 模型「在大多数基准上」可以<strong>胜过</strong> GPT-3（ 参数量达 1750 亿），而且可以在单块 V100 GPU 上运行；而最大的 650 亿参数的 LLaMA 模型可以媲美谷歌的 Chinchilla-70B 和 PaLM-540B。</p>
+<p>关于训练集，其来源都是公开数据集，无任何定制数据集，保证了其工作与开源兼容和可复现。整个训练数据集在 token 化之后大约包含 1.4T 的 token。其中，LLaMA-65B 和 LLaMA-33B 是在 1.4万亿个 <code>token</code> 上训练的，而最小的模型 LLaMA-7B 是在 1万亿个 token 上训练的。</p>
+<p><strong>模型结构</strong>：</p>
+<ul>
+<li>PreLayerNorm-RMSNorm-<a href="https://link.zhihu.com/?target=https%3A//proceedings.neurips.cc/paper_files/paper/2019/file/1e8a19426224ca89e83cef47f1e7f53b-Paper.pdf">Root Mean Square Layer Normalization</a></li>
+<li>ROPE旋转位置编码（替换绝对/相对位置编码）</li>
+<li>SwiGLU激活函数（替换ReLU）-<a href="https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/2002.05202v1.pdf">GLU Variants Improve Transformer</a></li>
+</ul>
+<h2 id="llama2">LLAMA2</h2>
+<p>官方页面上的介绍如下:</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692601172178-d4db2204-1caa-4e94-a856-fa8faf112b37.png" /></p>
+<p>在<strong>模型结构</strong>上，主要升级两点：</p>
+<ol type="1">
+<li><p>训练数据Token数量从1.4T-&gt;2T</p></li>
+<li><p>序列长度从2K-&gt;4K</p></li>
+</ol>
+<p>在<strong>SFT过程</strong>中，LLAMA2强调数据质量的重要性，通过2W的高质量指令数据，激发模型的指令遵循能力。</p>
+<p>在<strong>RLHF过程</strong>中，LLAMA2做了较多工作，对RLHF过程作出了进一步的解释。<strong>自建了100W的Reward数据集</strong>，训练了两个独立的Reword Model。</p>
+<p>整个LLAMA2的论文解读如下:</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692607746043-a7e78fd2-6755-4721-9d91-0f2b9b380861.png" /></p>
+<p>LLAMA2-Chat模型的训练过程如下图，主要包含<strong>预训练、SFT、RLHF</strong>三个步骤:</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692608498823-9ce1f7fe-54a0-493f-a64b-9f3605f29528.png" /></p>
+<h3 id="预训练">预训练</h3>
+<p>LLAMA2的主要提升点包括：<strong>更强大的数据清洗，更新数据组合，增加40%的总训练tokens，加倍上下文长度，以及使用分组查询注意力（GQA）来提高更大模型的推理可扩展性</strong>。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692608986172-ebbc9af5-30b0-40aa-b176-ef4432584ea4.png" /></p>
+<p><strong>模型结构:</strong></p>
+<ol type="1">
+<li><p>RMSNorm</p></li>
+<li><p>SwiGLU</p></li>
+<li><p>RoPE</p></li>
+<li><p><strong>4K序列长度</strong></p></li>
+<li><p><strong>分组查询注意力GQA(33B/70B)</strong></p></li>
+</ol>
+<h3 id="sft">SFT</h3>
+<p>作者发现许多第三方SFT数据集在多样性和质量方面不足，因此他们专注于收集自己的高质量SFT数据。</p>
+<p>他们观察到，与使用来自第三方数据集的数百万例子相比，从他们自己的供应商为基础的标注工作中使用较少但质量更高的例子可以显著提高结果。他们发现，数以万计的SFT注释足以实现高质量结果，共收集了<strong>27,540</strong>个注释。</p>
+<h3 id="rlhf">RLHF</h3>
+<p>我们主要挑三个核心步骤介绍：数据收集、奖励模型、迭代训练。</p>
+<h4 id="人类偏好数据收集">人类偏好数据收集</h4>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692611394323-a6c1baff-fe4e-4cb0-a05d-815faf8ea85e.png" /></p>
+<p>偏好数据如表6所示，其中包含了<strong>140W</strong>Meta自建的数据集，相比于开源数据集，自建数据集的轮次、对话长度更长。</p>
+<h4 id="奖励模型">奖励模型</h4>
+<p>LLAMA2训练了两个独立的奖励模型(Helpfulness RM/Safety RM)。</p>
+<p>动机:有研究发现（Bai等人，2022a），有时候有用性和安全性之间会存在权衡，这使得单一的奖励模型在这两方面的表现上可能会面临挑战。</p>
+<p>为了解决这个问题，作者训练了两个独立的奖励模型，一个针对有用性进行优化（称为有用性奖励模型，Helpfulness RM），另一个针对安全性进行优化（称为安全性奖励模型，Safety RM）。这样可以分别在有用性和安全性方面取得更好的效果，使得Llama 2-Chat在强化学习人类偏好（RLHF）过程中更好地符合人类偏好，提高生成回答的有用性和安全性。</p>
+<p><strong>损失函数:</strong></p>
+<p><span class="math display">\[
+L_{ranking} =−log(σ(r_θ(x,y_c)−r_θ(x,y_r)−m(r)))
+\]</span></p>
+<p>边界m(r)是关于偏好评分的离散函数。作者对那些响应差距较大的的对使用较大的边界，而对那些响应相似的对使用较小的边界（如表27所示）。作者发现这种边界分量可以提高有用性奖励模型的准确性，特别是在两个反应差距更大的样本中。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692669429363-52f91419-701b-4b27-a112-1eb2a4cb9014.png" /></p>
+<h4 id="迭代训练">迭代训练</h4>
+<p>LLAMA2采用了两种强化学习算法:PPO和拒绝采样算法。</p>
+<p>这两种强化学习算法主要区别在于：     • 广度：在拒绝采样中，模型为给定的提示探索K个样本，而在PPO中，只有一个生成过程。     • 深度：在PPO中，训练过程中第t步的样本是经过t-1步梯度更新后的模型策略的函数。在拒绝采样微调中，在模型的初始策略下采样所有输出以收集新数据集，然后类似于SFT进行微调。然而，由于采用了<strong>迭代模型更新</strong>，这两种算法之间的本质区别并不明显。</p>
+<p>LLAMA2直到RLHF (V4)，仅使用拒绝采样微调。之后将这两种方法结合起来，先对拒绝采样检查点应用PPO，然后再对采样进行拒绝采样。LLAMA2只使用最大的70B Llama 2-Chat模型进行拒绝采样。其他较小的模型则在更大模型的拒绝采样数据上进行微调，从而将大模型的能力转移到较小的模型中。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692670102006-54af67b5-95da-4d7a-87f8-56009bc10a49.png" /></p>
+<h1 id="百川升级之路">百川升级之路</h1>
+<p>首先对比下升级前后各大榜单结果，Baichuan-13B较Baichuan-7B模型在各个榜单中都取得了近20%的提升:</p>
+<p><a href="https://cevalbenchmark.com/index.html#home">C-Eval</a></p>
+<table>
+<thead>
+<tr class="header">
+<th>Model 5-shot</th>
+<th style="text-align: center;">STEM</th>
+<th style="text-align: center;">Social Sciences</th>
+<th style="text-align: center;">Humanities</th>
+<th style="text-align: center;">Others</th>
+<th style="text-align: center;">Average</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baichuan-7B</td>
+<td style="text-align: center;">38.2</td>
+<td style="text-align: center;">52.0</td>
+<td style="text-align: center;">46.2</td>
+<td style="text-align: center;">39.3</td>
+<td style="text-align: center;">42.8</td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan-13B-Base</strong></td>
+<td style="text-align: center;"><strong>45.9</strong></td>
+<td style="text-align: center;"><strong>63.5</strong></td>
+<td style="text-align: center;"><strong>57.2</strong></td>
+<td style="text-align: center;"><strong>49.3</strong></td>
+<td style="text-align: center;"><strong>52.4</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan-13B-Chat</strong></td>
+<td style="text-align: center;"><strong>43.7</strong></td>
+<td style="text-align: center;"><strong>64.6</strong></td>
+<td style="text-align: center;"><strong>56.2</strong></td>
+<td style="text-align: center;"><strong>49.2</strong></td>
+<td style="text-align: center;"><strong>51.5</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan2-7B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>54.0</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan2-13B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>58.1</strong></td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://arxiv.org/abs/2009.03300">MMLU</a></p>
+<table>
+<thead>
+<tr class="header">
+<th>Model 5-shot</th>
+<th style="text-align: center;">STEM</th>
+<th style="text-align: center;">Social Sciences</th>
+<th style="text-align: center;">Humanities</th>
+<th style="text-align: center;">Others</th>
+<th style="text-align: center;">Average</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baichuan-7B</td>
+<td style="text-align: center;">35.6</td>
+<td style="text-align: center;">48.9</td>
+<td style="text-align: center;">38.4</td>
+<td style="text-align: center;">48.1</td>
+<td style="text-align: center;">42.3</td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan-13B-Base</strong></td>
+<td style="text-align: center;"><strong>41.6</strong></td>
+<td style="text-align: center;"><strong>60.9</strong></td>
+<td style="text-align: center;"><strong>47.4</strong></td>
+<td style="text-align: center;"><strong>58.5</strong></td>
+<td style="text-align: center;"><strong>51.6</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan-13B-Chat</strong></td>
+<td style="text-align: center;"><strong>40.9</strong></td>
+<td style="text-align: center;"><strong>60.9</strong></td>
+<td style="text-align: center;"><strong>48.8</strong></td>
+<td style="text-align: center;"><strong>59.0</strong></td>
+<td style="text-align: center;"><strong>52.1</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan2-7B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>54.16</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan2-13B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>59.17</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>说明：采用了 MMLU 官方的<a href="https://github.com/hendrycks/test">评测方案</a>。</p>
+</blockquote>
+<p><a href="https://github.com/haonan-li/CMMLU">CMMLU</a></p>
+<table>
+<thead>
+<tr class="header">
+<th>Model 5-shot</th>
+<th style="text-align: center;">STEM</th>
+<th style="text-align: center;">Humanities</th>
+<th style="text-align: center;">Social Sciences</th>
+<th style="text-align: center;">Others</th>
+<th style="text-align: center;">China Specific</th>
+<th style="text-align: center;">Average</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baichuan-7B</td>
+<td style="text-align: center;">34.4</td>
+<td style="text-align: center;">47.5</td>
+<td style="text-align: center;">47.6</td>
+<td style="text-align: center;">46.6</td>
+<td style="text-align: center;">44.3</td>
+<td style="text-align: center;">44.0</td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan-13B-Base</strong></td>
+<td style="text-align: center;"><strong>41.7</strong></td>
+<td style="text-align: center;"><strong>61.1</strong></td>
+<td style="text-align: center;"><strong>59.8</strong></td>
+<td style="text-align: center;"><strong>59.0</strong></td>
+<td style="text-align: center;"><strong>56.4</strong></td>
+<td style="text-align: center;"><strong>55.3</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan-13B-Chat</strong></td>
+<td style="text-align: center;"><strong>42.8</strong></td>
+<td style="text-align: center;"><strong>62.6</strong></td>
+<td style="text-align: center;"><strong>59.7</strong></td>
+<td style="text-align: center;"><strong>59.0</strong></td>
+<td style="text-align: center;"><strong>56.1</strong></td>
+<td style="text-align: center;"><strong>55.8</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Baichuan2-7B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>57.07</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Baichuan2-13B-Base</strong></td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;"><strong>61.97</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>说明：CMMLU 是一个综合性的中文评估基准，专门用于评估语言模型在中文语境下的知识和推理能力。采用了其官方的<a href="https://github.com/haonan-li/CMMLU">评测方案</a>。</p>
+</blockquote>
+<h2 id="baichuan-7b">baichuan-7b</h2>
+<p>Baichuan-7B 是由百川智能开发的一个开源可商用的大规模预训练语言模型。基于 Transformer 结构，在大约 1.2 万亿 tokens 上训练的 70 亿参数模型，支持中英双语，上下文窗口长度为 4096。在标准的中文和英文 benchmark（C-Eval/MMLU）上均取得同尺寸最好的效果。</p>
+<p>百川模型结构与LLAMA相近，作了如下的优化：</p>
+<h3 id="分词器">分词器</h3>
+<p>参考学术界方案使用 SentencePiece 中的 Byte-Pair Encoding (BPE) 作为分词算法，并且进行了以下的优化：</p>
+<ol type="1">
+<li>目前大部分开源模型主要基于英文优化，因此对中文语料存在效率较低的问题。我们使用 2000 万条以中英为主的多语言语料训练分词模型，显著提升对于中文的压缩率。</li>
+<li>对于数学领域，我们参考了 LLaMA 和 Galactica 中的方案，对数字的每一位单独分开，避免出现数字不一致的问题，对于提升数学能力有重要帮助。</li>
+<li>对于罕见字词（如特殊符号等），支持 UTF-8 characters 的 byte 编码，因此做到未知字词的全覆盖。</li>
+<li>我们分析了不同分词器对语料的压缩率，如下表，可见我们的分词器明显优于 LLaMA, Falcon 等开源模型，并且对比其他中文分词器在压缩率相当的情况下，训练和推理效率更高。</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Model</th>
+<th style="text-align: center;">Baichuan-7B</th>
+<th style="text-align: center;">LLaMA</th>
+<th style="text-align: center;">Falcon</th>
+<th style="text-align: center;">mpt-7B</th>
+<th style="text-align: center;">ChatGLM</th>
+<th style="text-align: center;">moss-moon-003</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Compress Rate</td>
+<td style="text-align: center;">0.737</td>
+<td style="text-align: center;">1.312</td>
+<td style="text-align: center;">1.049</td>
+<td style="text-align: center;">1.206</td>
+<td style="text-align: center;">0.631</td>
+<td style="text-align: center;">0.659</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Vocab Size</td>
+<td style="text-align: center;">64,000</td>
+<td style="text-align: center;">32,000</td>
+<td style="text-align: center;">65,024</td>
+<td style="text-align: center;">50,254</td>
+<td style="text-align: center;">130,344</td>
+<td style="text-align: center;">106,029</td>
+</tr>
+</tbody>
+</table>
+<h3 id="算子优化-1">算子优化</h3>
+<blockquote>
+<p>采用更高效的算子:Flash-Attention，同ChatGLM2</p>
+</blockquote>
+<h2 id="baichuan-13b">baichuan-13b</h2>
+<p>Baichuan-13B 是由百川智能继 <a href="https://github.com/baichuan-inc/baichuan-7B">Baichuan-7B</a> 之后开发的包含 130 亿参数的开源可商用的大规模语言模型，在权威的中文和英文 benchmark 上均取得同尺寸最好的效果。本次发布包含有预训练 (<a href="https://huggingface.co/baichuan-inc/Baichuan-13B-Base">Baichuan-13B-Base</a>) 和对齐 (<a href="https://huggingface.co/baichuan-inc/Baichuan-13B-Chat">Baichuan-13B-Chat</a>) 两个版本。Baichuan-13B 有如下几个特点：</p>
+<ol type="1">
+<li><strong>更大尺寸、更多数据</strong>：Baichuan-13B 在 <a href="https://github.com/baichuan-inc/baichuan-7B">Baichuan-7B</a> 的基础上进一步扩大参数量到 130 亿，并且在高质量的语料上训练了 1.4 万亿 tokens，超过 LLaMA-13B 40%，是当前开源 13B 尺寸下训练数据量最多的模型。支持中英双语，使用 ALiBi 位置编码，上下文窗口长度为 4096。</li>
+<li><strong>同时开源预训练和对齐模型</strong>：预训练模型是适用开发者的『 基座 』，而广大普通用户对有对话功能的对齐模型具有更强的需求。因此本次开源我们同时发布了对齐模型（Baichuan-13B-Chat），具有很强的对话能力，开箱即用，几行代码即可简单的部署。</li>
+<li><strong>更高效的推理</strong>：为了支持更广大用户的使用，我们本次同时开源了 int8 和 int4 的量化版本，相对非量化版本在几乎没有效果损失的情况下大大降低了部署的机器资源门槛，可以部署在如 Nvidia 3090 这样的消费级显卡上。</li>
+<li><strong>开源免费可商用</strong>：Baichuan-13B 不仅对学术研究完全开放，开发者也仅需邮件申请并获得官方商用许可后，即可以免费商用。</li>
+</ol>
+<p><strong>模型细节</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>模型名称</th>
+<th style="text-align: center;">隐藏层维度</th>
+<th style="text-align: center;">层数</th>
+<th style="text-align: center;">注意力头数</th>
+<th style="text-align: center;">词表大小</th>
+<th style="text-align: center;">总参数量</th>
+<th style="text-align: center;">训练数据（tokens）</th>
+<th style="text-align: center;">位置编码</th>
+<th style="text-align: center;">最大长度</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baichuan-7B</td>
+<td style="text-align: center;">4,096</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;">32</td>
+<td style="text-align: center;">64,000</td>
+<td style="text-align: center;">7,000,559,616</td>
+<td style="text-align: center;">1.2 万亿</td>
+<td style="text-align: center;"><a href="https://arxiv.org/abs/2104.09864">RoPE</a></td>
+<td style="text-align: center;">4,096</td>
+</tr>
+<tr class="even">
+<td>Baichuan-13B</td>
+<td style="text-align: center;">5,120</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">64,000</td>
+<td style="text-align: center;">13,264,901,120</td>
+<td style="text-align: center;">1.4 万亿</td>
+<td style="text-align: center;"><a href="https://arxiv.org/abs/2108.12409">ALiBi</a></td>
+<td style="text-align: center;">4,096</td>
+</tr>
+</tbody>
+</table>
+<h2 id="升级过程-1">升级过程</h2>
+<ol type="1">
+<li><p>参数量:baichuan13B较baichuan7B 首先在<strong>参数量</strong>上翻了一倍，更大的参数量意味着知识的容量更大，通过更多的训练数据(1.2T-&gt;1.4T)，基座模型的常识能力得以提升；</p></li>
+<li><p>位置编码:从RoPE改成ALiBi，在一定程度的可以进行长度外推(TIPS:RoPE可以进行更长范围的外推)；</p></li>
+</ol>
+<h2 id="baichuan2">baichuan2</h2>
+<p>技术报告:<a href="https://cdn.baichuan-ai.com/paper/Baichuan2-technical-report.pdf">https://cdn.baichuan-ai.com/paper/Baichuan2-technical-report.pdf</a></p>
+<ul>
+<li>Baichuan 2 是百川智能推出的<strong>新一代开源大语言模型</strong>，采用 <strong>2.6 万亿</strong> Tokens 的高质量语料训练。</li>
+<li>Baichuan 2 在多个权威的中文、英文和多语言的通用、领域 benchmark 上取得同尺寸<strong>最佳</strong>的效果。</li>
+</ul>
+<h3 id="分词器-1">分词器</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1694401788439-a8c83817-04ee-472f-bbf0-545cadab1b57.png" /></p>
+<p>分词器需要平衡的两个关键因素是高压缩率以实现高效的推理（inference）和足够大小的词汇表以保证每个单词嵌入的充分训练。</p>
+<p>相对于前代模型，Baichuan 2在分词器方面进行了如下改进：</p>
+<ol type="1">
+<li><strong>词汇表扩展</strong>：Baichuan 2将词汇表的大小从Baichuan 1的64,000扩展到了125,696。这一变化旨在在保证计算效率的同时，充分训练每个词嵌入。</li>
+<li><strong>数据归一化处理</strong>：相比Baichuan 1，Baichuan 2在输入文本的归一化处理上有所不同。Baichuan 2不对输入文本进行任何归一化，并且不添加像Baichuan 1那样的虚拟前缀。</li>
+<li><strong>处理数字数据</strong>：Baichuan 2将数字数据拆分成独立的数字，以更好地编码数值数据。</li>
+<li><strong>处理代码数据</strong>：对于包含额外空格的代码数据，Baichuan 2向分词器中添加了仅包含空格的标记。</li>
+</ol>
+<h3 id="模型结构-1">模型结构</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1694402243624-6d6babce-1f69-4bd8-8172-9604356cf320.png" /></p>
+<ol type="1">
+<li><p><strong>Positional Embeddings</strong>：</p>
+<ul>
+<li>对于Baichuan 2-7B模型，采用了Rotary Positional Embedding (RoPE)。<br />
+</li>
+<li>对于Baichuan 2-13B模型，采用了ALiBi作为位置编码技术。</li>
+</ul></li>
+<li><p><strong>激活函数和归一化</strong>：</p>
+<ul>
+<li>使用了SwiGLU激活函数，这是GLU的一个变体，经过改进的版本。<br />
+</li>
+<li>在注意力层中采用了内存高效的注意力机制。</li>
+</ul></li>
+<li><p><strong>Tokenizer</strong>：</p>
+<ul>
+<li>对词汇表的大小进行了调整，将其从Baichuan 1的64,000扩展到125,696，以在计算效率和模型性能之间取得平衡。</li>
+</ul></li>
+<li><p><strong>NormHead：</strong></p>
+<ul>
+<li>Baichuan 2使用了一种称为NormHead的方法来稳定训练并提高模型性能。NormHead主要用于对输出嵌入进行归一化处理，有助于稳定训练动态，并降低了L2距离在计算logits时的影响。</li>
+</ul></li>
+<li><p><strong>最大z损失（Max-z loss）</strong>：</p>
+<ul>
+<li>引入了最大z损失，用于规范模型输出的logit值，从而提高训练的稳定性并使推断更加鲁棒。</li>
+</ul>
+<p><span class="math display">\[
+L_{max-z}=2e^{-4}*z^2
+\]</span></p></li>
+</ol>
+<p>接下来让我们从代码层面，看baichuan2的模型结构改动：</p>
+<p><strong>NormHead</strong>:完成模型输出的归一化工作</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">class NormHead(nn.Module):</span><br><span class="line">    def __init__(self, hidden_size, vocab_size, bias=False):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.weight = nn.Parameter(torch.empty((vocab_size, hidden_size)))</span><br><span class="line">        nn.init.kaiming_uniform_(self.weight, a=math.sqrt(5))</span><br><span class="line">        self.first_flag = True</span><br><span class="line"></span><br><span class="line">    def forward(self, hidden_states):</span><br><span class="line">        if self.training:</span><br><span class="line">            norm_weight = nn.functional.normalize(self.weight)</span><br><span class="line">        elif self.first_flag:</span><br><span class="line">            self.first_flag = False</span><br><span class="line">            self.weight = nn.Parameter(nn.functional.normalize(self.weight))</span><br><span class="line">            norm_weight = self.weight</span><br><span class="line">        else:</span><br><span class="line">            norm_weight = self.weight</span><br><span class="line">        return nn.functional.linear(hidden_states, norm_weight)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class BaichuanForCausalLM(BaichuanPreTrainedModel):</span><br><span class="line">    def __init__(self, config, *model_args, **model_kwargs):</span><br><span class="line">        super().__init__(config, *model_args, **model_kwargs)</span><br><span class="line">        self.model = BaichuanModel(config)</span><br><span class="line">        self.lm_head = NormHead(config.hidden_size, config.vocab_size, bias=False)</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    def forward(</span><br><span class="line">        self,</span><br><span class="line">        input_ids: torch.LongTensor = None,</span><br><span class="line">        attention_mask: Optional[torch.Tensor] = None,</span><br><span class="line">        past_key_values: Optional[List[torch.FloatTensor]] = None,</span><br><span class="line">        inputs_embeds: Optional[torch.FloatTensor] = None,</span><br><span class="line">        labels: Optional[torch.LongTensor] = None,</span><br><span class="line">        use_cache: Optional[bool] = None,</span><br><span class="line">        output_attentions: Optional[bool] = False,</span><br><span class="line">        output_hidden_states: Optional[bool] = False,</span><br><span class="line">        return_dict: Optional[bool] = True,</span><br><span class="line">        **kwargs,</span><br><span class="line">    ) -&gt; Union[Tuple, CausalLMOutputWithPast]:</span><br><span class="line">        return_dict = (</span><br><span class="line">            return_dict if return_dict is not None else self.config.use_return_dict</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)</span><br><span class="line">        outputs = self.model(</span><br><span class="line">            input_ids=input_ids,</span><br><span class="line">            attention_mask=attention_mask,</span><br><span class="line">            past_key_values=past_key_values,</span><br><span class="line">            inputs_embeds=inputs_embeds,</span><br><span class="line">            use_cache=use_cache,</span><br><span class="line">            output_attentions=output_attentions,</span><br><span class="line">            output_hidden_states=output_hidden_states,</span><br><span class="line">            return_dict=return_dict,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        hidden_states = outputs[0]</span><br><span class="line">        logits = self.lm_head(hidden_states)</span><br></pre></td></tr></table></figure>
+<p><strong>Max-z Loss</strong>: softmax_normalizer对应<span class="math inline">\(z^2\)</span></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">loss = None</span><br><span class="line">if labels is not None:</span><br><span class="line">    # Shift so that tokens &lt; n predict n</span><br><span class="line">    shift_logits = logits[..., :-1, :].contiguous()</span><br><span class="line">    shift_labels = labels[..., 1:].contiguous()</span><br><span class="line">    # Flatten the tokens</span><br><span class="line">    loss_fct = CrossEntropyLoss()</span><br><span class="line">    shift_logits = shift_logits.view(-1, self.config.vocab_size)</span><br><span class="line">    shift_labels = shift_labels.view(-1)</span><br><span class="line">    softmax_normalizer = shift_logits.max(-1).values ** 2</span><br><span class="line">    z_loss = self.config.z_loss_weight * softmax_normalizer.mean()</span><br><span class="line">    # Enable model parallelism</span><br><span class="line">    shift_labels = shift_labels.to(shift_logits.device)</span><br><span class="line">    loss = loss_fct(shift_logits, shift_labels) + z_loss</span><br></pre></td></tr></table></figure>
+<h1 id="如何构建一个好的基座大模型">如何构建一个好的基座大模型？</h1>
+<p>在深入探讨了ChatGLM、LLAMA、Baichuan大语言模型的升级之路后，我们将进一步拓展讨论范围，探索大模型所需具备的关键能力、实现这些能力所需的技术手段以及模型结构的设计方法。这将为我们在实际应用中构建和优化大模型提供有力的参考和指导。</p>
+<p>接下来的小节内容将从以下几个方面展开讨论：首先，我们将分析大型预训练模型所需要具备的核心能力，如长度外推、常识等；其次，我们将介绍如何利用先进的技术和方法实现这些能力，包括预训练策略、优化算法和损失函数等；最后，我们将针对模型结构进行探讨，分析如何选择合适的LLM（Large Language Model）结构以实现高性能的大型模型。</p>
+<p>本小节内容旨在为大家提供一个全面的视角，了解大模型的关键要素，以便在实际工程中构建出更为强大、灵活且高效的大型预训练模型。</p>
+<h2 id="大模型所需能力及升级方式">大模型所需能力及升级方式</h2>
+<p>通过对ChatGLM、LLAMA、Baichuan等大型语言模型升级过程的分析，可以发现它们的改进主要集中在基础知识能力的提升和支持的序列长度变化这两个方面。在本小节中，我们将重点梳理并总结这两项关键能力的升级策略。</p>
+<h3 id="基础知识">基础知识</h3>
+<p>基础知识能力的提升涵盖了多个领域，我们可以通过以下常用评测集来了解这些领域：</p>
+<ul>
+<li><p>英文知识 — MMLU</p></li>
+<li><p>中文知识 — C-Eval</p></li>
+<li><p>推理 — GSM8k / BBH</p></li>
+<li><p>代码 — HumanEval / MBPP</p></li>
+<li><p>数学 — MATH</p></li>
+</ul>
+<p>笔者认为升级基础知识能力的主要策略在于提升模型参数量及训练数据，通过更大的参数量及数据使模型更好的拟合相关领域的知识。</p>
+<p>而在这个过程中，最重要的是训练数据的质量，以下给出清洗数据的常用方式：</p>
+<ul>
+<li>无效数据，脏数据过滤</li>
+</ul>
+<p>一些无效数据，如意义空泛或模板化的文本（例如HTML代码、Lorem ipsum等）。甚至于在多语言语料库的构建过程中，从网站提取文本用于语言建模也极具挑战性。但这是我们必然要做到的，因为NTP(Next Token Prediction)的方式注定训练模型使用的数据本身就是真实语言世界很好的映射。数据清洗工具，如justext、trafilatura等，能有效剔除HTML模板文本，同时在减少噪音（提高精度）与保留所有有效部分（提高召回率）之间取得平衡。另外一点是，处理网页语料库中无效数据的有效方法之一是利用元数据进行筛选。例如，OpenAI在构建GPT-2用的WebText语料库时，抓取了reddit上点赞数至少为3的所有外部链接，这种启发式方法有助于减少数据集中的噪音，同时确保数据质量。</p>
+<ul>
+<li>文档长度过滤</li>
+</ul>
+<p>一方面，考虑到NTP（Next Token Prediction），从语料库中移除非常短的文档（包含少于约100个标记的文本）可以帮助通过创建连续的文本来建模文本中的依赖关系，从而去除噪音。另一方面，由于大多数语言模型如今都基于Transformer架构，对非常大的文档进行预处理并将其分成所需长度的连续片段是很有用的。</p>
+<ul>
+<li>机器生成数据过滤</li>
+</ul>
+<p>训练语言模型的目标之一是捕捉人类语言的分布。然而，网络爬取的数据集包含大量机器生成的文本，例如现有语言模型生成的文本、OCR文本和机器翻译文本。例如，来自http://patents.google.com的数据构成了C4语料库的大部分。该语料库使用机器翻译将来自世界各地专利机构的专利翻译成英语。此外，网络语料库中的数据还包含来自扫描书籍和文档的OCR生成文本。OCR系统并不完美，因此生成的文本与自然英语的分布不同（通常OCR系统会在拼写错误和完全遗漏单词等方面产生可预测的错误）——这点很重要，也很难搞，pdf扫描文档怎么去做还真挺头疼的。虽然很难识别机器生成的文本，但有一些工具，如ctrl-detector，可用于识别和检测机器生成的文本。在为语言建模预处理语料库时，重要的是对语料库中机器生成文本的存在进行表征和记录。</p>
+<ul>
+<li>去重</li>
+</ul>
+<p>从互联网上爬取原始文本创建的数据集往往会导致相同的序列被多次重复出现。例如，在论文《Deduplicating Training Data Makes Language Models Better》中，作者发现在C4数据集中，一个50个单词的序列被重复出现了60000次。事实上，在去重的数据集上训练模型速度更快，并且不太容易导致记忆效应——很不好。最近，研究人员还表明，在重复数据上训练的语言模型容易受到隐私攻击，其中对手从训练模型中生成序列并检测哪些序列来自训练集的记忆。在论文《Deduplicating Training Data Mitigates Privacy Risks in Language Models》中，作者展示了语言模型重新生成训练序列的速率与序列在训练集中的出现次数超线性相关。例如，一个在训练数据中出现10次的序列平均会比一个只出现一次的序列生成1000倍多。去重可以在不同粒度级别上执行。从精确匹配去重到模糊去重工具（例如deduplicate-text-datasets和datasketch），可以帮助减少和去除正在处理的语料库中的冗余文本。正如许多研究人员所指出的，需要理解去重过程需要大量计算资源（CPU和RAM），因为网页爬取数据集的大小，因此建议在分布式环境中运行此类计算。</p>
+<ul>
+<li>清洗污染数据</li>
+</ul>
+<p>这部分还挺保受争议的，可能还没有很细致的标准，不少公司也都挺功利的，就不好说。在NLP领域，我们常说的数据清洗，主要指的是训练数据和测试数据的区分和处理。在大型语言模型的情况下，由于训练和测试数据集都源于互联网，确保二者不发生交叉，这个过程可能颇具挑战。大型语言模型的评估通常会用到基准数据，如问答对，如果这些基准数据在训练数据中出现，可能会导致基准性能的高估。因此，需要进行去污染操作，也就是从训练数据中去除和基准数据集有重叠的部分，保证训练数据集的完整性。OpenAI的研究人员在创建WebText数据集时，就通过剔除所有维基百科内容来实现数据去污染，因为维基百科数据在他们的基准数据集中被广泛使用。另一个案例是EleutherAI的研究人员，他们开发了名为lm-eval harness的软件包，用以实现对基准数据集的去污染。在具体操作中，我们需要关注两类数据污染：</p>
+<ol type="1">
+<li><p>输入与输出污染：这种情况下，预训练语料库中存在与下游任务标签相同的数据。对于语言建模等任务，任务标签就是目标文本。如果目标文本在预训练语料库中出现，模型可能会倾向于复制文本，而非真正解决任务。</p></li>
+<li><p>输入污染：这指的是评估样本中并未包含标签的情况，这也可能导致下游任务的性能高估。在进行零样本和少样本评估时，如果预训练数据集中存在与热门基准任务重叠的数据，我们必须重视数据去污染。</p></li>
+</ol>
+<ul>
+<li>毒性和偏见控制</li>
+</ul>
+<p>尽管网络语料库具有丰富的多样性，但其中也常常弥漫着毒性和偏见内容。如，《RealToxicityPrompts》一文中作者使用PerspectiveAPI指出，OpenWebText与WebText的内容中分别有2.1%与4.3%存在毒性分数超过50%。因此，在训练语言模型时，必须警觉并借助PerspectiveAPI等工具筛选掉预训练数据集中的毒性内容，以防止模型表现出偏见或在下游应用中产生有害内容。一种解决策略是过滤掉"bad words"名单中的文本，比如C4的作者们就采用了这种策略。另一个例子是，PILE数据集的研究者利用spamscanner来对有害内容进行分类。然而，执行此类过滤步骤必须极为谨慎，并需考虑到下游应用，以免过滤器保留下更可能坚持霸权观点的声音。在利用数据进行预训练语言模型之前，对贬损内容和性别/宗教偏见进行深度分析是必要的。</p>
+<ul>
+<li>个人身份信息控制</li>
+</ul>
+<p>在收集大型数据集时，理解与数据集实例相关的法律问题至关重要，尤其是在处理个人身份信息（PII）时，如真实姓名、组织名称、医疗记录、社会安全号码等。根据不同的应用，对这些信息进行遮蔽或删除在预训练语言模型之前是必要的。像presidio和pii-codex这样的工具提供了检测、分析和处理文本数据中个人身份信息的流程，这些工具能帮助确保数据集中的个人信息得到合理处理，以遵守相关隐私法规并保护用户隐私。</p>
+<h3 id="序列长度-1">序列长度</h3>
+<p>大语言模型支持的序列长度主要受两方面影响:</p>
+<ol type="1">
+<li><p>训练阶段的最大长度</p></li>
+<li><p>模型的长度外推性</p></li>
+</ol>
+<p>第一点训练阶段的最大长度，可以通过DeepSpeed等分布式训练策略，减少模型的显存占用，从而提高训练的序列长度；</p>
+<p>第二点模型的长度外推性，则通过位置编码的设计来实现，实现方式见模型结构设计小节。</p>
+<h2 id="模型结构设计">模型结构设计</h2>
+<p>在梳理了大型语言模型所需具备的关键能力以及相应升级策略之后，本小节将重点关注大模型结构的设计方法。我们将深入探讨如何构建高效且强大的大型预训练模型。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692698220452-18482783-e800-4a9e-9d87-d240aef3a3e4.png" /></p>
+<h3 id="tokenizer">Tokenizer</h3>
+<p>参照baichuan提及的Tokenizer设计方式，编码器需要能够处理复杂的中英文任务。</p>
+<ol type="1">
+<li>目前大部分开源模型主要基于英文优化，因此对中文语料存在效率较低的问题。我们使用 2000 万条以中英为主的多语言语料训练分词模型，显著提升对于中文的压缩率。</li>
+<li>对于数学领域，我们参考了 LLaMA 和 Galactica 中的方案，对数字的每一位单独分开，避免出现数字不一致的问题，对于提升数学能力有重要帮助。</li>
+<li>对于罕见字词（如特殊符号等），支持 UTF-8 characters 的 byte 编码，因此做到未知字词的全覆盖。</li>
+<li>我们分析了不同分词器对语料的压缩率，如下表，可见我们的分词器明显优于 LLaMA, Falcon 等开源模型，并且对比其他中文分词器在压缩率相当的情况下，训练和推理效率更高。</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Baichuan-7B</th>
+<th>LLaMA</th>
+<th>Falcon</th>
+<th>mpt-7B</th>
+<th>ChatGLM</th>
+<th>moss-moon-003</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Compress Rate</td>
+<td>0.737</td>
+<td>1.312</td>
+<td>1.049</td>
+<td>1.206</td>
+<td>0.631</td>
+<td>0.659</td>
+</tr>
+<tr class="even">
+<td>Vocab Size</td>
+<td>64,000</td>
+<td>32,000</td>
+<td>65,024</td>
+<td>50,254</td>
+<td>130,344</td>
+<td>106,029</td>
+</tr>
+</tbody>
+</table>
+<h3 id="layernorm">LayerNorm</h3>
+<p>LayerNorm分为Pre-LN和Post-LN两种，有研究发现Post-LN在训练过程中不稳定，因此目前大模型基本都采用Pre-LN的训练方式。</p>
+<p><img src="https://pic1.zhimg.com/v2-c2fed007b3a0e176172079abe421e7c8_r.jpg?source=1940ef5c" /></p>
+<p><strong>LayerNorm计算方式:</strong></p>
+<p>首先计算均值与方差:</p>
+<p><span class="math display">\[
+\mu=\frac{1}{n} \sum_{i=1}^{n}a_i,\sigma=\sqrt{\frac{1}{n}\sum_{i=1}^n(a_i-\mu)^2}
+\]</span></p>
+<p>然后计算归一化:</p>
+<p><span class="math display">\[
+\overline{a}_i=\frac{a_i-\mu}{\sigma}g_i
+\]</span></p>
+<p>其中<span class="math inline">\(g_i\)</span>是起到缩放作用，在一开始设置为1.</p>
+<p><strong>RMSNorm计算方式:</strong></p>
+<p>RMSNorm假设均值为0，只针对方差进行归一化，训练速度更快且效果差距不大。</p>
+<p><span class="math display">\[
+\overline{a}_i=\frac{a_i}{RMS(a)}g_i,RMS(a)=\sqrt{\frac{1}{n}\sum_{i=1}^n(a_i)^2}
+\]</span></p>
+<h3 id="mlp">MLP</h3>
+<p>MLP小节主要涉及激活函数的选择。</p>
+<h4 id="relu">Relu</h4>
+<p>ReLU是一种非常流行的激活函数，其数学表达式如下：</p>
+<p><span class="math display">\[
+f(x)=max(0,x)
+\]</span></p>
+<p><img src="https://www.h3399.cn/uploads/body/182/987e1c343976.png" /></p>
+<h4 id="gelu">Gelu</h4>
+<p><strong><em>高斯误差线性单元激活函数</em></strong>（Gaussian Error Linear Units(GELUS)）的数学表达式如下:</p>
+<p><span class="math display">\[
+GELU(x)=xP(X \le x)=x\Phi(x)=x * \frac{1}{2}[1+erf(x/\sqrt2)]
+\]</span></p>
+<p>也可以采用以下等式近似计算GELU:</p>
+<p><span class="math display">\[
+GELU(x) \approx 0.5x(1+tanh[\sqrt{2/\pi}(x+0.044715x^3)])
+\]</span></p>
+<p><span class="math display">\[
+GELU(x) \approx x\sigma(1.702x)
+\]</span></p>
+<p>GELUs对于输入乘以一个0,1组成的mask，而该mask的生成则是依概率随机的依赖于输入。假设输入为x, mask为m，则m服从一个伯努利分布<span class="math inline">\(\Phi(x)\)</span> ,其中 <span class="math inline">\(\Phi(x)=P(X \le x)\)</span>,  <span class="math inline">\(X\)</span>服 从标准正态分布（高斯分布)，这么选择是因为神经元的输入趋向于正态分布，这么设定使得当输入x减小的时候，输入会有一个更高的概率被dropout掉，这样的激活变换就会随机依赖于输入了。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692683853445-67a2a995-b476-4069-8815-7d20b2983c5c.png" /></p>
+<p>Bert中GeLU代码如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def gelu(input_tensor):</span><br><span class="line">    cdf = 0.5 * (1.0 + tf.erf(input_tensor / tf.sqrt(2.0)))</span><br><span class="line">    return input_tesnsor*cdf</span><br></pre></td></tr></table></figure>
+<h4 id="swiglugeglu">SwiGLU&amp;GeGLU</h4>
+<p>SwiGLU 和 GeGLU都是Noam Shazeer在文章中探索的激活函数变体</p>
+<p>具体的，需要先了解门线性单元（Gated Linear Unit, GLU）这个基本的双线性函数，为</p>
+<p><span class="math display">\[
+GLU(x,W,V,b,c)=\sigma(xW+b) \otimes (xV+c)
+\]</span></p>
+<p>其中<span class="math inline">\(\otimes\)</span>代表逐元素相乘，SwiGLU 和 GeGLU作为GLU的变体，定义如下:</p>
+<p><span class="math display">\[
+GEGLU(x,W,V,b,c)=GELU(xW+b) \otimes (xV + c)
+\]</span></p>
+<p><span class="math display">\[
+SwiGLU(x,W,V,b,c,\beta) = Swish_{\beta}(xW + b) \otimes (xV + c)
+\]</span></p>
+<p>其中:</p>
+<p><span class="math display">\[
+Swish_{\beta}(x) = x\sigma(\beta x),\beta为常数如1
+\]</span></p>
+<p><img src="https://pic4.zhimg.com/80/v2-0d644ecd419bbdfdae9be5a8c076b9f7_1440w.webp" /></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692752178909-c3da6449-94ea-46a5-99ac-be362159f58d.png" /></p>
+<p>作者并没有对激活函数提出的原理和动机做过多描述，论文本身是对各类激活函数变种效果的对比尝试，可以看到SwishGLU和GeGLU是可以取得最小误差的，而在大模型中也得到了广泛应用。</p>
+<h3 id="attention">Attention</h3>
+<p>Attention层主要针对Attention的算子进行优化，加速模型的推理和部署。</p>
+<h4 id="flashattention">FlashAttention</h4>
+<p>详细介绍见:<a href="https://zhuanlan.zhihu.com/p/626079753">https://zhuanlan.zhihu.com/p/626079753</a></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692600059334-9525d3af-33a7-426d-b833-c0c73e219b5c.png" /></p>
+<p>动机:当输入序列（sequence length）较长时，Transformer的计算过程缓慢且耗费内存，这是因为self-attention的time和memory complexity会随着sequence length的增加成二次增长。</p>
+<p>标准Attention的中间结果S,P（见下文）通常需要通过高带宽内存（HBM）进行存取，两者所需内存空间复杂度为<span class="math inline">\(O(N^2)\)</span>。本文分析：</p>
+<ul>
+<li>FlashAttention: 对HBM访问的次数为<span class="math inline">\(O(N^2d^2M^{-1})\)</span></li>
+<li>Attention: 对HBM访问的次数为<span class="math inline">\(\Omega(Nd+N^2)\)</span></li>
+</ul>
+<p>往往（例如GPT2中N=1024，d=64），因此FlashAttention会快很多。下图展示了两者在GPT-2上的Forward+Backward的GFLOPs、HBM、Runtime对比（A100 GPU）：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-1e31e931b373c95619e975d7f16c88ed_1440w.webp" /></p>
+<p>GPU中存储单元主要有HBM和SRAM：HBM容量大但是访问速度慢，SRAM容量小却有着较高的访问速度。例如：A100 GPU有40-80GB的HBM，带宽为1.5-2.0TB/s；每108个流式多核处理器各有192KB的片上SRAM，带宽估计约为19TB/s。可以看出，片上的SRAM比HBM快一个数量级，但尺寸要小许多数量级。</p>
+<p><strong>综上，FlashAttention目的不是节约FLOPs，而是减少对HBM的访问。重点是FlashAttention在训练和预测过程中的结果和标准Attention一样，对用户是无感的，而其他加速方法做不到这点。</strong></p>
+<h4 id="multi-query-attention">Multi Query Attention</h4>
+<p>论文地址：<a href="https://arxiv.org/pdf/1911.0215">https://arxiv.org/pdf/1911.0215</a></p>
+<p>MQA 是 19 年提出的一种新的 Attention 机制，其能够在保证模型效果的同时加快 decoder 生成 token 的速度。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692696411037-fef17f67-9d7a-42ea-bafd-7c02aacdfbc3.png" /></p>
+<p>从上图表中可以看到，MQA 在 encoder 上的提速没有非常明显，但在 decoder 上的提速是很显著的。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-09340314592932def37858652e999adc_1440w.webp" /></p>
+<p>从论文的解释中可以看到，MQA 让所有的头之间 <strong>共享</strong> 同一份 Key 和 Value 矩阵，每个头只单独保留了一份 Query 参数，从而大大减少 Key 和 Value 矩阵的参数量。</p>
+<p>即：<strong>MQA 实际上是将 head 中的 key 和 value 矩阵抽出来单独存为一份共享参数，</strong></p>
+<p><strong>而 query 则是依旧保留在原来的 head 中，每个 head 有一份自己独有的 query 参数。</strong></p>
+<p><strong>代码实现：</strong></p>
+<p>实现方式很简单，将原维度直接变成头数*维度的总和。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># Multi Head Attention</span><br><span class="line">self.Wqkv = nn.Linear(                        # 【关键】Multi-Head Attention 的创建方法</span><br><span class="line">    self.d_model, </span><br><span class="line">    3 * self.d_model,                         # 有 query, key, value 3 个矩阵, 所以是 3 * d_model</span><br><span class="line">    device=device</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">query, key, value = qkv.chunk(                # 【关键】每个 tensor 都是 (1, 512, 768)</span><br><span class="line">    3, </span><br><span class="line">    dim=2</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># Multi Query Attention</span><br><span class="line">self.Wqkv = nn.Linear(                                # 【关键】Multi-Query Attention 的创建方法</span><br><span class="line">    d_model,</span><br><span class="line">    d_model + 2 * self.head_dim,                      # 只创建 query 的 head 向量，所以只有 1 个 d_model</span><br><span class="line">    device=device,                                    # 而 key 和 value 不再具备单独的头向量</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">query, key, value = qkv.split(                        # query -&gt; (1, 512, 768)</span><br><span class="line">    [self.d_model, self.head_dim, self.head_dim],     # key   -&gt; (1, 512, 96)</span><br><span class="line">    dim=2                                             # value -&gt; (1, 512, 96)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>即<strong>K，V的维度从d_model转成self.head_dim</strong></p>
+<p><u><b>在 MQA 中，除了 query 向量还保存着 8 个头，key 和 value 向量都只剩 1 个「公共头」了。</b></u></p>
+<p>这也正好印证了论文中所说的「所有 head 之间共享一份 key 和 value 的参数」。</p>
+<p>剩下的问题就是如何将这 1 份参数同时让 8 个头都使用，</p>
+<p>代码里使用矩阵乘法 matmul 来广播，使得每个头都乘以这同一个 tensor，以此来实现参数共享：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">def scaled_multihead_dot_product_attention(</span><br><span class="line">        query,</span><br><span class="line">        key,</span><br><span class="line">        value,</span><br><span class="line">        n_heads,</span><br><span class="line">        multiquery=False,</span><br><span class="line">    ):</span><br><span class="line">    q = rearrange(query, &#x27;b s (h d) -&gt; b h s d&#x27;, h=n_heads)         # (1, 512, 768) -&gt; (1, 8, 512, 96)</span><br><span class="line">    kv_n_heads = 1 if multiquery else n_heads</span><br><span class="line">    k = rearrange(key, &#x27;b s (h d) -&gt; b h d s&#x27;, h=kv_n_heads)        # (1, 512, 768) -&gt; (1, 8, 96, 512) if not multiquery </span><br><span class="line">                                                                    # (1, 512, 96) -&gt; (1, 1, 96, 512)  if multiquery</span><br><span class="line">    v = rearrange(value, &#x27;b s (h d) -&gt; b h s d&#x27;, h=kv_n_heads)      # (1, 512, 768) -&gt; (1, 8, 512, 96) if not multiquery </span><br><span class="line">                                                                    # (1, 512, 96) -&gt; (1, 1, 512, 96)  if multiquery</span><br><span class="line"></span><br><span class="line">    attn_weight = q.matmul(k) * softmax_scale                       # (1, 8, 512, 512)</span><br><span class="line">    attn_weight = torch.softmax(attn_weight, dim=-1)                # (1, 8, 512, 512)</span><br><span class="line"></span><br><span class="line">    out = attn_weight.matmul(v)                                     # (1, 8, 512, 512) * (1, 1, 512, 96) = (1, 8, 512, 96)</span><br><span class="line">    out = rearrange(out, &#x27;b h s d -&gt; b s (h d)&#x27;)                    # (1, 512, 768)</span><br><span class="line"></span><br><span class="line">    return out, attn_weight, past_key_value</span><br></pre></td></tr></table></figure>
+<h3 id="位置编码">位置编码</h3>
+<p>这里列出常见大模型应用的RoPE和ALiBi位置编码，从选择方式上更倾向于RoPE，可以通过位置插值等方式进行更长的长度外推。</p>
+<h4 id="rope">RoPE</h4>
+<p>详细内容见<a href="https://zhuanlan.zhihu.com/p/645263524">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a>，这里给出关键性结论：</p>
+<ol type="1">
+<li><p>实现方式:</p>
+<p><span class="math display">\[
+\begin{equation}\begin{pmatrix}q_0 \\ q_1 \\ q_2 \\ q_3 \\ \vdots \\ q_{d-2} \\ q_{d-1} 
+\end{pmatrix}\otimes\begin{pmatrix}\cos m\theta_0 \\ \cos m\theta_0 \\ \cos m\theta_1 \\ \cos m\theta_1 \\ \vdots \\ \cos m\theta_{d/2-1} \\ \cos m\theta_{d/2-1} 
+\end{pmatrix} + \begin{pmatrix}-q_1 \\ q_0 \\ -q_3 \\ q_2 \\ \vdots \\ -q_{d-1} \\ q_{d-2} 
+\end{pmatrix}\otimes\begin{pmatrix}\sin m\theta_0 \\ \sin m\theta_0 \\ \sin m\theta_1 \\ \sin m\theta_1 \\ \vdots \\ \sin m\theta_{d/2-1} \\ \sin m\theta_{d/2-1} 
+\end{pmatrix}\end{equation}
+\]</span></p>
+<p>其中<span class="math inline">\(\otimes\)</span>表示逐位对应相乘。</p></li>
+<li><p>优点:通过绝对编码的方式融入相对位置信息</p></li>
+<li><p>长度外推:位置插值、<span class="math inline">\(\beta\)</span>进制编码可以无损进行长度外推</p></li>
+</ol>
+<h4 id="alibi">ALiBi</h4>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692672154734-46f24488-26b0-4fe7-b2f9-05752aae68a7.png" /></p>
+<p><strong>实现方式：</strong></p>
+<p>本文的做法是不添加position embedding，然后添加一个静态的不学习的bias，如上图：</p>
+<p><span class="math display">\[
+softmax(q_iK^T + m · [−(i − 1), ..., −2, −1, 0])
+\]</span></p>
+<p>在query和key做矩阵点乘的基础上，加上一个常数负值，比如距离当前位置前1位为-1， 前两位为-2，这些常数要乘上 权重 m，对于n头的注意力模型，m从<span class="math inline">\(2^{\frac{-8}{n}}\)</span>开始。</p>
+<p>例如，对于8头注意力模型:</p>
+<p>m使用序列:<span class="math inline">\(2^{-1},2^{-2},...,2^{-8}\)</span></p>
+<p>对于16头注意力模型:</p>
+<p>m使用序列:<span class="math inline">\(2^{-0.5},2^{-1},...,2^{-8}\)</span></p>
+<p><strong>优势:</strong></p>
+<ul>
+<li><p>减少了需要训练的Embedding，加快训练速度</p></li>
+<li><p>较原位置编码，具有更好的长度外推性</p></li>
+</ul>
+<h3 id="训练数据参数量">训练数据&amp;参数量</h3>
+<p>详细内容见<a href="https://zhuanlan.zhihu.com/p/636812912">LLM训练指南:Token及模型参数准备</a>，这里给出关键性结论，模型计算量增加时，训练数据和参数量应该保持同比增加:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Parameters</th>
+<th>FLOPs</th>
+<th>FLOPs (in Gopher unit)</th>
+<th>Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>400 Million</td>
+<td>1.92e+19</td>
+<td>1//29,968</td>
+<td>8.0 Billion</td>
+</tr>
+<tr class="even">
+<td>1 Billion</td>
+<td>1.21e+20</td>
+<td>1//4,761</td>
+<td>20.2 Billion</td>
+</tr>
+<tr class="odd">
+<td>10 Billion</td>
+<td>1.23e+22</td>
+<td>1//46</td>
+<td>205.1 Billion</td>
+</tr>
+<tr class="even">
+<td>67 Billion</td>
+<td>5.76e+23</td>
+<td>1</td>
+<td>1.5 Trillion</td>
+</tr>
+<tr class="odd">
+<td>175 Billion</td>
+<td>3.85e+24</td>
+<td>6.7</td>
+<td>3.7 Trillion</td>
+</tr>
+<tr class="even">
+<td>280 Billion</td>
+<td>9.90e+24</td>
+<td>17.2</td>
+<td>5.9 Trillion</td>
+</tr>
+<tr class="odd">
+<td>520 Billion</td>
+<td>3.43e+25</td>
+<td>59.5</td>
+<td>11.0 Trillion</td>
+</tr>
+<tr class="even">
+<td>1 Trillion</td>
+<td>1.27e+26</td>
+<td>221.3</td>
+<td>21.2 Trillion</td>
+</tr>
+<tr class="odd">
+<td>10 Trillion</td>
+<td>1.30e+28</td>
+<td>22515.9</td>
+<td>216.2 Trillion</td>
+</tr>
+</tbody>
+</table>
+<h1 id="总结">总结</h1>
+<p>经过对ChatGLM、LLAMA和Baichuan大型语言模型升级之路的深入探讨，以及对LLM结构选型的全面分析，我们可以得出以下结论：</p>
+<ol type="1">
+<li><p>大型预训练模型的升级过程主要体现在基础知识能力的提升和支持的序列长度变化。通过增加模型参数量和优化训练数据质量，模型可以更好地拟合各个领域的知识，并进一步提高模型性能；通过增加训练长度和调整位置编码外推性，支持更长的序列。</p></li>
+<li><p>在模型结构设计方面，选择合适的LLM结构对于实现高性能的大型预训练模型至关重要。通过引入合适的LayerNorm和激活函数，提高训练的稳定性；通过引入高效的算子，如Flash Attention和Multi Query Attention，可以在保持模型性能的同时显著提高计算效率；通过引入RoPE或ALiBi位置编码，提高模型的长度外推性。</p></li>
+<li><p>在构建和优化大型预训练模型时，不仅要关注模型的性能和计算效率，还应重视数据质量、去重、去污染、毒性与偏见控制以及个人信息保护等方面的问题。这将有助于使模型在实际应用中更具安全性、鲁棒性和可靠性。</p></li>
+</ol>
+<p>总之，本文通过深入剖析ChatGLM、LLAMA和Baichuan模型的升级路径，以及探讨大型语言模型结构选型，为大家提供了一个系统性的视角，梳理了大型预训练模型的关键要素。我们希望这些知识能够为大家在实际工程中构建更强大、灵活且高效的大型预训练模型提供有力的参考和指导。</p>
+<p>感兴趣的可以关注微信公众号联系哈～</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png" /></p>
+<h1 id="参考链接">参考链接:</h1>
+<ol type="1">
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzIwNDY1NTU5Mg==&amp;mid=2247486036&amp;idx=1&amp;sn=1885f2b1c35415c981f22c5ab0efeee5&amp;chksm=973d94d3a04a1dc56c4fe7353ae0f426d0c305398780faca1f749ae7e9fba24ee6af3f375877&amp;scene=21#wechat_redirect">大模型微调样本构造的trick</a></li>
+<li>https://github.com/facebookresearch/llama</li>
+<li>https://github.com/baichuan-inc/Baichuan-7B</li>
+<li>https://github.com/THUDM/ChatGLM2-6B/tree/main</li>
+<li>https://arxiv.org/pdf/2002.05202.pdf</li>
+<li>https://zhuanlan.zhihu.com/p/634236135</li>
+<li>https://zhuanlan.zhihu.com/p/626079753</li>
+</ol>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>ChatGPT</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>ChatGPT</tag>
+      </tags>
+  </entry>
 </search>

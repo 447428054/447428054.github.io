@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引言 在前面的文章中，我们深入探讨了RoPE（旋转位置编码）的理论推导过程、ChatGLM&#x2F;LLAMA的RoPE代码实现以及如何针对RoPE编码进行长度外推。此次，我们将聚焦于另一种编码方式——ALiBi，并对其进行长度外推的研究。本文将介绍两种ALiBi长度外推的方法：内插法和NTK插值法，并通过采用ALiBi作为位置编码的百川模型进行实验，在长文本测试基准LongBench上进行评估，以进一步">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ALiBi位置编码深度解析：代码实现、长度外推">
+<meta property="og:url" content="https://jmxgodlz.xyz/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="引言 在前面的文章中，我们深入探讨了RoPE（旋转位置编码）的理论推导过程、ChatGLM&#x2F;LLAMA的RoPE代码实现以及如何针对RoPE编码进行长度外推。此次，我们将聚焦于另一种编码方式——ALiBi，并对其进行长度外推的研究。本文将介绍两种ALiBi长度外推的方法：内插法和NTK插值法，并通过采用ALiBi作为位置编码的百川模型进行实验，在长文本测试基准LongBench上进行评估，以进一步">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vOhrAly1hi7yeo2zdtj31ca0k67a8.jpg">
+<meta property="article:published_time" content="2023-09-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-09-24T12:41:00.163Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vOhrAly1hi7yeo2zdtj31ca0k67a8.jpg">
+
+<link rel="canonical" href="https://jmxgodlz.xyz/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ALiBi位置编码深度解析：代码实现、长度外推 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ALiBi位置编码深度解析：代码实现、长度外推
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-09-19 00:00:00" itemprop="dateCreated datePublished" datetime="2023-09-19T00:00:00+08:00">2023-09-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-24 20:41:00" itemprop="dateModified" datetime="2023-09-24T20:41:00+08:00">2023-09-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言">引言</h1>
+<p>在前面的文章中，我们深入探讨了<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/645263524">RoPE（旋转位置编码）</a>的理论推导过程、ChatGLM/LLAMA的RoPE代码实现以及如何针对RoPE编码进行长度外推。此次，我们将聚焦于另一种编码方式——ALiBi，并对其进行长度外推的研究。本文将介绍两种ALiBi长度外推的方法：内插法和NTK插值法，并通过采用ALiBi作为位置编码的百川模型进行实验，在长文本测试基准LongBench上进行评估，以进一步揭示ALiBi在长文本生成任务中的表现及其优势。希望通过这篇文章，能对ALibi编码有更深入的理解，以及如何将它应用到实际的工程问题中。</p>
+<table>
+<thead>
+<tr class="header">
+<th>插值方法</th>
+<th>计算公式</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>内插法</td>
+<td><span class="math inline">\(a_{ij} = q_i k_j - (m_h/a) \|i - j\|\)</span></td>
+</tr>
+<tr class="even">
+<td>NTK-ALiBi插值法</td>
+<td><span class="math inline">\(b = a^{(1/(H-1))}\)</span>, <span class="math inline">\(m_h = \frac{b}{(2^{(8/H)} * b)^h}\)</span></td>
+</tr>
+</tbody>
+</table>
+<span id="more"></span>
+<h1 id="alibi">ALiBi</h1>
+<p><img src="https://tva1.sinaimg.cn/large/008vOhrAly1hi7yeo2zdtj31ca0k67a8.jpg" /></p>
+<p><strong>实现方式：</strong></p>
+<p>本文的做法是不添加position embedding，然后添加一个静态的不学习的bias，如上图：</p>
+<p><span class="math display">\[
+softmax(q_iK^T + m · [−(i − 1), ..., −2, −1, 0])
+\]</span></p>
+<p>在query和key做矩阵点乘的基础上，加上一个常数负值，比如距离当前位置前1位为-1， 前两位为-2，这些常数要乘上 权重 m，对于n头的注意力模型，m从2^{}开始。</p>
+<p>例如，对于8头注意力模型:</p>
+<p>m使用序列:<span class="math inline">\(2^{-1},2^{-2},...,2^{-8}\)</span></p>
+<p>对于16头注意力模型:</p>
+<p>m使用序列:<span class="math inline">\(2^{-0.5},2^{-1},...,2^{-8}\)</span></p>
+<p><strong>优势:</strong></p>
+<ul>
+<li><p>减少了需要训练的Embedding，加快训练速度</p></li>
+<li><p>较原位置编码，具有更好的长度外推性</p></li>
+</ul>
+<h1 id="内插值">内插值</h1>
+<ul>
+<li><p>内插值：假设推理长度为训练长度的a倍，简单对位置缩减a倍，实现位置内插值。等价于将偏置系数m缩小a倍，即将注意力视野扩大了a倍。</p></li>
+<li><p><span class="math inline">\(a_{ij} = q_i k_j - (m_h/a) |i - j|\)</span></p></li>
+<li><p>不足：内插值方法会将不同视野大小（Head）下的m值统一缩减，会损失视野分辨率。</p></li>
+</ul>
+<h1 id="ntk-alibi插值">NTK-ALiBi插值</h1>
+<ul>
+<li><p>频域：RoPE编码或ALiBi编码其共同点，都是将位置空间编码为频域空间，其中三角函数（RoPE）或偏置项（ALiBi）的系数，即为频域值。</p></li>
+<li><p>NTK-RoPE插值：NTK-RoPE位置编码的改进，在于保持分辨率的情况下（高频），实现了频域空间缩放（低频），从而实现位置空间的插值。</p></li>
+<li><p><strong>NTK-ALiBi</strong>插值：受NTK编码的启发，我们也可以对ALiBi的频域空间进行缩放，实现NTK-ALiBi的位置插值。改进后的偏置项系数为：</p></li>
+<li><p><span class="math inline">\(m_h = 1 / ({2^{(8h/H)} * a^{((h-1)/(H-1))}})\)</span></p></li>
+<li><p>其中h为当前注意力头数索引，H为注意力头数</p></li>
+<li><p>令<span class="math inline">\(b = a^{(1/(H-1))}\)</span>, 则有：<span class="math inline">\(m_h = \frac{b}{(2^{(8/H)} * b)^h}\)</span></p></li>
+<li><p>NTK改进后可以实现高频分辨率不变，低频视野放大的效果</p></li>
+<li><p>注：通常可以将缩放系数a设为：a = 推理长度 / 训练长度</p></li>
+<li><p>解释：NTK-ALiBi的公式看起来可能有些难懂，但核心思想与苏建林大佬所说的“<a href="https://link.zhihu.com/?target=https%3A//kexue.fm/archives/9675">高频外推，低频内插</a>”相同。下面从两种情况考虑：</p></li>
+<li><p>h=1时，视野较小，为高频情况。<span class="math inline">\(m_h = 1 / 2^{(8/H)}\)</span>，与原始偏置系数相同，相当于直接外推，因此是高频外推。高频视野分辨率不变。</p></li>
+<li><p>h=H时，视野较大，为低频情况。<span class="math inline">\(m_h = 1 / ({2^{8}*a})\)</span>，在原始偏置基础上缩减了a倍，等价于对位置进行了内插值，因此是低频内插。低频视野变大a倍。</p></li>
+</ul>
+<p>代码实现:</p>
+<p><strong>原ALibi:</strong></p>
+<ol type="1">
+<li>生成每一个对应head的权重</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">def _get_interleave(n):</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    生成每一个对应head的权重</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    def _get_interleave_power_of_2(n):</span><br><span class="line">        start = (2 ** (-2 ** -(math.log2(n) - 3)))</span><br><span class="line">        ratio = start</span><br><span class="line">        return [start * ratio ** i for i in range(n)]</span><br><span class="line"></span><br><span class="line">    if math.log2(n).is_integer():</span><br><span class="line">        return _get_interleave_power_of_2(n)</span><br><span class="line">    else:</span><br><span class="line">        closest_power_of_2 = 2 ** math.floor(math.log2(n))</span><br><span class="line">        return _get_interleave_power_of_2(closest_power_of_2) + \</span><br><span class="line">               _get_interleave(2 * closest_power_of_2)[0::2][:n - closest_power_of_2]</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">print(_get_interleave(8))</span><br><span class="line"></span><br><span class="line"># [0.5, 0.25, 0.125, 0.0625, 0.03125, 0.015625, 0.0078125, 0.00390625]</span><br><span class="line"></span><br><span class="line"># 对应2^-1到2^-8</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>MASK生成</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">def _gen_alibi_mask(n_head, max_pos):</span><br><span class="line">    slopes = torch.Tensor(_get_interleave(n_head)) # n_head</span><br><span class="line">    alibi = slopes.unsqueeze(1).unsqueeze(1) * torch.arange(max_pos).unsqueeze(0).unsqueeze(0).expand(</span><br><span class="line">        n_head, -1, -1) </span><br><span class="line">    # slopes.unsqueeze(1).unsqueeze(1):[n_head, 1, 1]</span><br><span class="line">    # torch.arange(max_pos).unsqueeze(0).unsqueeze(0).expand(</span><br><span class="line">        n_head, -1, -1): [n_head, 1, max_pos]</span><br><span class="line">    # 两者逐元素相乘,alibi:[n_head, 1, max_pos]</span><br><span class="line">    alibi = alibi.view(n_head, 1, max_pos)</span><br><span class="line">    alibi_mask = torch.triu(</span><br><span class="line">        _fill_with_neg_inf(torch.zeros([max_pos, max_pos])), 1</span><br><span class="line">    )</span><br><span class="line">    # _fill_with_neg_inf(torch.zeros([max_pos, max_pos]))：首先，创建一个形状为[max_pos, max_pos]的零矩阵，然后使用_fill_with_neg_inf函数将矩阵中的所有元素填充为负无穷。结果矩阵维度依然为[max_pos, max_pos]。</span><br><span class="line">    # torch.triu(_fill_with_neg_inf(torch.zeros([max_pos, max_pos])), 1): 使用torch.triu函数生成上三角矩阵，将传入矩阵的下半部分（对角线以下）置为0，只保留上半部分（对角线以上）的负无穷值。1参数表示从主对角线的下一行开始置为0。结果矩阵维度依然为[max_pos, max_pos]。</span><br><span class="line">    # 总结起来，alibi_mask是一个形状为[max_pos, max_pos]的上三角矩阵，对角线以上的元素（不含对角线）为负无穷，其他位置为0。</span><br><span class="line">    # alibi_mask起到将上三角矩阵mask的作用</span><br><span class="line">    alibi_mask = alibi_mask.unsqueeze(0) + alibi</span><br><span class="line">    # alibi_mask.unsqueeze(0) + alibi：将alibi_mask张量与alibi张量相加。由于它们的维度分别为(1, max_pos, max_pos)和(n_head, 1, max_pos)，所以这里的加法实际上是一种广播（broadcasting）操作。广播规则要求从最后一个维度开始逐个维度比较，如果有一个维度大小不同且其中一个为1，则将该维度扩展成较大的那个。在这个例子中，根据广播规则，alibi_mask将在第一个维度上扩展n_head次，alibi将在第二个维度上扩展max_pos次。因此，alibi_mask.unsqueeze(0) + alibi的结果张量维度为(n_head, max_pos, max_pos)。</span><br><span class="line">    return alibi_mask</span><br><span class="line"></span><br><span class="line">print(torch.arange(max_pos).unsqueeze(0).unsqueeze(0).expand(</span><br><span class="line">        n_head, -1, -1))</span><br><span class="line"># tensor([[[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]],</span><br><span class="line"></span><br><span class="line">        [[0, 1, 2, 3]]])</span><br><span class="line"></span><br><span class="line">print(_gen_alibi_mask(8, 4))</span><br><span class="line"># tensor([[[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.5000,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.5000, 1.0000,   -inf],</span><br><span class="line">         [0.0000, 0.5000, 1.0000, 1.5000]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.2500,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.2500, 0.5000,   -inf],</span><br><span class="line">         [0.0000, 0.2500, 0.5000, 0.7500]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.1250,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.1250, 0.2500,   -inf],</span><br><span class="line">         [0.0000, 0.1250, 0.2500, 0.3750]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0625,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0625, 0.1250,   -inf],</span><br><span class="line">         [0.0000, 0.0625, 0.1250, 0.1875]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0312,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0312, 0.0625,   -inf],</span><br><span class="line">         [0.0000, 0.0312, 0.0625, 0.0938]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0156,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0156, 0.0312,   -inf],</span><br><span class="line">         [0.0000, 0.0156, 0.0312, 0.0469]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0078,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0078, 0.0156,   -inf],</span><br><span class="line">         [0.0000, 0.0078, 0.0156, 0.0234]],</span><br><span class="line"></span><br><span class="line">        [[0.0000,   -inf,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0039,   -inf,   -inf],</span><br><span class="line">         [0.0000, 0.0039, 0.0078,   -inf],</span><br><span class="line">         [0.0000, 0.0039, 0.0078, 0.0117]]])</span><br></pre></td></tr></table></figure>
+<ol start="3" type="1">
+<li>添加至Attention计算结果中</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">class BaichuanAttention(torch.nn.Module):</span><br><span class="line"></span><br><span class="line">    def __init__(self, config: BaichuanConfig):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.config = config</span><br><span class="line">        self.hidden_size = config.hidden_size</span><br><span class="line">        self.num_heads = config.num_attention_heads</span><br><span class="line">        self.head_dim = self.hidden_size // self.num_heads</span><br><span class="line">        self.max_position_embeddings = config.model_max_length</span><br><span class="line"></span><br><span class="line">        if (self.head_dim * self.num_heads) != self.hidden_size:</span><br><span class="line">            raise ValueError(</span><br><span class="line">                f&quot;hidden_size &#123;self.hidden_size&#125; is not divisible by num_heads &#123;self.num_heads&#125;&quot;</span><br><span class="line">            )</span><br><span class="line">        self.W_pack = torch.nn.Linear(self.hidden_size, 3 * self.hidden_size, bias=False)</span><br><span class="line">        self.o_proj = torch.nn.Linear(self.num_heads * self.head_dim, self.hidden_size, bias=False)</span><br><span class="line"></span><br><span class="line">    def _shape(self, tensor: torch.Tensor, seq_len: int, bsz: int):</span><br><span class="line">        return tensor.view(bsz, seq_len, self.num_heads, self.head_dim).transpose(1, 2).contiguous()</span><br><span class="line"></span><br><span class="line">    def forward(</span><br><span class="line">            self,</span><br><span class="line">            hidden_states: torch.Tensor,</span><br><span class="line">            attention_mask: Optional[torch.Tensor] = None,</span><br><span class="line">            past_key_value: Optional[Tuple[torch.Tensor]] = None,</span><br><span class="line">            output_attentions: bool = False,</span><br><span class="line">            use_cache: bool = False,</span><br><span class="line">    ) -&gt; Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:</span><br><span class="line"></span><br><span class="line">        bsz, q_len, _ = hidden_states.size()</span><br><span class="line"></span><br><span class="line">        proj = self.W_pack(hidden_states)</span><br><span class="line">        proj = proj.unflatten(-1, (3, self.hidden_size)).unsqueeze(0).transpose(0, -2).squeeze(-2)</span><br><span class="line">        query_states = proj[0].view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)</span><br><span class="line">        key_states = proj[1].view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)</span><br><span class="line">        value_states = proj[2].view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)</span><br><span class="line"></span><br><span class="line">        kv_seq_len = key_states.shape[-2]</span><br><span class="line">        if past_key_value is not None:</span><br><span class="line">            kv_seq_len += past_key_value[0].shape[-2]</span><br><span class="line"></span><br><span class="line">        if past_key_value is not None:</span><br><span class="line">            # reuse k, v, self_attention</span><br><span class="line">            key_states = torch.cat([past_key_value[0], key_states], dim=2)</span><br><span class="line">            value_states = torch.cat([past_key_value[1], value_states], dim=2)</span><br><span class="line"></span><br><span class="line">        past_key_value = (key_states, value_states) if use_cache else None</span><br><span class="line"></span><br><span class="line">        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)</span><br><span class="line"></span><br><span class="line">        if attention_mask is not None:</span><br><span class="line">            if attn_weights.size(-2) == 1:</span><br><span class="line">                attention_mask = attention_mask[:, -1:, :]</span><br><span class="line">            attn_weights = attn_weights + attention_mask.unsqueeze(0)</span><br><span class="line">            attn_weights = torch.max(attn_weights, torch.tensor(torch.finfo(attn_weights.dtype).min))</span><br><span class="line"></span><br><span class="line">        attn_weights = torch.nn.functional.softmax(attn_weights, dim=-1)</span><br><span class="line">        attn_output = torch.matmul(attn_weights, value_states)</span><br><span class="line"></span><br><span class="line">        attn_output = attn_output.transpose(1, 2)</span><br><span class="line">        attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)</span><br><span class="line">        attn_output = self.o_proj(attn_output)</span><br><span class="line"></span><br><span class="line">        if not output_attentions:</span><br><span class="line">            attn_weights = None</span><br><span class="line"></span><br><span class="line">        return attn_output, attn_weights, past_key_value</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">if attention_mask is not None:</span><br><span class="line">    if attn_weights.size(-2) == 1:</span><br><span class="line">        attention_mask = attention_mask[:, -1:, :]</span><br><span class="line">    attn_weights = attn_weights + attention_mask.unsqueeze(0)</span><br><span class="line">    attn_weights = torch.max(attn_weights, torch.tensor(torch.finfo(attn_weights.dtype).min))</span><br><span class="line">    # 这一步是为了防止在进行softmax操作时数值溢出，将attention权重中小于最小值的部分都设为最小值。</span><br></pre></td></tr></table></figure>
+<p><strong>NTK-ALibi:</strong></p>
+<p>改动点:生成每一个对应head的权重</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">def build_dynamically_alibi_tensor(num_heads, max_pos) -&gt; torch.Tensor:</span><br><span class="line">    &quot;&quot;&quot;Psuedo code for Dynamic NTK-ALiBi.&quot;&quot;&quot;</span><br><span class="line"></span><br><span class="line">    # dynamic ntk factor according to actual sequence length</span><br><span class="line">    a0 = 1.0</span><br><span class="line">    train_seq_len = 4096</span><br><span class="line">    a = a0 * torch.tensor(max_pos) / train_seq_len  # [batch, 1]</span><br><span class="line">    a = a.masked_fill(a &lt; 1.0, 1.0)  # dynamic step 1: dynamic ntk scaling factor</span><br><span class="line"></span><br><span class="line">    scale = a ** (1.0 / (num_heads-1))  # dynamic step 2: coefficient b, for computation convenience</span><br><span class="line">    closest_power_of_2 = 2 ** math.floor(math.log2(num_heads))</span><br><span class="line">    base = torch.tensor(</span><br><span class="line">        2 ** (-(2 ** -(math.log2(closest_power_of_2) - 3))), dtype=torch.float32</span><br><span class="line">    )</span><br><span class="line">    base = base / scale  # dynamic step 3: divide b to alibi base</span><br><span class="line">    powers = torch.arange(1, 1 + closest_power_of_2, dtype=torch.int32)</span><br><span class="line">    slopes = torch.pow(base, powers)</span><br><span class="line">    slopes = slopes * scale  # dynamic step 4: fix alibi bias m_h by multiplying b</span><br><span class="line"></span><br><span class="line">    if closest_power_of_2 != num_heads:  # todo: fix ntk when num_heads is not power of 2</span><br><span class="line">        extra_base = torch.tensor(</span><br><span class="line">            2 ** (-(2 ** -(math.log2(2 * closest_power_of_2) - 3))), dtype=torch.float32</span><br><span class="line">        )</span><br><span class="line">        num_remaining_heads = min(closest_power_of_2, num_heads - closest_power_of_2)</span><br><span class="line">        extra_powers = torch.arange(1, 1 + 2 * num_remaining_heads, 2, dtype=torch.int32)</span><br><span class="line">        slopes = torch.cat([slopes, torch.pow(extra_base, extra_powers)], dim=0)</span><br><span class="line">    return slopes</span><br><span class="line"></span><br><span class="line">print(build_dynamically_alibi_tensor(8, 4096))</span><br><span class="line"></span><br><span class="line"># tensor([0.5000, 0.2500, 0.1250, 0.0625, 0.0312, 0.0156, 0.0078, 0.0039])</span><br><span class="line"></span><br><span class="line">print(build_dynamically_alibi_tensor(8, 32768))</span><br><span class="line"></span><br><span class="line"># tensor([5.0000e-01, 1.8575e-01, 6.9006e-02, 2.5635e-02, 9.5235e-03, 3.5380e-03,</span><br><span class="line">        1.3144e-03, 4.8828e-04])</span><br></pre></td></tr></table></figure>
+<p>当推理长度为32K, n_head=8时:</p>
+<p><span class="math inline">\(a = 32768 / 4096 = 8\)</span></p>
+<p><span class="math inline">\(b = a^{(1/(H-1))}=8^{1/7}=1.3459001926323562\)</span></p>
+<p><span class="math inline">\(m_h = \frac{b}{(2^{(8/H)} * b)^h}\)</span></p>
+<p><span class="math inline">\(m_1=\frac{b}{2*b}=0.5,m_2=\frac{b}{4b^2}=0.1857,m_3=\frac{b}{8*b^3}=0.069,m_4=\frac{b}{16*b^4}=0.0256\)</span></p>
+<p><span class="math inline">\(m_5=\frac{b}{32*b^5}=0.0095,m_6=\frac{b}{64*b^6}=0.00353,m_7=\frac{b}{128*b^7}=0.00131,m_8=\frac{b}{256*b^8}=0.000488\)</span></p>
+<h1 id="长文本评测数据集">长文本评测数据集</h1>
+<p>上下文窗口大小是影响模型解决更广泛问题的重要维度之一。近期包括 ChatGLM2 等在内的多个模型都在努力尝试在保证性能的同时，将模型上下文长度尽可能地拓展，达到千/万 tokens 级别。</p>
+<p>然而，现有的模型评测集长度多数比较短，仅在百/千 tokens 量级，并不能很好地评测模型的长文本理解能力，尤其是中文的长文本理解能力。</p>
+<p>为了解决这一问题，GLM 技术团队基于内部长期的探索，开发了专门针对模型长文本理解能力的评测数据集 LongBench。</p>
+<p>该数据集包含了 13 个英文任务、5个中文任务和 2 个代码任务。多数任务的平均长度在5k-15k之间，共包含约4500条测试数据。</p>
+<p>从主要任务分类上，LongBench包含单文档QA、多文档QA、摘要、Few-shot学习、代码补全和合成任务等六大类任务 20 个不同子任务。</p>
+<p>具体来说，LongBench 有以下特点：</p>
+<p><strong>双语</strong>：LongBench 能够针对中、英双语的长文本进行更全面的评估。</p>
+<p><strong>多任务</strong>：LongBench由六大类、二十个不同的任务组成，覆盖了单文档QA、多文档QA、摘要、Few-shot学习、代码补全和合成任务等关键的长文本应用场景。</p>
+<p><strong>LongBench任务统计如下</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">任务</th>
+<th style="text-align: center;">任务类型</th>
+<th style="text-align: center;">评价指标</th>
+<th style="text-align: center;">平均长度</th>
+<th style="text-align: center;">语言</th>
+<th style="text-align: center;">Sample数量</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">HotpotQA</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">9,151</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2WikiMultihopQA</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">4,887</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MuSiQue</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">11,214</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">DuReader</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">15,768</td>
+<td style="text-align: center;">中文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MultiFieldQA-en</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">4,559</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">MultiFieldQA-zh</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">6,701</td>
+<td style="text-align: center;">中文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NarrativeQA</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">18,409</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Qasper</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">3,619</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">GovReport</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">8,734</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">QMSum</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">10,614</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">MultiNews</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">2,113</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VCSUM</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">15,380</td>
+<td style="text-align: center;">中文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TriviaQA</td>
+<td style="text-align: center;">Few shot</td>
+<td style="text-align: center;">F1</td>
+<td style="text-align: center;">8,209</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SAMSum</td>
+<td style="text-align: center;">Few shot</td>
+<td style="text-align: center;">Rouge-L</td>
+<td style="text-align: center;">6,258</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TREC</td>
+<td style="text-align: center;">Few shot</td>
+<td style="text-align: center;">Accuracy</td>
+<td style="text-align: center;">5,177</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LSHT</td>
+<td style="text-align: center;">Few shot</td>
+<td style="text-align: center;">Accuracy</td>
+<td style="text-align: center;">22,337</td>
+<td style="text-align: center;">中文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PassageRetrieval-en</td>
+<td style="text-align: center;">合成任务</td>
+<td style="text-align: center;">Accuracy</td>
+<td style="text-align: center;">9,289</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PassageCount</td>
+<td style="text-align: center;">合成任务</td>
+<td style="text-align: center;">Accuracy</td>
+<td style="text-align: center;">11,141</td>
+<td style="text-align: center;">英文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PassageRetrieval-zh</td>
+<td style="text-align: center;">合成任务</td>
+<td style="text-align: center;">Accuracy</td>
+<td style="text-align: center;">6,745</td>
+<td style="text-align: center;">中文</td>
+<td style="text-align: center;">200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LCC</td>
+<td style="text-align: center;">代码</td>
+<td style="text-align: center;">Edit Sim</td>
+<td style="text-align: center;">1,235</td>
+<td style="text-align: center;">Python/C#/Java</td>
+<td style="text-align: center;">500</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RepoBench-P</td>
+<td style="text-align: center;">代码</td>
+<td style="text-align: center;">Edit Sim</td>
+<td style="text-align: center;">4,206</td>
+<td style="text-align: center;">Python/Java</td>
+<td style="text-align: center;">500</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注：为了避免不同Tokenizer统计的差距，我们使用单词数（Python的split函数）来统计英文数据集和代码数据集的平均长度，使用汉字数来统计中文数据集的平均长度。</p>
+</blockquote>
+<p>笔者在LongBench的中文数据集上通过A100-80G进行测试，实验结果如下表所示:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">模型名称</th>
+<th style="text-align: center;">任务类型</th>
+<th style="text-align: center;">任务名称</th>
+<th>指标结果</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Baichuan13B</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">multifieldqa_zh</td>
+<td>26.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Baichuan13B-8K-NTK</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">multifieldqa_zh</td>
+<td><strong>36.81</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Baichuan13B-16K-NTK</td>
+<td style="text-align: center;">单文档QA</td>
+<td style="text-align: center;">multifieldqa_zh</td>
+<td>-(OOM)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Baichuan13B</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">dureader</td>
+<td>16.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Baichuan13B-8K-NTK</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">dureader</td>
+<td><strong>19.73</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Baichuan13B-16K-NTK</td>
+<td style="text-align: center;">多文档QA</td>
+<td style="text-align: center;">dureader</td>
+<td>-(OOM)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Baichuan13B</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">VCSUM</td>
+<td>13.29</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Baichuan13B-8K-NTK</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">VCSUM</td>
+<td><strong>13.3</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Baichuan13B-16K-NTK</td>
+<td style="text-align: center;">摘要</td>
+<td style="text-align: center;">VCSUM</td>
+<td>-(OOM)</td>
+</tr>
+</tbody>
+</table>
+<p>实验结果表明，在未经微调的情况下，使用NTK-ALiBi位置编码，模型外推长度的表现取得了明显的提升，本次实验仅外推至8K长度，16K的情况下使用单卡A100推理已经发生OOM。multifieldqa_zh数据集平均长度在6K左右，在8K的外推情况下取得了显著的提升，dureader与VCSUM平均长度在16K，在8K的外推情况下提升幅度较小。</p>
+<h1 id="参考链接">参考链接</h1>
+<p>https://zhuanlan.zhihu.com/p/647628295</p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/" rel="bookmark">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/22/2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推/" rel="bookmark">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://jmxgodlz.xyz/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="ALiBi位置编码深度解析：代码实现、长度外推">https://jmxgodlz.xyz/2023/09/19/2023-09-19-ALiBi位置编码深度解析：代码实现、长度外推/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/09/19/2023-09-19-%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%A9%E5%B1%95%E6%8E%A2%E7%B4%A2%EF%BC%9AFOT%E4%B8%8EMT%E7%9A%84%E5%A4%96%E9%83%A8%E5%AD%98%E5%82%A8%E7%AD%96%E7%95%A5/" rel="prev" title="上下文扩展探索：FOT与MT的外部存储策略">
+      <i class="fa fa-chevron-left"></i> 上下文扩展探索：FOT与MT的外部存储策略
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#alibi"><span class="nav-number">2.</span> <span class="nav-text">ALiBi</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E6%8F%92%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text">内插值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ntk-alibi%E6%8F%92%E5%80%BC"><span class="nav-number">4.</span> <span class="nav-text">NTK-ALiBi插值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%BF%E6%96%87%E6%9C%AC%E8%AF%84%E6%B5%8B%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">5.</span> <span class="nav-text">长文本评测数据集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">6.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="2023&#x2F;09&#x2F;19&#x2F;2023-09-19-ALiBi位置编码深度解析：代码实现、长度外推&#x2F;">ALiBi位置编码深度解析：代码实现、长度外推</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/09/19/2023-09-19-%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%A9%E5%B1%95%E6%8E%A2%E7%B4%A2%EF%BC%9AFOT%E4%B8%8EMT%E7%9A%84%E5%A4%96%E9%83%A8%E5%AD%98%E5%82%A8%E7%AD%96%E7%95%A5/" title="2023&#x2F;09&#x2F;19&#x2F;2023-09-19-上下文扩展探索：FOT与MT的外部存储策略&#x2F;">上下文扩展探索：FOT与MT的外部存储策略</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/08/23/2023-08-23-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%8D%87%E7%BA%A7%E4%B8%8E%E8%AE%BE%E8%AE%A1%E4%B9%8B%E9%81%93%EF%BC%9AChatGLM%E3%80%81LLAMA%E3%80%81Baichuan%E5%8F%8ALLM%E7%BB%93%E6%9E%84%E8%A7%A3%E6%9E%90/" title="2023&#x2F;08&#x2F;23&#x2F;2023-08-23-大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析&#x2F;">大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/22/2023-07-22-RoPE%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E7%90%86%E8%AE%BA%E6%8E%A8%E5%AF%BC%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="2023&#x2F;07&#x2F;22&#x2F;2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推&#x2F;">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/07/01/2023-07-01-LLM%E8%AE%AD%E7%BB%83%E6%8C%87%E5%8D%97(%E4%BA%8C):%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E3%80%81%E8%AE%A1%E7%AE%97%E9%87%8F%E3%80%81%E6%98%BE%E5%AD%98%E3%80%81%E8%AE%A1%E7%AE%97%E6%97%B6%E9%97%B4%E8%AE%A1%E7%AE%97/" title="2023&#x2F;07&#x2F;01&#x2F;2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算&#x2F;">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">264k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:01</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

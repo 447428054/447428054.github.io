@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="前言今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM">
+  <meta name="description" content="前言 今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LL">
 <meta property="og:type" content="article">
 <meta property="og:title" content="复刻ChatGPT语言模型系列-（二）参数高效微调">
 <meta property="og:url" content="https://jmxgodlz.xyz/2023/10/26/2023-10-26-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%BA%8C%EF%BC%89%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83/index.html">
 <meta property="og:site_name" content="JMX Blog">
-<meta property="og:description" content="前言今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LLM">
+<meta property="og:description" content="前言 今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：  复刻ChatGPT语言模型系列-（一）基座模型选取 复刻ChatGPT语言模型系列-（二）参数高效微调 复刻ChatGPT语言模型系列-（三）指令学习微调 复刻ChatGPT语言模型系列-（四）文本生成解码 复刻ChatGPT语言模型系列-（五）强化学习RLHF 复刻ChatGPT语言模型系列-（六）LL">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008vOhrAly1hjb9571g8jj30u00wwjtb.jpg">
 <meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/kZXlvA.png">
@@ -56,7 +56,7 @@
 <meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698197086391-6b08ea04-49c9-43c9-b271-2084456d5225.png">
 <meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698196596717-9cbafbb3-bec2-46db-92b3-5af7bbeccb30.png">
 <meta property="article:published_time" content="2023-10-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-11-18T03:43:29.894Z">
+<meta property="article:modified_time" content="2023-12-31T12:25:18.484Z">
 <meta property="article:author" content="JMXGODLZZ">
 <meta property="article:tag" content="NLP">
 <meta property="article:tag" content="ChatGPT">
@@ -264,7 +264,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-11-18 11:43:29" itemprop="dateModified" datetime="2023-11-18T11:43:29+08:00">2023-11-18</time>
+                <time title="修改时间：2023-12-31 20:25:18" itemprop="dateModified" datetime="2023-12-31T20:25:18+08:00">2023-12-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -330,7 +330,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：</p>
+        <h1 id="前言">前言</h1>
+<p>今天开始我将会推出一系列关于复刻ChatGPT语言模型的博文。本系列将包括以下内容：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/627832567">复刻ChatGPT语言模型系列-（一）基座模型选取</a></li>
 <li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/663412945">复刻ChatGPT语言模型系列-（二）参数高效微调</a></li>
@@ -343,12 +344,15 @@
 <p>首先本文将深入介绍LoRA的工作原理，并讨论其自适应调整矩阵秩的进阶版本——AdaLoRA，以及进一步节省显存的QLoRA方法。接着，我们将探讨P-tuning的原理，并详细解读P-tuning V1和V2的实现代码。最后，我们将以LLAMA-Adapter为例，详细讲解Adapter的工作机制。</p>
 <p>最后，我们将介绍统一这三种方法的框架，分析三种方法起效果的核心部件，并介绍在此基础上提出优化的MAM Adapter方法。希望这些内容能帮助你深入理解和掌握参数微调的技巧，并在实际工作中有效提升模型的性能。</p>
 <p>文章整体结构如下图所示:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vOhrAly1hjb9571g8jj30u00wwjtb.jpg" alt=""></p>
-<p>&lt;— !more —&gt;</p>
-<h1 id="LoRA"><a href="#LoRA" class="headerlink" title="LoRA"></a>LoRA</h1><h2 id="LoRA-1"><a href="#LoRA-1" class="headerlink" title="LoRA"></a>LoRA</h2><p>论文标题:LoRA: Low-Rank Adaptation of Large Language Models</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vOhrAly1hjb9571g8jj30u00wwjtb.jpg" /></p>
+<span id="more"></span>
+<h1 id="lora">LoRA</h1>
+<h2 id="lora-1">LoRA</h2>
+<p>论文标题:LoRA: Low-Rank Adaptation of Large Language Models</p>
 <p>论文链接:<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2106.09685.pdf">https://arxiv.org/pdf/2106.09685.pdf</a></p>
-<h3 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h3><p>随着自然范式的发展，自然语言处理向着大模型的方向发展，尤其是chatGPT出现之后，175B的参数量，训练起来非常昂贵。微软提出了低秩自适应（LoRA），它冻结了预训练的模型权重，将可训练的秩分解矩阵注入到Transform架构的每一层，极大地减少了下游任务的可训练参数的数量</p>
-<p>主要思想：<strong>LoRA的主要思想很简单，冻结预训练模型的参数，并选择用A和B矩阵来代替，在微调下游任务的时候，只更新A和B</strong>，该方法的核心思想就是通过低秩分解来模拟参数的改变量，从而以极小的参数量来实现大模型的间接训练。 </p>
+<h3 id="出发点">出发点</h3>
+<p>随着自然范式的发展，自然语言处理向着大模型的方向发展，尤其是chatGPT出现之后，175B的参数量，训练起来非常昂贵。微软提出了低秩自适应（LoRA），它冻结了预训练的模型权重，将可训练的秩分解矩阵注入到Transform架构的每一层，极大地减少了下游任务的可训练参数的数量</p>
+<p>主要思想：<strong>LoRA的主要思想很简单，冻结预训练模型的参数，并选择用A和B矩阵来代替，在微调下游任务的时候，只更新A和B</strong>，该方法的核心思想就是通过低秩分解来模拟参数的改变量，从而以极小的参数量来实现大模型的间接训练。</p>
 <p>LoRA方法有以下几个优点</p>
 <ul>
 <li>预训练模型可以共享，针对下游任务可以构建许多不同任务的LoRA模块。通过冻结预训练模型参数享，并通过替换上图中的矩阵A和B来高效地切换任务，从而显著降低存储需求和任务切换开销。</li>
@@ -356,199 +360,244 @@
 <li>线性设计允许我们在部署时将可训练矩阵与冻结权重合并，和完全微调的模型相比，不会引入推理延迟</li>
 <li>LoRA与许多先前的方法正交，并且可以与其中的许多方法组合，例如prefix-tuning</li>
 </ul>
-<h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/kZXlvA.png" alt="kZXlvA"></p>
-<script type="math/tex; mode=display">
-h=W_0 x+\Delta W x=W_0 x+B A x</script><p>在训练过程中$W_0$被冻结，不接收梯度更新，而$A$和$B$包含可训练参数。</p>
-<p>在初始化的时候，我们对$A$使用随机高斯初始化，对$B$使用零初始化。</p>
-<p>因此，在训练开始时为0，然后我们可以通过$\frac{\alpha}{r}$对$\Delta W$进行缩放，r是秩 在推理时，我们通过上图可知，将左右两部分进行相加即可，不会添加额外的计算资源</p>
-<h3 id="代码解读"><a href="#代码解读" class="headerlink" title="代码解读"></a>代码解读</h3><p>参考链接：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/515954218">https://zhuanlan.zhihu.com/p/515954218</a></p>
-<p>LoRA类的定义如下，包含了LoRA训练时涉及的主要参数$r,\alpha,dropout$：</p>
+<h3 id="实现方法">实现方法</h3>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/kZXlvA.png" alt="kZXlvA" /><figcaption aria-hidden="true">kZXlvA</figcaption>
+</figure>
+<p><span class="math display">\[
+h=W_0 x+\Delta W x=W_0 x+B A x
+\]</span></p>
+<p>在训练过程中<span class="math inline">\(W_0\)</span>被冻结，不接收梯度更新，而<span class="math inline">\(A\)</span>和<span class="math inline">\(B\)</span>包含可训练参数。</p>
+<p>在初始化的时候，我们对<span class="math inline">\(A\)</span>使用随机高斯初始化，对<span class="math inline">\(B\)</span>使用零初始化。</p>
+<p>因此，在训练开始时为0，然后我们可以通过<span class="math inline">\(\frac{\alpha}{r}\)</span>对<span class="math inline">\(\Delta W\)</span>进行缩放，r是秩 在推理时，我们通过上图可知，将左右两部分进行相加即可，不会添加额外的计算资源</p>
+<h3 id="代码解读">代码解读</h3>
+<p>参考链接：https://zhuanlan.zhihu.com/p/515954218</p>
+<p>LoRA类的定义如下，包含了LoRA训练时涉及的主要参数<span class="math inline">\(r,\alpha,dropout\)</span>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">class LoRALayer():</span><br><span class="line">    def __init__(</span><br><span class="line">        self, </span><br><span class="line">        r: int, </span><br><span class="line">        lora_alpha: int, </span><br><span class="line">        lora_dropout: float,</span><br><span class="line">        merge_weights: bool,</span><br><span class="line">    ):</span><br><span class="line"></span><br><span class="line">        self.r = r</span><br><span class="line">        self.lora_alpha = lora_alpha</span><br><span class="line">        # Optional dropout</span><br><span class="line">        if lora_dropout &gt; 0.:</span><br><span class="line">            self.lora_dropout = nn.Dropout(p=lora_dropout)</span><br><span class="line">        else:</span><br><span class="line">            self.lora_dropout = lambda x: x</span><br><span class="line">        # Mark the weight as unmerged</span><br><span class="line">        self.merged = False</span><br><span class="line">        self.merge_weights = merge_weights</span><br></pre></td></tr></table></figure>
 <p>以下内容以一个<strong>Embedding层代码</strong>为例，展示如何通过添加低秩矩阵来实施LoRA训练。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">class Embedding(nn.Embedding, LoRALayer):</span><br><span class="line">    # LoRA implemented in a dense layer</span><br><span class="line">    def __init__(</span><br><span class="line">        self,</span><br><span class="line">        num_embeddings: int,</span><br><span class="line">        embedding_dim: int,</span><br><span class="line">        r: int = 0,</span><br><span class="line">        lora_alpha: int = 1,</span><br><span class="line">        merge_weights: bool = True,</span><br><span class="line">        **kwargs</span><br><span class="line">    ):</span><br><span class="line">        nn.Embedding.__init__(self, num_embeddings, embedding_dim, **kwargs)</span><br><span class="line">        LoRALayer.__init__(self, r=r, lora_alpha=lora_alpha, lora_dropout=0,</span><br><span class="line">                           merge_weights=merge_weights)</span><br><span class="line"></span><br><span class="line">        # Lora 部分</span><br><span class="line">        # Actual trainable parameters</span><br><span class="line">        if r &gt; 0:</span><br><span class="line">            self.lora_A = nn.Parameter(self.weight.new_zeros((r, num_embeddings)))</span><br><span class="line">            self.lora_B = nn.Parameter(self.weight.new_zeros((embedding_dim, r)))</span><br><span class="line">            #  scale ∆W x by α/r </span><br><span class="line">            self.scaling = self.lora_alpha / self.r</span><br><span class="line">            # Freezing the pre-trained weight matrix</span><br><span class="line">            #冻结pre-trained 参数</span><br><span class="line">            self.weight.requires_grad = False</span><br><span class="line">        self.reset_parameters()</span><br><span class="line"></span><br><span class="line">    def reset_parameters(self):</span><br><span class="line">        nn.Embedding.reset_parameters(self)</span><br><span class="line">        if hasattr(self, &#x27;lora_A&#x27;):</span><br><span class="line">          #初始化</span><br><span class="line">          # We use a random Gaussian initialization for A and zero for B, so ∆W = BA is zero at the beginning of training.</span><br><span class="line">            # initialize A the same way as the default for nn.Linear and B to zero</span><br><span class="line">            nn.init.zeros_(self.lora_A)</span><br><span class="line">            nn.init.normal_(self.lora_B)</span><br><span class="line"></span><br><span class="line">    def train(self, mode: bool = True):</span><br><span class="line">        nn.Embedding.train(self, mode)</span><br><span class="line">        if self.merge_weights and self.merged:</span><br><span class="line">            # self.merged = Ture</span><br><span class="line">            # Make sure that the weights are not merged</span><br><span class="line">            # weight=weight-B * A * scale 需要剪掉merge的部分</span><br><span class="line">            if self.r &gt; 0:</span><br><span class="line">                self.weight.data -= (self.lora_B @ self.lora_A).T * self.scaling</span><br><span class="line">            self.merged = False</span><br><span class="line"></span><br><span class="line">    def eval(self):</span><br><span class="line">        nn.Linear.eval(self)</span><br><span class="line">        if self.merge_weights and not self.merged:</span><br><span class="line">            # Merge the weights and mark it</span><br><span class="line">            # self.merged= False</span><br><span class="line">            if self.r &gt; 0:</span><br><span class="line">                self.weight.data += (self.lora_B @ self.lora_A) * self.scaling</span><br><span class="line">            self.merged = True</span><br><span class="line"></span><br><span class="line">    def forward(self, x: torch.Tensor):</span><br><span class="line">        if self.r &gt; 0 and not self.merged:</span><br><span class="line">           # self.merged= False</span><br><span class="line">            result = nn.Embedding.forward(self, x)</span><br><span class="line">            if self.r &gt; 0:</span><br><span class="line">                after_A = F.embedding(</span><br><span class="line">                    x, self.lora_A.T, self.padding_idx, self.max_norm,</span><br><span class="line">                    self.norm_type, self.scale_grad_by_freq, self.sparse</span><br><span class="line">                )  # W0x + BAx</span><br><span class="line">                result += (after_A @ self.lora_B.T) * self.scaling</span><br><span class="line">            return result</span><br><span class="line">        else:</span><br><span class="line">            return nn.Embedding.forward(self, x)</span><br></pre></td></tr></table></figure>
-<ol>
-<li><p>在这段代码中，首先定义了一个名为Embedding的类，该类继承自nn.Embedding和LoRALayer两个父类，即该类同时具备nn.Embedding和LoRALayer的特性。</p>
-</li>
-<li><p>在类的初始化函数<strong>init</strong>中，首先调用了nn.Embedding和LoRALayer的初始化函数，以设置必要的参数。接着，针对LoRA部分，如果给定的rank r大于0，就会创建两个可训练的参数lora_A和lora_B。其中，lora_A是一个r行num_embeddings列的零矩阵，lora_B是一个embedding_dim行r列的零矩阵。此外，还设置了一个名为scaling的缩放因子，其值为lora_alpha除以r，用于在后续训练中调整模型权重。最后，如果r大于0，则会冻结pre-trained参数。</p>
-</li>
-<li><p>在reset_parameters函数中，对lora_A和lora_B进行初始化。lora_A使用nn.init.zeros_进行初始化为0，lora_B使用nn.init.normal_进行正态分布的初始化。</p>
-</li>
-<li><p>在train和eval函数中，根据是否需要将权重合并进行不同的操作。在train模式下，如果需要合并权重，且权重已经合并，就会将原始权重减去B乘以A乘以scaling的结果。相反，在eval模式下，如果需要合并权重，且权重还未合并，就会将原始权重加上B乘以A乘以scaling的结果。这两种操作保证了在不同模式下，权重的正确性。</p>
-</li>
-<li><p>在forward函数中，首先检查r是否大于0且权重未合并，如果满足条件，则先进行正常的Embedding操作，然后再加上处理过的lora_A和lora_B的结果。否则，直接进行正常的Embedding操作。</p>
-</li>
+<ol type="1">
+<li><p>在这段代码中，首先定义了一个名为Embedding的类，该类继承自nn.Embedding和LoRALayer两个父类，即该类同时具备nn.Embedding和LoRALayer的特性。</p></li>
+<li><p>在类的初始化函数__init__中，首先调用了nn.Embedding和LoRALayer的初始化函数，以设置必要的参数。接着，针对LoRA部分，如果给定的rank r大于0，就会创建两个可训练的参数lora_A和lora_B。其中，lora_A是一个r行num_embeddings列的零矩阵，lora_B是一个embedding_dim行r列的零矩阵。此外，还设置了一个名为scaling的缩放因子，其值为lora_alpha除以r，用于在后续训练中调整模型权重。最后，如果r大于0，则会冻结pre-trained参数。</p></li>
+<li><p>在reset_parameters函数中，对lora_A和lora_B进行初始化。lora_A使用nn.init.zeros_进行初始化为0，lora_B使用nn.init.normal_进行正态分布的初始化。</p></li>
+<li><p>在train和eval函数中，根据是否需要将权重合并进行不同的操作。在train模式下，如果需要合并权重，且权重已经合并，就会将原始权重减去B乘以A乘以scaling的结果。相反，在eval模式下，如果需要合并权重，且权重还未合并，就会将原始权重加上B乘以A乘以scaling的结果。这两种操作保证了在不同模式下，权重的正确性。</p></li>
+<li><p>在forward函数中，首先检查r是否大于0且权重未合并，如果满足条件，则先进行正常的Embedding操作，然后再加上处理过的lora_A和lora_B的结果。否则，直接进行正常的Embedding操作。</p></li>
 </ol>
-<h3 id="LoRA-VS-SFT"><a href="#LoRA-VS-SFT" class="headerlink" title="LoRA VS SFT"></a>LoRA VS SFT</h3><p>论文标题：A Comparative Study between Full-Parameter and LoRA-based Fine-Tuning on Chinese Instruction Data for Instruction Following Large Language Model</p>
+<h3 id="lora-vs-sft">LoRA VS SFT</h3>
+<p>论文标题：A Comparative Study between Full-Parameter and LoRA-based Fine-Tuning on Chinese Instruction Data for Instruction Following Large Language Model</p>
 <p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2304.08109.pdf">https://arxiv.org/pdf/2304.08109.pdf</a></p>
 <p>该文章主要进行了:<strong>Lora微调、全量微调和先全量微调再lora微调</strong>的效果对比。</p>
-<ol>
-<li><p>如果算力成本有，直接上大点基座模型，直接做FT 效果明显</p>
-</li>
-<li><p>如果算力不足，可以在别人微调好的FT模型上使用少量 instructions datasets lora微调，训练时间和成本都是最低的</p>
-</li>
+<ol type="1">
+<li><p>如果算力成本有，直接上大点基座模型，直接做FT 效果明显</p></li>
+<li><p>如果算力不足，可以在别人微调好的FT模型上使用少量 instructions datasets lora微调，训练时间和成本都是最低的</p></li>
 </ol>
 <p><strong>实验结论：</strong></p>
-<ol>
-<li><p>基础模型对LoRA训练影响较大</p>
-</li>
-<li><p>增加训练数据规模能够显著提高模型表现</p>
-</li>
-<li><p>LoRA模型随模型参数量增加，表现更好</p>
-</li>
+<ol type="1">
+<li><p>基础模型对LoRA训练影响较大</p></li>
+<li><p>增加训练数据规模能够显著提高模型表现</p></li>
+<li><p>LoRA模型随模型参数量增加，表现更好</p></li>
 </ol>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/8gPDi2.png" alt="8gPDi2"></p>
-<h2 id="AdaLoRA"><a href="#AdaLoRA" class="headerlink" title="AdaLoRA"></a>AdaLoRA</h2><p>论文标题：ADAPTIVE BUDGET ALLOCATION FOR PARAMETER-<br>EFFICIENT FINE-TUNING</p>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/8gPDi2.png" alt="8gPDi2" /><figcaption aria-hidden="true">8gPDi2</figcaption>
+</figure>
+<h2 id="adalora">AdaLoRA</h2>
+<p>论文标题：ADAPTIVE BUDGET ALLOCATION FOR PARAMETER- EFFICIENT FINE-TUNING</p>
 <p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2303.10512.pdf">https://arxiv.org/pdf/2303.10512.pdf</a></p>
 <p>参考链接:</p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/657130029">https://zhuanlan.zhihu.com/p/657130029</a></p>
-<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/xA0XGB.png" alt="xA0XGB"></p>
+<p>https://zhuanlan.zhihu.com/p/657130029</p>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/xA0XGB.png" alt="xA0XGB" /><figcaption aria-hidden="true">xA0XGB</figcaption>
+</figure>
 <p>如上图所示，<strong>将可微调参数全部放在FFN的效果</strong>要好于放在attention矩阵中的效果(图a),同时<strong>微调高层参数</strong>的效果会比微调底层参数的效果更好。<strong>分配到更多可微调参数到重要的参数矩阵</strong>中可以提高模型的效果，同时如果将更多可微调参数分配到不重要的参数矩阵中也可能降低模型的效果。</p>
 <p><strong>核心Idea</strong>：AdaLoRA adjusts the <strong>rank</strong> of incremental matrices to control their budget.</p>
 <blockquote>
 <p>Critical incremental matrices are assigned with high rank such that they can capture more fine-grained and task-specific information. Less importance ones are pruned to have lower rank to prevent overfitting and save the computational budget.</p>
 </blockquote>
-<h3 id="研究方法"><a href="#研究方法" class="headerlink" title="研究方法"></a>研究方法</h3><p><strong>出发点</strong>:针对预训练中的高维矩阵进行奇异值分解的效率非常慢。</p>
-<p>AdaLoRA将增量矩阵的$\Delta$替换为$P \Lambda Q$,这样既省去到了复杂的SVD计算又能显式的裁剪奇异值。</p>
-<script type="math/tex; mode=display">
-W=W^{(0)}+\Delta = W^{(0)}+ P \Lambda Q</script><p>其中$\Lambda$以全0初始化，P和Q通过高斯分布初始化，确保训练开始时$\Delta$为0。同时，为保证P和Q的正交性，还在训练过程中增加了一个正则化，保证:</p>
-<script type="math/tex; mode=display">
-P^TP=Q^TQ=I</script><p>正则化体现在损失函数中:</p>
-<script type="math/tex; mode=display">
-\mathcal{L}(\mathcal{P}, \mathcal{E}, \mathcal{Q})=\mathcal{C}(\mathcal{P}, \mathcal{E}, \mathcal{Q})+\gamma \sum_{k=1}^n R\left(P_k, Q_k\right)</script><script type="math/tex; mode=display">
-R(P_k, Q_k)=||P^TP-I||_F^2 + ||Q^TQ-I||_F^2</script><p>其中$\gamma$&gt;0 ,是正则化的系数，C是训练损失函数，R是正则化函数。</p>
+<h3 id="研究方法">研究方法</h3>
+<p><strong>出发点</strong>:针对预训练中的高维矩阵进行奇异值分解的效率非常慢。</p>
+<p>AdaLoRA将增量矩阵的<span class="math inline">\(\Delta\)</span>替换为<span class="math inline">\(P \Lambda Q\)</span>,这样既省去到了复杂的SVD计算又能显式的裁剪奇异值。</p>
+<p><span class="math display">\[
+W=W^{(0)}+\Delta = W^{(0)}+ P \Lambda Q
+\]</span></p>
+<p>其中<span class="math inline">\(\Lambda\)</span>以全0初始化，P和Q通过高斯分布初始化，确保训练开始时<span class="math inline">\(\Delta\)</span>为0。同时，为保证P和Q的正交性，还在训练过程中增加了一个正则化，保证:</p>
+<p><span class="math display">\[
+P^TP=Q^TQ=I
+\]</span></p>
+<p>正则化体现在损失函数中:</p>
+<p><span class="math display">\[
+\mathcal{L}(\mathcal{P}, \mathcal{E}, \mathcal{Q})=\mathcal{C}(\mathcal{P}, \mathcal{E}, \mathcal{Q})+\gamma \sum_{k=1}^n R\left(P_k, Q_k\right)
+\]</span></p>
+<p><span class="math display">\[
+R(P_k, Q_k)=||P^TP-I||_F^2 + ||Q^TQ-I||_F^2
+\]</span></p>
+<p>其中<span class="math inline">\(\gamma\)</span>&gt;0 ,是正则化的系数，C是训练损失函数，R是正则化函数。</p>
 <p>相比LORA，AdaLORA这种设计方式有两个优点：</p>
 <ul>
 <li>AdaLORA只裁剪奇异值矩阵，并不裁剪奇异向量，因此训练过程中更容易恢复被误删的奇异值。</li>
 <li>AdaLORA的P和Q正交矩阵，而LORA的A和B非正交。AdaLORA训练过程中裁剪操作不会影响其他奇异值对应的奇异向量，因此训练会更稳定泛化性能更好。</li>
 </ul>
-<h3 id="粗略流程"><a href="#粗略流程" class="headerlink" title="粗略流程"></a>粗略流程</h3><p><img src="https://pic3.zhimg.com/80/v2-d1c8c18c6e14fc320c9da6bd476e898a_1440w.webp" alt=""></p>
-<p>（1）<strong>首先，我们初始化三个矩阵</strong>$P,\Lambda,Q$  。其中，$\Lambda$矩阵比较特殊，其大部分元素为0，只有对角线上的r个元素有值。所以实操中我们可将其视为长度为r的向量，即 $\Lambda \in \mathbb{R}^r$。<br>初始化时，<strong>我们将</strong>$\Lambda$ <strong>初始化为0，</strong>  <strong>初始化为高斯随机矩阵</strong>。这样做的目的和LoRA一样，都是为了在训练开始保证$\Delta W$是0，以此避免引入噪声。  </p>
+<h3 id="粗略流程">粗略流程</h3>
+<p><img src="https://pic3.zhimg.com/80/v2-d1c8c18c6e14fc320c9da6bd476e898a_1440w.webp" /></p>
+<p>（1）<strong>首先，我们初始化三个矩阵</strong><span class="math inline">\(P,\Lambda,Q\)</span>  。其中，<span class="math inline">\(\Lambda\)</span>矩阵比较特殊，其大部分元素为0，只有对角线上的r个元素有值。所以实操中我们可将其视为长度为r的向量，即 <span class="math inline">\(\Lambda \in \mathbb{R}^r\)</span>。<br />
+初始化时，<strong>我们将</strong><span class="math inline">\(\Lambda\)</span> <strong>初始化为0，</strong>  <strong>初始化为高斯随机矩阵</strong>。这样做的目的和LoRA一样，都是为了在训练开始保证<span class="math inline">\(\Delta W\)</span>是0，以此避免引入噪声。</p>
 <p>（2）然后，<strong>我们正常做forward和backward，得到Loss和参数的梯度</strong>。</p>
-<p>（3）接着，<strong>根据Loss和参数梯度</strong>，我们可以对图中所示的每个三元组(triplets) $\mathcal{G}_i\left\{P_{<em> i}, \sigma_i, Q_{i </em>}\right\}$ <strong>计算重要性分数</strong>(importance scoring)，其中，$P_{<em>i},Q_{i</em>}$ 分别表示“第i列”和“第i行”。（重要性分数的计算方法我们在后文细说）  </p>
-<p>（4）接着，<strong>根据计算出来的重要性分数，我们将不重要的三元组挑选出来</strong>。（根据重要性分数筛选三元组的方法，我们在后文细说）。  </p>
-<p>（5）接着，<strong>对于不重要的三元组，我们将其</strong>$\sigma$<strong>值置0</strong>。这样，在下一次做forward时，这个三元组里对应的P向量和Q向量<strong>相当于</strong>被mask掉了，对Loss没有贡献。也就起到了<strong>变秩</strong>的效果。  </p>
-<p>（6）接着，使用（2）中计算出来的梯度，更新P和Q的参数。  </p>
-<p>（7）然后，使用更新完毕的  ，开启新一轮forward和backward，重复上面步骤，随时动态更新参数的秩。</p>
+<p>（3）接着，<strong>根据Loss和参数梯度</strong>，我们可以对图中所示的每个三元组(triplets) <span class="math inline">\(\mathcal{G}_i\left\{P_{* i}, \sigma_i, Q_{i *}\right\}\)</span> <strong>计算重要性分数</strong>(importance scoring)，其中，<span class="math inline">\(P_{*i},Q_{i*}\)</span> 分别表示“第i列”和“第i行”。（重要性分数的计算方法我们在后文细说）</p>
+<p>（4）接着，<strong>根据计算出来的重要性分数，我们将不重要的三元组挑选出来</strong>。（根据重要性分数筛选三元组的方法，我们在后文细说）。</p>
+<p>（5）接着，<strong>对于不重要的三元组，我们将其</strong><span class="math inline">\(\sigma\)</span><strong>值置0</strong>。这样，在下一次做forward时，这个三元组里对应的P向量和Q向量<strong>相当于</strong>被mask掉了，对Loss没有贡献。也就起到了<strong>变秩</strong>的效果。</p>
+<p>（6）接着，使用（2）中计算出来的梯度，更新P和Q的参数。</p>
+<p>（7）然后，使用更新完毕的  ，开启新一轮forward和backward，重复上面步骤，随时动态更新参数的秩。</p>
 <p><strong>其中涉及三个具体问题</strong>:</p>
-<ol>
-<li><p>AdaLoRA 中Loss的设计</p>
-</li>
-<li><p>AdaLoRA 中重要性分数计算的设计</p>
-</li>
-<li><p>AdaLoRA 中如何根据重要性分数筛选不重要的三元组，并调节矩阵的秩</p>
-</li>
+<ol type="1">
+<li><p>AdaLoRA 中Loss的设计</p></li>
+<li><p>AdaLoRA 中重要性分数计算的设计</p></li>
+<li><p>AdaLoRA 中如何根据重要性分数筛选不重要的三元组，并调节矩阵的秩</p></li>
 </ol>
 <p>第一点在上文中已经提到:</p>
-<script type="math/tex; mode=display">
-\mathcal{L}(\mathcal{P}, \mathcal{E}, \mathcal{Q})=\mathcal{C}(\mathcal{P}, \mathcal{E}, \mathcal{Q})+\gamma \sum_{k=1}^n R\left(P_k, Q_k\right)</script><p>LoRA中是让模型学习BA，去近似SVD分解的结果，但是在训练过程中，没有引入任何SVD分解相关的性质做约束，而AdaLoRA则是直接将这一束缚考虑到了Loss中。</p>
-<h4 id="重要性分数"><a href="#重要性分数" class="headerlink" title="重要性分数"></a>重要性分数</h4><p><strong>单参数重要性分数</strong>:</p>
-<p>AdaLoRA的整体目标是要做<strong>参数预算（budget）</strong>，也就是忽略不重要的参数，然后把训练资源给重要的参数，在AdaLoRA中，我们是通过“<strong>变秩</strong>”来实现这种预算的动态分配的。所以现在问题就变成：如何判断一个矩阵中的<u>一个</u>参数（我们将其表示为$w_{ij}$  <strong>）对模型训练是否重要？</strong>  </p>
+<p><span class="math display">\[
+\mathcal{L}(\mathcal{P}, \mathcal{E}, \mathcal{Q})=\mathcal{C}(\mathcal{P}, \mathcal{E}, \mathcal{Q})+\gamma \sum_{k=1}^n R\left(P_k, Q_k\right)
+\]</span></p>
+<p>LoRA中是让模型学习BA，去近似SVD分解的结果，但是在训练过程中，没有引入任何SVD分解相关的性质做约束，而AdaLoRA则是直接将这一束缚考虑到了Loss中。</p>
+<h4 id="重要性分数">重要性分数</h4>
+<p><strong>单参数重要性分数</strong>:</p>
+<p>AdaLoRA的整体目标是要做<strong>参数预算（budget）</strong>，也就是忽略不重要的参数，然后把训练资源给重要的参数，在AdaLoRA中，我们是通过“<strong>变秩</strong>”来实现这种预算的动态分配的。所以现在问题就变成：如何判断一个矩阵中的<u>一个</u>参数（我们将其表示为<span class="math inline">\(w_{ij}\)</span>  <strong>）对模型训练是否重要？</strong></p>
 <p><strong>一个最直观的想法就是：去看看这个参数对Loss的影响</strong>。所以，在前人的研究中，就提出过<strong>梯度参数</strong>（gradient-weight product）这种算法：</p>
-<script type="math/tex; mode=display">
-I(w_{ij})=|w_{ij}\nabla_{w_{ij}}L|</script><p><strong>改进：单参数重要性分数</strong>：</p>
-<p>上面这个直观有效的想法, 被广泛运用在前人做的参数剪枝的优化中, 但它有一个显著的问题: 我是在mini-batch上计算重要性分数的, 不同step间重要性分数可能会受到mini-batch客观波动的影响，有啥办法能消除这种影响吗?  </p>
-<p>当然有啦, 遇到这种消除波动的问题, 我们肯定要祭出momentum。  </p>
-<p>所以, AdaLoRA作者就提出了这样一种计算t时刻, 单个模型参数重要性的方法:  </p>
-<script type="math/tex; mode=display">
-s^{(t)}(w_{i j})=\bar{I}^{(t)}(w_{i j}) \cdot \bar{U}^{(t)}(w_{i j})</script><p>其中:</p>
-<script type="math/tex; mode=display">
-\bar{I}^{(t)}(w_{i j}) =\beta_1 \bar{I}^{(t-1)}(w_{i j})+(1-\beta_1) I^{(t)}(w_{i j})</script><script type="math/tex; mode=display">
-\bar{U}^{(t)}(w_{i j}) =\beta_2 \bar{U}^{(t-1)}(w_{i j})+(1-\beta_2)|I^{(t)}(w_{i j})-\bar{I}^{(t)}(w_{i j})|,</script><ul>
-<li><p>$I^{(t)}(w_{i j})$是t时刻下，按上面单参数重要性计算公式的单参数重要性</p>
-</li>
-<li><p>$\bar{I}^{(t)}(w_{i j})$是前t-1个时刻该单参数重要性的平滑值</p>
-</li>
-<li><p>$|I^{(t)}(w_{i j})-\bar{I}^{(t)}(w_{i j})|$是当前值与平滑值之间的差异。这一项的意义是，你也不能一股脑地去平滑，也要考虑到重要性分数的真实波动情况</p>
-</li>
+<p><span class="math display">\[
+I(w_{ij})=|w_{ij}\nabla_{w_{ij}}L|
+\]</span></p>
+<p><strong>改进：单参数重要性分数</strong>：</p>
+<p>上面这个直观有效的想法, 被广泛运用在前人做的参数剪枝的优化中, 但它有一个显著的问题: 我是在mini-batch上计算重要性分数的, 不同step间重要性分数可能会受到mini-batch客观波动的影响，有啥办法能消除这种影响吗?</p>
+<p>当然有啦, 遇到这种消除波动的问题, 我们肯定要祭出momentum。</p>
+<p>所以, AdaLoRA作者就提出了这样一种计算t时刻, 单个模型参数重要性的方法:</p>
+<p><span class="math display">\[
+s^{(t)}(w_{i j})=\bar{I}^{(t)}(w_{i j}) \cdot \bar{U}^{(t)}(w_{i j})
+\]</span></p>
+<p>其中:</p>
+<p><span class="math display">\[
+\bar{I}^{(t)}(w_{i j}) =\beta_1 \bar{I}^{(t-1)}(w_{i j})+(1-\beta_1) I^{(t)}(w_{i j})
+\]</span></p>
+<p><span class="math display">\[
+\bar{U}^{(t)}(w_{i j}) =\beta_2 \bar{U}^{(t-1)}(w_{i j})+(1-\beta_2)|I^{(t)}(w_{i j})-\bar{I}^{(t)}(w_{i j})|, 
+\]</span></p>
+<ul>
+<li><p><span class="math inline">\(I^{(t)}(w_{i j})\)</span>是t时刻下，按上面单参数重要性计算公式的单参数重要性</p></li>
+<li><p><span class="math inline">\(\bar{I}^{(t)}(w_{i j})\)</span>是前t-1个时刻该单参数重要性的平滑值</p></li>
+<li><p><span class="math inline">\(|I^{(t)}(w_{i j})-\bar{I}^{(t)}(w_{i j})|\)</span>是当前值与平滑值之间的差异。这一项的意义是，你也不能一股脑地去平滑，也要考虑到重要性分数的真实波动情况</p></li>
 </ul>
-<p>针对单元素重要性$s^{(t)}(w_{ij})$就介绍到此。</p>
+<p>针对单元素重要性<span class="math inline">\(s^{(t)}(w_{ij})\)</span>就介绍到此。</p>
 <p><strong>三元组重要性分数</strong>:</p>
 <p>AdaLoRA提出三元组的重要性计算公式如下：</p>
-<script type="math/tex; mode=display">
-S_{k,i}=s(\lambda_{k,i})+\frac{1}{d_1}\sum_{j=1}^{d_1}s(P_{k,ji}) + \frac{1}{d_2}\sum_{j=1}^{d_2}s(Q_{k,ij})</script><p><strong>三元组的重要性分数 =</strong>  $\lambda$的重要性分数 + P矩阵列中所有元素重要性分数的均值 + Q矩阵行中所有元素重要性分数的均值。取均值的原因，是不希望参数量影响到重要性分数。</p>
-<h4 id="动态矩阵秩调节"><a href="#动态矩阵秩调节" class="headerlink" title="动态矩阵秩调节"></a>动态矩阵秩调节</h4><p>给出符号定义:</p>
+<p><span class="math display">\[
+S_{k,i}=s(\lambda_{k,i})+\frac{1}{d_1}\sum_{j=1}^{d_1}s(P_{k,ji}) + \frac{1}{d_2}\sum_{j=1}^{d_2}s(Q_{k,ij})
+\]</span></p>
+<p><strong>三元组的重要性分数 =</strong>  <span class="math inline">\(\lambda\)</span>的重要性分数 + P矩阵列中所有元素重要性分数的均值 + Q矩阵行中所有元素重要性分数的均值。取均值的原因，是不希望参数量影响到重要性分数。</p>
+<h4 id="动态矩阵秩调节">动态矩阵秩调节</h4>
+<p>给出符号定义:</p>
 <ul>
-<li>$\nabla P_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)$ : 表示第 $\mathrm{k}$ 个模块的 $\mathrm{P}$ 矩阵在t时刻的梯度</li>
-<li>$\nabla Q_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)$ : 表示第 $\mathrm{k}$ 个模块的 $\mathrm{Q}$ 矩阵在t时刻的梯度</li>
-<li>$\nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)$ : 表示第 $\mathrm{k}$ 个模块的 $\Lambda$ 矩阵在t时刻的梯度</li>
+<li><span class="math inline">\(\nabla P_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)\)</span> : 表示第 <span class="math inline">\(\mathrm{k}\)</span> 个模块的 <span class="math inline">\(\mathrm{P}\)</span> 矩阵在t时刻的梯度</li>
+<li><span class="math inline">\(\nabla Q_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)\)</span> : 表示第 <span class="math inline">\(\mathrm{k}\)</span> 个模块的 <span class="math inline">\(\mathrm{Q}\)</span> 矩阵在t时刻的梯度</li>
+<li><span class="math inline">\(\nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)\)</span> : 表示第 <span class="math inline">\(\mathrm{k}\)</span> 个模块的 <span class="math inline">\(\Lambda\)</span> 矩阵在t时刻的梯度</li>
 </ul>
-<h5 id="1-调整函数"><a href="#1-调整函数" class="headerlink" title="1. 调整函数"></a>1. 调整函数</h5><p>前文说过, 动态调整矩阵秩的核心, 就是根据三元组重要性分数, 对 $\Lambda$ 矩阵中相应的 $\lambda$ 做置 0 处理。所以, 我们就来看看 $\lambda$ 的置 0 策略。<br>(1) 首先, 我们拿 $\nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)$, 先更新一波 $\Lambda_k$, 即我们有: $\widetilde{\Lambda}_k^t=\Lambda_k^t-\eta \nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)$</p>
-<p>其中, $\eta$ 是我们的学习率 (learning_rate)<br>注意, 这里 $\widetilde{\Lambda}_k^t$ 头上还顶着 $\mathrm{t}$ 时刻的标志, 而不是 $\mathrm{t}+1$, 也就是说, 我们对 $\Lambda$ 做完梯度更新后的结果，并不是 $t+1$ 时刻的结果。我们做完置 0 后，才是 $t+1$ 时刻的结果。<br>(2) 接着, 我们按以下方式判断 $\Lambda$ 矩阵中哪些元素应该置0, 哪些元素应该保持为梯度更新后的结果:</p>
-<script type="math/tex; mode=display">
+<h5 id="调整函数">1. 调整函数</h5>
+<p>前文说过, 动态调整矩阵秩的核心, 就是根据三元组重要性分数, 对 <span class="math inline">\(\Lambda\)</span> 矩阵中相应的 <span class="math inline">\(\lambda\)</span> 做置 0 处理。所以, 我们就来看看 <span class="math inline">\(\lambda\)</span> 的置 0 策略。 (1) 首先, 我们拿 <span class="math inline">\(\nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)\)</span>, 先更新一波 <span class="math inline">\(\Lambda_k\)</span>, 即我们有: <span class="math inline">\(\widetilde{\Lambda}_k^t=\Lambda_k^t-\eta \nabla \Lambda_k \mathcal{L}\left(\mathcal{P}^{(t)}, \mathcal{E}^{(t)}, \mathcal{Q}^{(t)}\right)\)</span></p>
+<p>其中, <span class="math inline">\(\eta\)</span> 是我们的学习率 (learning_rate) 注意, 这里 <span class="math inline">\(\widetilde{\Lambda}_k^t\)</span> 头上还顶着 <span class="math inline">\(\mathrm{t}\)</span> 时刻的标志, 而不是 <span class="math inline">\(\mathrm{t}+1\)</span>, 也就是说, 我们对 <span class="math inline">\(\Lambda\)</span> 做完梯度更新后的结果，并不是 <span class="math inline">\(t+1\)</span> 时刻的结果。我们做完置 0 后，才是 <span class="math inline">\(t+1\)</span> 时刻的结果。 (2) 接着, 我们按以下方式判断 <span class="math inline">\(\Lambda\)</span> 矩阵中哪些元素应该置0, 哪些元素应该保持为梯度更新后的结果:</p>
+<p><span class="math display">\[
 \Lambda_k^{(t+1)}=\mathcal{T}\left(\tilde{\Lambda}_k^{(t)}, S_k^{(t)}\right), \text { with } \mathcal{T}\left(\tilde{\Lambda}_k^{(t)}, S_k^{(t)}\right)_{i i}=\left\{\begin{array}{lc}
 \tilde{\Lambda}_{k, i i}^{(t)}  S_{k, i}^{(t)} \text { is in the top- } b^{(t)} \text { of } S^{(t)}, \\
 0  \text { otherwise, }
-\end{array}\right.</script><ul>
-<li>t+1时刻$\Lambda$矩阵，是由$\mathcal{T}$这个函数决定的，这个函数的输入是梯度更新后的$\Lambda_k^{(t)}$，以及第k个模块所有三元组的重要性分数$S_k^{(t)}$ .</li>
-<li>那$\mathcal{T}$这个函数具体就长成后面带大括号的那个样子。也就是重要性分数排在top_b的三元组，它们的$\lambda$保持原样，其余的则置0</li>
+\end{array}\right.
+\]</span></p>
+<ul>
+<li>t+1时刻<span class="math inline">\(\Lambda\)</span>矩阵，是由<span class="math inline">\(\mathcal{T}\)</span>这个函数决定的，这个函数的输入是梯度更新后的<span class="math inline">\(\Lambda_k^{(t)}\)</span>，以及第k个模块所有三元组的重要性分数<span class="math inline">\(S_k^{(t)}\)</span> .</li>
+<li>那<span class="math inline">\(\mathcal{T}\)</span>这个函数具体就长成后面带大括号的那个样子。也就是重要性分数排在top_b的三元组，它们的<span class="math inline">\(\lambda\)</span>保持原样，其余的则置0</li>
 <li>最后，这里的top_b也涉及一种策略，那就是它的值是随着t的变动而变化的（例如t=1时，我取的是top 2； t=2时，我取的是top b之类）。我们在下一小节细说这个策略</li>
 </ul>
-<h5 id="2-top-b策略"><a href="#2-top-b策略" class="headerlink" title="2. top-b策略"></a>2. top-b策略</h5><p>在开始讲top_b策略前，我们先来思考一个问题：<strong>为什么每次选出的重要三元组的个数，要随着时刻t的变动而变动？</strong>  </p>
-<p>这个问题的答案还是：<strong>模型的学习是探索性的过程</strong>。  </p>
+<h5 id="top-b策略">2. top-b策略</h5>
+<p>在开始讲top_b策略前，我们先来思考一个问题：<strong>为什么每次选出的重要三元组的个数，要随着时刻t的变动而变动？</strong></p>
+<p>这个问题的答案还是：<strong>模型的学习是探索性的过程</strong>。</p>
 <p><strong>在训练刚开始，我们逐渐增加top_b，也就是逐渐加秩，让模型尽可能多探索。到后期再慢慢把top_b降下来，直到最后以稳定的top_b进行训练，达到AdaLoRA的总目的：把训练资源留给最重要的参数。这个过程就和<u>warm-up</u>非常相似。</strong></p>
-<h3 id="具体流程"><a href="#具体流程" class="headerlink" title="具体流程"></a>具体流程</h3><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1697593077006-bffe6e61-077c-4286-8756-1ca46329a07e.png" alt=""></p>
-<p>（1）拿到训练数据集，确定好总训练步长T。根据总步长T设计好top_b的warm-up策略，并设定好一系列超参，同时也把$P,\Lambda,Q$的初始化做好<br>（2）进入某个step的迭代<br>（3）给模型喂一份mini-batch，正常做forward和backward，计算loss和梯度<br>（4）（5）对某一个三元组，我们先计算其中每个参数的重要性（单参数重要性）<br>（6）根据单参数重要性，计算出整个三元组的重要性分数<br>（7）使用（3）中计算好的梯度，正常更新矩阵P和Q<br>（8）根据三元组重要性分数、动态调秩策略、top_b来判断要给哪些  置0，其对应的三元组中的P和Q向量相当于被mask掉，以此来实现动态调秩的目的。这番操作后，我们得到更新的矩阵  然后将$P,\Lambda,Q$送入下一轮训练。</p>
+<h3 id="具体流程">具体流程</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1697593077006-bffe6e61-077c-4286-8756-1ca46329a07e.png" /></p>
+<p>（1）拿到训练数据集，确定好总训练步长T。根据总步长T设计好top_b的warm-up策略，并设定好一系列超参，同时也把<span class="math inline">\(P,\Lambda,Q\)</span>的初始化做好<br />
+（2）进入某个step的迭代<br />
+（3）给模型喂一份mini-batch，正常做forward和backward，计算loss和梯度<br />
+（4）（5）对某一个三元组，我们先计算其中每个参数的重要性（单参数重要性）<br />
+（6）根据单参数重要性，计算出整个三元组的重要性分数<br />
+（7）使用（3）中计算好的梯度，正常更新矩阵P和Q<br />
+（8）根据三元组重要性分数、动态调秩策略、top_b来判断要给哪些  置0，其对应的三元组中的P和Q向量相当于被mask掉，以此来实现动态调秩的目的。这番操作后，我们得到更新的矩阵  然后将<span class="math inline">\(P,\Lambda,Q\)</span>送入下一轮训练。</p>
 <p><strong>TIPs:</strong></p>
 <p>为什么不直接修改Lora的r值-<strong>因为R代表的是超参数无法动态调整</strong>。</p>
-<h2 id="QLoRA"><a href="#QLoRA" class="headerlink" title="QLoRA"></a>QLoRA</h2><p>论文标题:QLoRA: Efficient Finetuning of Quantized LLMs</p>
+<h2 id="qlora">QLoRA</h2>
+<p>论文标题:QLoRA: Efficient Finetuning of Quantized LLMs</p>
 <p>论文链接:<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2305.14314.pdf">https://arxiv.org/pdf/2305.14314.pdf</a></p>
 <p>参考链接:</p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/648239462">https://zhuanlan.zhihu.com/p/648239462</a></p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/654967425">https://zhuanlan.zhihu.com/p/654967425</a></p>
-<h3 id="分块量化-Block-wise-Quantization"><a href="#分块量化-Block-wise-Quantization" class="headerlink" title="分块量化(Block-wise Quantization)"></a>分块量化(Block-wise Quantization)</h3><p><img src="https://pic4.zhimg.com/80/v2-a774f055fe8cc13c26d29e7c3a846847_1440w.webp" alt=""></p>
-<ol>
+<p>https://zhuanlan.zhihu.com/p/648239462</p>
+<p>https://zhuanlan.zhihu.com/p/654967425</p>
+<h3 id="分块量化block-wise-quantization">分块量化(Block-wise Quantization)</h3>
+<p><img src="https://pic4.zhimg.com/80/v2-a774f055fe8cc13c26d29e7c3a846847_1440w.webp" /></p>
+<ol type="1">
 <li>量化常数获取</li>
 </ol>
 <p>计算公式:</p>
-<script type="math/tex; mode=display">
-c^{FP32}=127(量化位数)/absmax(X^{FP32})</script><p>计算过程:</p>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
+c^{FP32}=127(量化位数)/absmax(X^{FP32})
+\]</span></p>
+<p>计算过程:</p>
+<p><span class="math display">\[
 Global:c^{FP32}=127/100=1.27
-\\ Block: c1^{FP32}=127/100=1.27, c2^{FP32}=127/0.3=423.33</script><ol>
+\\ Block: c1^{FP32}=127/100=1.27, c2^{FP32}=127/0.3=423.33
+\]</span></p>
+<ol start="2" type="1">
 <li>归一化</li>
 </ol>
 <p>计算公式:</p>
-<script type="math/tex; mode=display">
-X^{Int8}=round(c^{FP32}*X^{FP32})</script><p>计算过程:</p>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
+X^{Int8}=round(c^{FP32}*X^{FP32})
+\]</span></p>
+<p>计算过程:</p>
+<p><span class="math display">\[
 Global:round(100*1.27),round(90*1.27),round(0.3*1.27),round(0.1*1.27)
 \\ =127,114,0,0
 \\ Block:round(100*1.27),round(90*1.27),round(0.3*423.33),round(0.1*423.33)
-\\ = 127,114,127,42</script><ol>
+\\ = 127,114,127,42
+\]</span></p>
+<ol start="3" type="1">
 <li>反量化</li>
 </ol>
 <p>计算公式:</p>
-<script type="math/tex; mode=display">
-X^{FP32}=\frac{X^{Int8}}{c^{FP32}}</script><p>计算过程:</p>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
+X^{FP32}=\frac{X^{Int8}}{c^{FP32}}
+\]</span></p>
+<p>计算过程:</p>
+<p><span class="math display">\[
 Global:127/1.27,114/1.27,0/1.27,0/1.27
 \\ = 100, 89.76, 0, 0
 \\ Block:127/1.27,114/1.27,127/423.33,42/423.33
-\\ = 100, 89.76, 0.3, 0.099</script><ol>
+\\ = 100, 89.76, 0.3, 0.099
+\]</span></p>
+<ol start="4" type="1">
 <li>误差计算</li>
 </ol>
 <p>求和二者之差</p>
-<h3 id="4-bit-NormalFloat-NF4"><a href="#4-bit-NormalFloat-NF4" class="headerlink" title="4-bit NormalFloat(NF4)"></a>4-bit NormalFloat(NF4)</h3><p><img src="https://pic3.zhimg.com/80/v2-70672359414524826e182bced6bedab6_1440w.webp" alt=""></p>
-<ol>
-<li><p>输入分块，切分到不同block中</p>
-</li>
-<li><p>找到输入的最大值，进行归一化</p>
-</li>
-<li><p>找到最近的NF4分位值</p>
-</li>
+<h3 id="bit-normalfloatnf4">4-bit NormalFloat(NF4)</h3>
+<p><img src="https://pic3.zhimg.com/80/v2-70672359414524826e182bced6bedab6_1440w.webp" /></p>
+<p>  </p>
+<ol type="1">
+<li><p>输入分块，切分到不同block中</p></li>
+<li><p>找到输入的最大值，进行归一化</p></li>
+<li><p>找到最近的NF4分位值</p></li>
 </ol>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NF4分位值如下:</span><br><span class="line">data = [-1.0, -0.6961928009986877, -0.5250730514526367, -0.39491748809814453, -0.28444138169288635,</span><br><span class="line">                -0.18477343022823334, -0.09105003625154495, 0.0, 0.07958029955625534, 0.16093020141124725,</span><br><span class="line">                0.24611230194568634, 0.33791524171829224, 0.44070982933044434, 0.5626170039176941,</span><br><span class="line">                0.7229568362236023, 1.0]</span><br></pre></td></tr></table></figure>
 <p>图中找的是8-bit值，如果是NF4则如下:</p>
 <p>-1,0,0,1</p>
-<ol>
+<ol start="4" type="1">
 <li>找到对应的索引</li>
 </ol>
 <p>0,7,7,15</p>
-<ol>
+<ol start="5" type="1">
 <li>查找索引分位值</li>
 </ol>
 <p>-1,0,0,1</p>
-<ol>
+<ol start="6" type="1">
 <li>通过最大值反归一化</li>
 </ol>
 <p>-3.1,0,0,1.2</p>
@@ -562,59 +611,68 @@ Global:127/1.27,114/1.27,0/1.27,0/1.27
 </ul>
 <p>认真看代码的同学肯定还有一个疑问，这里的 offset=0.9677083是怎么回事？仍然可以在网上<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/638927564#ref_2">[2]</a>找到作者对此数据的解释：</p>
 <blockquote>
-<p>We want to find the quantiles which have equal area to the left and the right side of the quantile. This means, we do not start with the 0 or 1 quantile for the normal distribution, but with an offset quantile. This start position is called offset in the code snipped and is 1-1/(2<em>15). If we have an asymmetric data type, we have one side with spacing equivalent to 16 “halves” around each quantile and the other side with 15 halves. As such, the offset is on average (1-1/(2</em>15) + 1-1/(2*16))/2 = 0.9677083.</p>
+<p>We want to find the quantiles which have equal area to the left and the right side of the quantile. This means, we do not start with the 0 or 1 quantile for the normal distribution, but with an offset quantile. This start position is called offset in the code snipped and is 1-1/(2<em>15). If we have an asymmetric data type, we have one side with spacing equivalent to 16 "halves" around each quantile and the other side with 15 halves. As such, the offset is on average (1-1/(2</em>15) + 1-1/(2*16))/2 = 0.9677083.</p>
 </blockquote>
-<p>作者在这段解释中讨论了如何选择<code>offset</code>的默认值。在创建正态映射时，他们希望找到的分位数在其左侧和右侧有相等的面积。这意味着他们并不从0或1的分位数开始，而是从一个偏移量（offset）的分位数开始。在这段代码中，<code>offset</code>的默认值是$1-1/(2<em>15)$。这是因为在一个不对称的数据类型中，一侧有等于16个”半”的间隔围绕每个分位数，另一侧有15个”半”。因此，<code>offset</code>的平均值是$(1-1/(2</em>15) + 1-1/(2*16))/2=0.9677083$。</p>
+<p>作者在这段解释中讨论了如何选择<code>offset</code>的默认值。在创建正态映射时，他们希望找到的分位数在其左侧和右侧有相等的面积。这意味着他们并不从0或1的分位数开始，而是从一个偏移量（offset）的分位数开始。在这段代码中，<code>offset</code>的默认值是<span class="math inline">\(1-1/(2*15)\)</span>。这是因为在一个不对称的数据类型中，一侧有等于16个"半"的间隔围绕每个分位数，另一侧有15个"半"。因此，<code>offset</code>的平均值是<span class="math inline">\((1-1/(2*15) + 1-1/(2*16))/2=0.9677083\)</span>。</p>
 <p>这种方法确保了生成的映射表在正态分布的两侧都有相等的覆盖范围，从而使得量化过程更加均匀和平衡。</p>
-<h3 id="Double-Quantization"><a href="#Double-Quantization" class="headerlink" title="Double Quantization"></a>Double Quantization</h3><p><img src="https://pic2.zhimg.com/80/v2-388287d6166892e7f79e211cdf192ab9_1440w.webp" alt=""></p>
+<h3 id="double-quantization">Double Quantization</h3>
+<p><img src="https://pic2.zhimg.com/80/v2-388287d6166892e7f79e211cdf192ab9_1440w.webp" /></p>
 <p>在第一次量化后，<strong>并不会直接储存量化常数，而是按照block大小256对量化常数再量化到8bit上去储存</strong>，这个阶段会再引入一个量化常数。最终保存的额外参数为8/64 + 32/(64 · 256)=0.127bits。</p>
-<ol>
-<li><p>明确已知变量:每个block存储64个参数，一共256个block</p>
-</li>
-<li><p>正常量化:每个Block存储64个NF4参数和一个FP32的量化常数；</p>
-</li>
+<ol type="1">
+<li><p>明确已知变量:每个block存储64个参数，一共256个block</p></li>
+<li><p>正常量化:每个Block存储64个NF4参数和一个FP32的量化常数；</p></li>
 </ol>
-<p><img src="https://pic1.zhimg.com/80/v2-10e7b2ef95a523661a7a1b703813cf3c_1440w.webp" alt=""></p>
-<ol>
+<p><img src="https://pic1.zhimg.com/80/v2-10e7b2ef95a523661a7a1b703813cf3c_1440w.webp" /></p>
+<ol start="3" type="1">
 <li>双重量化:每个Block存储64个NF4参数，所有的256个FP32量化常数进一步量化为256分FP8常数和一个FP32</li>
 </ol>
-<p><img src="https://pic1.zhimg.com/80/v2-f57d82d50aec29d47d24e5b2e5db4c10_1440w.webp" alt=""></p>
+<p><img src="https://pic1.zhimg.com/80/v2-f57d82d50aec29d47d24e5b2e5db4c10_1440w.webp" /></p>
 <p><strong>每个参数量化的平均内存消耗计算:</strong></p>
 <p>原来的用32位表示64个参数:32/64=0.5位/参数。（64的block里面需要一个FP32来表示。）</p>
 <p>双重量化用8位表示64个参数，外加32位表示64*256个量化参数:8/64+32/(64*256)=0.127位/参数。（64的block里面需要一个FP8来表示，此外64*256的大block里面需要一个FP32表示）</p>
 <p><strong>代码实现:</strong></p>
-<p><img src="https://pic3.zhimg.com/80/v2-abbfd01a055923d6fcfa9d660ddb1436_1440w.webp" alt=""></p>
-<h3 id="QLoRA实现"><a href="#QLoRA实现" class="headerlink" title="QLoRA实现"></a>QLoRA实现</h3><script type="math/tex; mode=display">
-Y^{BF16} = X^{BF16}doubleDequant(c_1^{FP32},c_2^{k-bit},W^{NF4}) + X^{BF16}L_1^{BF16}L_2^{BF16}</script><p>其中，doubleDequant(.)定义如下:</p>
-<script type="math/tex; mode=display">
-doubleDequant(c_1^{FP32},c_2^{k-bit},W^{NF4})=dequant(dequant(c_1^{FP32},c_2^{k-bit}),W^{NF4})=W^{BF16}</script><h1 id="P-Tuning"><a href="#P-Tuning" class="headerlink" title="P-Tuning"></a>P-Tuning</h1><p>P-tuning原理介绍的文章较多，本文主要介绍P-Tuning的相关内容，而不过多深入其原理，而是着重于代码部分的解析。P-Tuning的基本原理可以概括为以下两点：</p>
-<ol>
-<li><p>P-Tuning重新定义了模板的概念，摒弃了“模板必须由自然语言构成”的传统观念，进而将模板构建转变为一个连续参数优化问题。</p>
-</li>
-<li><p>P-Tuning V2在模型的每一层都引入了可优化的连续参数进行训练，以此解决V1版本中模型参数较少、序列标注等难题的性能不佳的问题。</p>
-</li>
+<p><img src="https://pic3.zhimg.com/80/v2-abbfd01a055923d6fcfa9d660ddb1436_1440w.webp" /></p>
+<h3 id="qlora实现">QLoRA实现</h3>
+<p><span class="math display">\[
+Y^{BF16} = X^{BF16}doubleDequant(c_1^{FP32},c_2^{k-bit},W^{NF4}) + X^{BF16}L_1^{BF16}L_2^{BF16}
+\]</span></p>
+<p>其中，doubleDequant(.)定义如下:</p>
+<p><span class="math display">\[
+doubleDequant(c_1^{FP32},c_2^{k-bit},W^{NF4})=dequant(dequant(c_1^{FP32},c_2^{k-bit}),W^{NF4})=W^{BF16}
+\]</span></p>
+<h1 id="p-tuning">P-Tuning</h1>
+<p>P-tuning原理介绍的文章较多，本文主要介绍P-Tuning的相关内容，而不过多深入其原理，而是着重于代码部分的解析。P-Tuning的基本原理可以概括为以下两点：</p>
+<ol type="1">
+<li><p>P-Tuning重新定义了模板的概念，摒弃了“模板必须由自然语言构成”的传统观念，进而将模板构建转变为一个连续参数优化问题。</p></li>
+<li><p>P-Tuning V2在模型的每一层都引入了可优化的连续参数进行训练，以此解决V1版本中模型参数较少、序列标注等难题的性能不佳的问题。</p></li>
 </ol>
-<h2 id="P-tuning-V1"><a href="#P-tuning-V1" class="headerlink" title="P-tuning V1"></a>P-tuning V1</h2><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/67256578/1663138934972-d61d12fa-86ae-44e6-a0cc-7d72fe2975dc.png" alt=""></p>
+<h2 id="p-tuning-v1">P-tuning V1</h2>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/67256578/1663138934972-d61d12fa-86ae-44e6-a0cc-7d72fe2975dc.png" /></p>
 <p>论文标题:GPT Understands, Too</p>
 <p>论文链接:<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2103.10385.pdf">https://arxiv.org/pdf/2103.10385.pdf</a></p>
 <p><strong>P-tuning重新审视了关于模版的定义，放弃了“模版由自然语言构成”这一常规要求，从而将模版的构建转化为连续参数优化问题。</strong></p>
-<h3 id="出发点-1"><a href="#出发点-1" class="headerlink" title="出发点"></a>出发点</h3><p>大模型的Prompt构造方式严重影响下游任务的效果。比如：GPT-3采用人工构造的模版来做上下文学习（in context learning），但人工设计的模版的变化特别敏感，加一个词或者少一个词，或者变动位置都会造成比较大的变化。</p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698023711789-e6a462ba-57fc-474f-8c23-74b70d7b1c25.png" alt=""></p>
-<h3 id="实现方法-1"><a href="#实现方法-1" class="headerlink" title="实现方法"></a>实现方法</h3><p>P-Tuning将Prompt转换为可以学习的Embedding层，并用MLP+LSTM的方式来对Prompt Embedding进行一层处理。</p>
+<h3 id="出发点-1">出发点</h3>
+<p>大模型的Prompt构造方式严重影响下游任务的效果。比如：GPT-3采用人工构造的模版来做上下文学习（in context learning），但人工设计的模版的变化特别敏感，加一个词或者少一个词，或者变动位置都会造成比较大的变化。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698023711789-e6a462ba-57fc-474f-8c23-74b70d7b1c25.png" /></p>
+<h3 id="实现方法-1">实现方法</h3>
+<p>P-Tuning将Prompt转换为可以学习的Embedding层，并用MLP+LSTM的方式来对Prompt Embedding进行一层处理。</p>
 <p>P-Tuning加入的连续的embedding token，但仅限于输入层，没有在每一层都加；另外，virtual token的位置也不一定是前缀，插入的位置是可选的。这里的出发点实际是<strong>把传统人工设计模版中的真实token替换成连续的embedding token。</strong></p>
 <p>从对比实验证实看出，P-Tuning获得了与全参数一致的效果。甚至在某些任务上优于全参数微调。</p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698023893317-d54fa8e1-7df9-4a94-a900-60dc70adda12.png" alt=""></p>
-<h2 id="P-tuning-V2"><a href="#P-tuning-V2" class="headerlink" title="P-tuning V2"></a>P-tuning V2</h2><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/67256578/1663139033309-ef0b4504-b57f-43ac-8674-6c93eecde82e.png" alt=""></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698023893317-d54fa8e1-7df9-4a94-a900-60dc70adda12.png" /></p>
+<h2 id="p-tuning-v2">P-tuning V2</h2>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2022/png/67256578/1663139033309-ef0b4504-b57f-43ac-8674-6c93eecde82e.png" /></p>
 <p>论文标题:P-Tuning v2: Prompt Tuning Can Be Comparable to Fine-tuning Universally Across Scales and Tasks</p>
 <p>论文链接:<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2110.07602.pdf">https://arxiv.org/pdf/2110.07602.pdf</a></p>
 <p><strong>DEEP PROMPT Tuning</strong></p>
-<h3 id="出发点-2"><a href="#出发点-2" class="headerlink" title="出发点"></a>出发点</h3><p>Prompt tuning是之前其他论文提出的一种方法，通过冻结语言模型仅去调整连续的prompts，在参数量超过10B的模型上，效果追上了fine-tune，但是<strong>在normal-sized模型上表现不好，并且无法解决序列标注任务</strong>。针对这两个问题，作者提出了P-tuning v2。</p>
+<h3 id="出发点-2">出发点</h3>
+<p>Prompt tuning是之前其他论文提出的一种方法，通过冻结语言模型仅去调整连续的prompts，在参数量超过10B的模型上，效果追上了fine-tune，但是<strong>在normal-sized模型上表现不好，并且无法解决序列标注任务</strong>。针对这两个问题，作者提出了P-tuning v2。</p>
 <ul>
 <li>模型参数量较小时，P-tuning效果较差</li>
 <li>序列标注任务下，P-tuning效果较差</li>
 <li>实际优化的emb与下游使用的emb存在差距</li>
 </ul>
-<h3 id="实现方法-2"><a href="#实现方法-2" class="headerlink" title="实现方法"></a>实现方法</h3><p>该方法在每一层都加入了Prompts tokens作为输入，而不是仅仅加在输入层，这带来两个方面的好处：</p>
+<h3 id="实现方法-2">实现方法</h3>
+<p>该方法在每一层都加入了Prompts tokens作为输入，而不是仅仅加在输入层，这带来两个方面的好处：</p>
 <ul>
 <li>更多可学习的参数（从P-tuning和Prompt Tuning的0.01%增加到0.1%-3%），同时也足够参数高效。</li>
 <li>加入到更深层结构中的Prompt能给模型预测带来更直接的影响。</li>
@@ -626,237 +684,262 @@ doubleDequant(c_1^{FP32},c_2^{k-bit},W^{NF4})=dequant(dequant(c_1^{FP32},c_2^{k-
 <li><strong>引入多任务学习</strong>。先在多任务的Prompt上进行预训练，然后再适配下游任务。多任务学习对我们的方法来说是可选的，但可能是相当有帮助的。一方面，连续提示的随机惯性给优化带来了困难，这可以通过更多的训练数据或与任务相关的无监督预训练来缓解；另一方面，连续提示是跨任务和数据集的特定任务知识的完美载体。我们的实验表明，在一些困难的序列任务中，多任务学习可以作为P-tuning v2的有益补充。</li>
 <li><strong>回归传统的分类标签范式，而不是映射器</strong>。标签词映射器（Label Word Verbalizer）一直是提示优化的核心组成部分，它将one-hot类标签变成有意义的词，以利用预训练语言模型头。尽管它在few-shot设置中具有潜在的必要性，但在全数据监督设置中，Verbalizer并不是必须的。它阻碍了提示调优在我们需要无实际意义的标签和句子嵌入的场景中的应用。因此，P-Tuning v2回归传统的CLS标签分类范式，采用随机初始化的分类头（Classification Head）应用于tokens之上，以增强通用性，可以适配到序列标注任务。</li>
 </ul>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ol>
+<h2 id="小结">小结</h2>
+<ol type="1">
 <li><strong>P-tuning的V1，V2都是优化连续embedding空间</strong></li>
 <li><strong>P-tuning的V1，V2都是均冻结BERT其他层的参数，优化prompt emb参数</strong></li>
 <li><strong>P-tuning v2 较之前的 prompt emb的网络结构升级，多层MLP代替原先的方式</strong></li>
 </ol>
-<h2 id="代码解读-1"><a href="#代码解读-1" class="headerlink" title="代码解读"></a>代码解读</h2><p>核心的实现流程：</p>
-<ol>
-<li><p>输入数据根据模版 替换得到实际输入，并得到tokenize后的输入。</p>
-</li>
-<li><p>P-tuning V2部分不用替换数据，采用了GPT方式，模版在头部，其次直接接了下游任务，而不是重新用LM方式预测</p>
-</li>
-<li><p>对prompt部分对编码处理(Prompt Encoder)</p>
-</li>
-<li><p>下游任务预测，如取mask位置的向量，或者预测该位置的结果</p>
-</li>
-<li><p>优化目标：冻结了bert的参数，优化目标与下游任务一致</p>
-</li>
+<h2 id="代码解读-1">代码解读</h2>
+<p>核心的实现流程：</p>
+<ol type="1">
+<li><p>输入数据根据模版 替换得到实际输入，并得到tokenize后的输入。</p></li>
+<li><p>P-tuning V2部分不用替换数据，采用了GPT方式，模版在头部，其次直接接了下游任务，而不是重新用LM方式预测</p></li>
+<li><p>对prompt部分对编码处理(Prompt Encoder)</p></li>
+<li><p>下游任务预测，如取mask位置的向量，或者预测该位置的结果</p></li>
+<li><p>优化目标：冻结了bert的参数，优化目标与下游任务一致</p></li>
 </ol>
-<h3 id="P-tuning-V2代码处理"><a href="#P-tuning-V2代码处理" class="headerlink" title="P-tuning V2代码处理"></a>P-tuning V2代码处理</h3><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/459305102">https://zhuanlan.zhihu.com/p/459305102</a></p>
-<h4 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h4><p>仅需要做tokenize等预处理操作</p>
+<h3 id="p-tuning-v2代码处理">P-tuning V2代码处理</h3>
+<p>https://zhuanlan.zhihu.com/p/459305102</p>
+<h4 id="数据处理">数据处理</h4>
+<p>仅需要做tokenize等预处理操作</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">def preprocess_function(self, examples):</span><br><span class="line">     # WSC</span><br><span class="line">     if self.data_args.dataset_name == &quot;wsc&quot;:</span><br><span class="line">         examples[&quot;span2_word_text&quot;] = []</span><br><span class="line">         for text, span2_index, span2_word in zip(examples[&quot;text&quot;], examples[&quot;span2_index&quot;], examples[&quot;span2_text&quot;]):</span><br><span class="line">             if self.data_args.template_id == 0:</span><br><span class="line">                 examples[&quot;span2_word_text&quot;].append(span2_word + &quot;: &quot; + text)</span><br><span class="line">             elif self.data_args.template_id == 1:</span><br><span class="line">                 words_a = text.split()</span><br><span class="line">                 words_a[span2_index] = &quot;*&quot; + words_a[span2_index] + &quot;*&quot;</span><br><span class="line">                 examples[&quot;span2_word_text&quot;].append(&#x27; &#x27;.join(words_a))</span><br><span class="line"></span><br><span class="line">     # WiC</span><br><span class="line">     if self.data_args.dataset_name == &quot;wic&quot;:</span><br><span class="line">         examples[&quot;processed_sentence1&quot;] = []</span><br><span class="line">         if self.data_args.template_id == 1:</span><br><span class="line">             self.sentence2_key = &quot;processed_sentence2&quot;</span><br><span class="line">             examples[&quot;processed_sentence2&quot;] = []</span><br><span class="line">         for sentence1, sentence2, word, start1, end1, start2, end2 in zip(examples[&quot;sentence1&quot;], examples[&quot;sentence2&quot;], examples[&quot;word&quot;], examples[&quot;start1&quot;], examples[&quot;end1&quot;], examples[&quot;start2&quot;], examples[&quot;end2&quot;]):</span><br><span class="line">             if self.data_args.template_id == 0: #ROBERTA</span><br><span class="line">                 examples[&quot;processed_sentence1&quot;].append(f&quot;&#123;sentence1&#125; &#123;sentence2&#125; Does &#123;word&#125; have the same meaning in both sentences?&quot;)</span><br><span class="line">             elif self.data_args.template_id == 1: #BERT</span><br><span class="line">                 examples[&quot;processed_sentence1&quot;].append(word + &quot;: &quot; + sentence1)</span><br><span class="line">                 examples[&quot;processed_sentence2&quot;].append(word + &quot;: &quot; + sentence2)</span><br><span class="line"></span><br><span class="line">     # MultiRC</span><br><span class="line">     if self.data_args.dataset_name == &quot;multirc&quot;:</span><br><span class="line">         examples[&quot;question_answer&quot;] = []</span><br><span class="line">         for question, asnwer in zip(examples[&quot;question&quot;], examples[&quot;answer&quot;]):</span><br><span class="line">             examples[&quot;question_answer&quot;].append(f&quot;&#123;question&#125; &#123;asnwer&#125;&quot;)</span><br><span class="line"></span><br><span class="line">     # COPA</span><br><span class="line">     if self.data_args.dataset_name == &quot;copa&quot;:</span><br><span class="line">         examples[&quot;text_a&quot;] = []</span><br><span class="line">         for premise, question in zip(examples[&quot;premise&quot;], examples[&quot;question&quot;]):</span><br><span class="line">             joiner = &quot;because&quot; if question == &quot;cause&quot; else &quot;so&quot;</span><br><span class="line">             text_a = f&quot;&#123;premise&#125; &#123;joiner&#125;&quot;                    </span><br><span class="line">             examples[&quot;text_a&quot;].append(text_a)</span><br><span class="line"></span><br><span class="line">         result1 = self.tokenizer(examples[&quot;text_a&quot;], examples[&quot;choice1&quot;], padding=self.padding, max_length=self.max_seq_length, truncation=True) </span><br><span class="line">         result2 = self.tokenizer(examples[&quot;text_a&quot;], examples[&quot;choice2&quot;], padding=self.padding, max_length=self.max_seq_length, truncation=True)</span><br><span class="line">         result = &#123;&#125;  </span><br><span class="line">         for key in [&quot;input_ids&quot;, &quot;attention_mask&quot;, &quot;token_type_ids&quot;]:</span><br><span class="line">             if key in result1 and key in result2:</span><br><span class="line">                 result[key] = []</span><br><span class="line">                 for value1, value2 in zip(result1[key], result2[key]):</span><br><span class="line">                     result[key].append([value1, value2])</span><br><span class="line">         return result</span><br><span class="line"></span><br><span class="line">     args = (</span><br><span class="line">         (examples[self.sentence1_key],) if self.sentence2_key is None else (examples[self.sentence1_key], examples[self.sentence2_key])</span><br><span class="line">     )</span><br><span class="line">     result = self.tokenizer(*args, padding=self.padding, max_length=self.max_seq_length, truncation=True)</span><br><span class="line"></span><br><span class="line">     return result</span><br></pre></td></tr></table></figure>
-<h4 id="prompt部分编码"><a href="#prompt部分编码" class="headerlink" title="prompt部分编码"></a>prompt部分编码</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">def get_prompt(self, batch_size):</span><br><span class="line">    prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)</span><br><span class="line">    past_key_values = self.prefix_encoder(prefix_tokens)</span><br><span class="line">    past_key_values = past_key_values.view(</span><br><span class="line">        batch_size,</span><br><span class="line">        self.pre_seq_len,</span><br><span class="line">        self.n_layer * 2, </span><br><span class="line">        self.n_head,</span><br><span class="line">        self.n_embd</span><br><span class="line">    )</span><br><span class="line">    past_key_values = self.dropout(past_key_values)</span><br><span class="line">    past_key_values = past_key_values.permute([2, 0, 3, 1, 4]).split(2) # 2 * layers , batch, head, seqlen, hidden</span><br><span class="line">    return past_key_values</span><br></pre></td></tr></table></figure>
-<h4 id="下游任务预测"><a href="#下游任务预测" class="headerlink" title="下游任务预测"></a>下游任务预测</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pooled_output = outputs[1]</span><br><span class="line"></span><br><span class="line">pooled_output = self.dropout(pooled_output)</span><br><span class="line">logits = self.classifier(pooled_output)</span><br></pre></td></tr></table></figure>
+<h4 id="prompt部分编码">prompt部分编码</h4>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">def get_prompt(self, batch_size):</span><br><span class="line">    prefix_tokens = self.prefix_tokens.unsqueeze(0).expand(batch_size, -1).to(self.roberta.device)</span><br><span class="line">    past_key_values = self.prefix_encoder(prefix_tokens)</span><br><span class="line">    past_key_values = past_key_values.view(</span><br><span class="line">        batch_size,</span><br><span class="line">        self.pre_seq_len,</span><br><span class="line">        self.n_layer * 2, </span><br><span class="line">        self.n_head,</span><br><span class="line">        self.n_embd</span><br><span class="line">    )</span><br><span class="line">    past_key_values = self.dropout(past_key_values)</span><br><span class="line">    past_key_values = past_key_values.permute([2, 0, 3, 1, 4]).split(2) # 2 * layers , batch, head, seqlen, hidden</span><br><span class="line">    return past_key_values</span><br></pre></td></tr></table></figure>
+<h4 id="下游任务预测">下游任务预测</h4>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pooled_output = outputs[1]</span><br><span class="line"></span><br><span class="line">pooled_output = self.dropout(pooled_output)</span><br><span class="line">logits = self.classifier(pooled_output)</span><br></pre></td></tr></table></figure>
 <ul>
 <li>past_key_values作用：将Prompt加到Transformer每一层的前缀上</li>
 <li>为什么需要concat attention mask，因为通过past_key_values 传递attention的QK，扩展了输入的大小了，从而需要扩展attention mask。</li>
 </ul>
-<h3 id="P-tuning-代码处理"><a href="#P-tuning-代码处理" class="headerlink" title="P-tuning 代码处理"></a>P-tuning 代码处理</h3><h4 id="数据处理-1"><a href="#数据处理-1" class="headerlink" title="数据处理"></a>数据处理</h4><p>根据模版长度，生成输入id</p>
+<h3 id="p-tuning-代码处理">P-tuning 代码处理</h3>
+<h4 id="数据处理-1">数据处理</h4>
+<p>根据模版长度，生成输入id</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">def get_query(self, x_h, prompt_tokens, x_t=None):</span><br><span class="line">    # For using handcraft prompts</span><br><span class="line">    if self.args.use_original_template:</span><br><span class="line">        if &#x27;gpt&#x27; in self.args.model_name or &#x27;megatron&#x27; in self.args.model_name:</span><br><span class="line">            query = re.sub(r&#x27;\[Y\].*&#x27;, &#x27;&#x27;, self.relation_templates[self.args.relation_id].replace(&#x27;[X]&#x27;, x_h))</span><br><span class="line">            return self.tokenizer(&#x27; &#x27; + query)[&#x27;input_ids&#x27;]</span><br><span class="line">        else:</span><br><span class="line">            query = self.relation_templates[self.args.relation_id].replace(&#x27;[X]&#x27;, x_h).replace(&#x27;[Y]&#x27;,</span><br><span class="line">                                                                                               self.tokenizer.mask_token)</span><br><span class="line">            return self.tokenizer(&#x27; &#x27; + query)[&#x27;input_ids&#x27;]</span><br><span class="line">    # For P-tuning</span><br><span class="line">    if &#x27;gpt&#x27; not in self.args.model_name and &#x27;megatron&#x27; not in self.args.model_name:</span><br><span class="line">        # BERT-style model</span><br><span class="line">        return [[self.tokenizer.cls_token_id]  # [CLS]</span><br><span class="line">                + prompt_tokens * self.template[0]</span><br><span class="line">                + [self.tokenizer.mask_token_id]  # head entity</span><br><span class="line">                + prompt_tokens * self.template[1]</span><br><span class="line">                + self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(&#x27; &#x27; + x_h))  # [MASK] (tail entity)</span><br><span class="line">                + (prompt_tokens * self.template[2] if self.template[</span><br><span class="line">                                                           2] &gt; 0 else self.tokenizer.convert_tokens_to_ids([&#x27;.&#x27;]))</span><br><span class="line">                + [self.tokenizer.sep_token_id]</span><br><span class="line">                ]</span><br><span class="line">    elif &#x27;gpt&#x27; in self.args.model_name or &#x27;megatron&#x27; in self.args.model_name:</span><br><span class="line">        # GPT-style models</span><br><span class="line">        return [prompt_tokens * self.template[0]</span><br><span class="line">                + self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(&#x27; &#x27; + x_h))  # head entity</span><br><span class="line">                + prompt_tokens * self.template[1]</span><br><span class="line">                + (self.tokenizer.convert_tokens_to_ids(</span><br><span class="line">            self.tokenizer.tokenize(&#x27; &#x27; + x_t)) if x_t is not None else [])</span><br><span class="line">                ]</span><br><span class="line">    else:</span><br><span class="line">        raise NotImplementedError(&quot;The query template for &#123;&#125; has not been defined.&quot;.format(self.args.model_name))</span><br></pre></td></tr></table></figure>
-<h4 id="Prompt部分编码"><a href="#Prompt部分编码" class="headerlink" title="Prompt部分编码"></a>Prompt部分编码</h4><p>替换prompt部分的 bert编码</p>
+<h4 id="prompt部分编码-1">Prompt部分编码</h4>
+<p>替换prompt部分的 bert编码</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">class PromptEncoder(torch.nn.Module):</span><br><span class="line">    def __init__(self, template, hidden_size, tokenizer, device, args):</span><br><span class="line">        super().__init__()</span><br><span class="line">        self.device = device</span><br><span class="line">        self.spell_length = sum(template)</span><br><span class="line">        self.hidden_size = hidden_size</span><br><span class="line">        self.tokenizer = tokenizer</span><br><span class="line">        self.args = args</span><br><span class="line">        # ent embedding</span><br><span class="line">        self.cloze_length = template</span><br><span class="line">        self.cloze_mask = [</span><br><span class="line">            [1] * self.cloze_length[0]  # first cloze</span><br><span class="line">            + [1] * self.cloze_length[1]  # second cloze</span><br><span class="line">            + [1] * self.cloze_length[2]  # third cloze</span><br><span class="line">        ] # 1, templen</span><br><span class="line">        self.cloze_mask = torch.LongTensor(self.cloze_mask).bool().to(self.device)</span><br><span class="line"></span><br><span class="line">        self.seq_indices = torch.LongTensor(list(range(len(self.cloze_mask[0])))).to(self.device)</span><br><span class="line">        # embedding</span><br><span class="line">        self.embedding = torch.nn.Embedding(len(self.cloze_mask[0]), self.hidden_size).to(self.device)</span><br><span class="line">        # LSTM</span><br><span class="line">        self.lstm_head = torch.nn.LSTM(input_size=self.hidden_size,</span><br><span class="line">                                       hidden_size=self.hidden_size // 2,</span><br><span class="line">                                       num_layers=2,</span><br><span class="line">                                       dropout=self.args.lstm_dropout,</span><br><span class="line">                                       bidirectional=True,</span><br><span class="line">                                       batch_first=True)</span><br><span class="line">        self.mlp_head = nn.Sequential(nn.Linear(self.hidden_size, self.hidden_size),</span><br><span class="line">                                      nn.ReLU(),</span><br><span class="line">                                      nn.Linear(self.hidden_size, self.hidden_size))</span><br><span class="line">        print(&quot;init prompt encoder...&quot;)</span><br><span class="line"></span><br><span class="line">    def forward(self):</span><br><span class="line">        input_embeds = self.embedding(self.seq_indices).unsqueeze(0)</span><br><span class="line">        output_embeds = self.mlp_head(self.lstm_head(input_embeds)[0]).squeeze()</span><br><span class="line">        return output_embeds</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def embed_input(self, queries):</span><br><span class="line">        bz = queries.shape[0]</span><br><span class="line">        queries_for_embedding = queries.clone()</span><br><span class="line">        queries_for_embedding[(queries == self.pseudo_token_id)] = self.tokenizer.unk_token_id</span><br><span class="line">        raw_embeds = self.embeddings(queries_for_embedding)</span><br><span class="line"></span><br><span class="line">        # For using handcraft prompts</span><br><span class="line">        if self.args.use_original_template:</span><br><span class="line">            return raw_embeds</span><br><span class="line"></span><br><span class="line">        blocked_indices = (queries == self.pseudo_token_id).nonzero().reshape((bz, self.spell_length, 2))[:, :, 1]  # bz</span><br><span class="line">        replace_embeds = self.prompt_encoder()</span><br><span class="line">        for bidx in range(bz):</span><br><span class="line">            for i in range(self.prompt_encoder.spell_length):</span><br><span class="line">                raw_embeds[bidx, blocked_indices[bidx, i], :] = replace_embeds[i, :]</span><br><span class="line">        return raw_embeds</span><br></pre></td></tr></table></figure>
-<h4 id="下游任务预测-1"><a href="#下游任务预测-1" class="headerlink" title="下游任务预测"></a>下游任务预测</h4><p>找到预测任务的mask标签索引，计算该位置logit与label的损失及准确性</p>
+<h4 id="下游任务预测-1">下游任务预测</h4>
+<p>找到预测任务的mask标签索引，计算该位置logit与label的损失及准确性</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">def bert_out():</span><br><span class="line">     label_mask = (queries == self.tokenizer.mask_token_id).nonzero().reshape(bz, -1)[:, 1].unsqueeze(</span><br><span class="line">         1).to(self.device)  # bz * 1</span><br><span class="line">     labels = torch.empty_like(queries).fill_(-100).long().to(self.device)  # bz * seq_len</span><br><span class="line">     labels = labels.scatter_(1, label_mask, label_ids)</span><br><span class="line">     output = self.model(inputs_embeds=inputs_embeds.to(self.device),</span><br><span class="line">                         attention_mask=attention_mask.to(self.device).bool(),</span><br><span class="line">                         labels=labels.to(self.device))</span><br><span class="line">     loss, logits = output.loss, output.logits</span><br><span class="line"></span><br><span class="line">     pred_ids = torch.argsort(logits, dim=2, descending=True)</span><br><span class="line">     hit1 = 0</span><br><span class="line">     top10 = []</span><br><span class="line">     for i in range(bz):</span><br><span class="line">         pred_seq = pred_ids[i, label_mask[i, 0]].tolist()</span><br><span class="line">         for pred in pred_seq:</span><br><span class="line">             if pred in self.allowed_vocab_ids:</span><br><span class="line">                 break</span><br><span class="line">         if pred == label_ids[i, 0]:</span><br><span class="line">             hit1 += 1</span><br><span class="line"></span><br><span class="line">     if return_candidates:</span><br><span class="line">         return loss, hit1, top10</span><br><span class="line">     return loss, hit1</span><br></pre></td></tr></table></figure>
-<h1 id="Adapter"><a href="#Adapter" class="headerlink" title="Adapter"></a>Adapter</h1><h2 id="LLAMA-Adapter"><a href="#LLAMA-Adapter" class="headerlink" title="LLAMA-Adapter"></a>LLAMA-Adapter</h2><p>论文标题:LLaMA-Adapter: Efficient Fine-tuning of Language Models with Zero-init Attention</p>
+<h1 id="adapter">Adapter</h1>
+<h2 id="llama-adapter">LLAMA-Adapter</h2>
+<p>论文标题:LLaMA-Adapter: Efficient Fine-tuning of Language Models with Zero-init Attention</p>
 <p>论文链接:<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2303.16199.pdf">https://arxiv.org/pdf/2303.16199.pdf</a></p>
 <p>参考链接:<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/619236467">https://zhuanlan.zhihu.com/p/619236467</a></p>
-<h3 id="出发点-3"><a href="#出发点-3" class="headerlink" title="出发点"></a>出发点</h3><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698058683790-cac0df7c-d838-4b3d-a1d3-78611832f79a.png" alt=""></p>
+<h3 id="出发点-3">出发点</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698058683790-cac0df7c-d838-4b3d-a1d3-78611832f79a.png" /></p>
 <p><strong>主要贡献:</strong></p>
-<ol>
-<li><p>7B的LLAMA模型，只需要1.2MB的参数进行微调</p>
-</li>
-<li><p>8卡A100只需要1h的微调时间，较Alpaca快三倍</p>
-</li>
-<li><p>易插拔,容易存储不同的知识</p>
-</li>
-<li><p>多模态指令,除了文本，模型同样可以接收图片作为模型输入</p>
-</li>
+<ol type="1">
+<li><p>7B的LLAMA模型，只需要1.2MB的参数进行微调</p></li>
+<li><p>8卡A100只需要1h的微调时间，较Alpaca快三倍</p></li>
+<li><p>易插拔,容易存储不同的知识</p></li>
+<li><p>多模态指令,除了文本，模型同样可以接收图片作为模型输入</p></li>
 </ol>
 <p>采用Adaption Prompt指导微调。</p>
-<ol>
+<ol type="1">
 <li>在深层Transformer插入Adapter</li>
 <li>将自适应Prompt与词语前缀拼接</li>
 </ol>
 <p><strong>为了避免开始随机初始化注意力的影响，添加门控机制.</strong></p>
-<h3 id="研究方法-1"><a href="#研究方法-1" class="headerlink" title="研究方法"></a>研究方法</h3><h4 id="Learnable-Adaption-Prompts"><a href="#Learnable-Adaption-Prompts" class="headerlink" title="Learnable Adaption Prompts"></a>Learnable Adaption Prompts</h4><p>该方法引入M个adapter的token,符号定义如下:</p>
+<h3 id="研究方法-1">研究方法</h3>
+<h4 id="learnable-adaption-prompts">Learnable Adaption Prompts</h4>
+<p>该方法引入M个adapter的token,符号定义如下:</p>
 <ul>
-<li>将 L 层 transformer 的提示符记为$\{P_l\}_{l=1}^L$，其中$P_l \in \mathbb{R}^{K \times C}$, K 表示每一层的提示长度，C 等于 LLaMA transformer 层的特征维数</li>
+<li>将 L 层 transformer 的提示符记为<span class="math inline">\(\{P_l\}_{l=1}^L\)</span>，其中<span class="math inline">\(P_l \in \mathbb{R}^{K \times C}\)</span>, K 表示每一层的提示长度，C 等于 LLaMA transformer 层的特征维数</li>
 <li>只对于深层的 L 层插入 adapter，这可以更好地调整具有高级语义的语言表示</li>
-<li>以第l个插入层为例，将长度为 M 的词 token 表示为$T_l \in \mathbb{R}^{M \times C}$。然后，将自适应提示符按照 token 维度作为前缀与$T_l$连接，表达式为：</li>
+<li>以第l个插入层为例，将长度为 M 的词 token 表示为<span class="math inline">\(T_l \in \mathbb{R}^{M \times C}\)</span>。然后，将自适应提示符按照 token 维度作为前缀与<span class="math inline">\(T_l\)</span>连接，表达式为：</li>
 </ul>
-<script type="math/tex; mode=display">
-[P_l;T_l] \in \mathbb{R}^{(K+M) \times C}</script><p>这样$P_l$内部学习到的指令知识可以有效地引导$T_l$生成上下文响应</p>
-<h4 id="Zero-initialized-Attention"><a href="#Zero-initialized-Attention" class="headerlink" title="Zero-initialized Attention"></a>Zero-initialized Attention</h4><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698057728193-d7a75ed7-8b5c-4cb0-919a-a57ad3675b93.png" alt=""></p>
+<p><span class="math display">\[
+[P_l;T_l] \in \mathbb{R}^{(K+M) \times C}
+\]</span></p>
+<p>这样<span class="math inline">\(P_l\)</span>内部学习到的指令知识可以有效地引导<span class="math inline">\(T_l\)</span>生成上下文响应</p>
+<h4 id="zero-initialized-attention">Zero-initialized Attention</h4>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698057728193-d7a75ed7-8b5c-4cb0-919a-a57ad3675b93.png" /></p>
 <ul>
-<li><p>如果适应提示是随机初始化的，可能会在训练开始时对词 token 带来干扰，不利于调优的稳定性和有效性。考虑到这一点，修改了最后 L 个 transformer 层的传统注意机制为零初始注意  </p>
-</li>
-<li><p>假设模型基于$[P_l;T_l]$信息，在生成第 (M + 1)-th 个单词，将对应的 (M + 1)-th 个词表示为$t_l \in \mathbb{R}^{(1 \times C)}$， attention 首先基于如下 linear 层对 qkv 进行计算：</p>
-</li>
+<li><p>如果适应提示是随机初始化的，可能会在训练开始时对词 token 带来干扰，不利于调优的稳定性和有效性。考虑到这一点，修改了最后 L 个 transformer 层的传统注意机制为零初始注意</p></li>
+<li><p>假设模型基于<span class="math inline">\([P_l;T_l]\)</span>信息，在生成第 (M + 1)-th 个单词，将对应的 (M + 1)-th 个词表示为<span class="math inline">\(t_l \in \mathbb{R}^{(1 \times C)}\)</span>， attention 首先基于如下 linear 层对 qkv 进行计算：</p></li>
 </ul>
-<script type="math/tex; mode=display">
+<p><span class="math display">\[
 Q_l = Linear_q(t_l)
 \\ K_l = Linear_k([P_l;T_l;t_l])
-\\ V_l = Linear_v([P_l;T_l;t_l])</script><ul>
+\\ V_l = Linear_v([P_l;T_l;t_l])
+\]</span></p>
+<ul>
 <li>计算Softmax注意力得分</li>
 </ul>
-<script type="math/tex; mode=display">
-S_l=Q_l K_l^T / \sqrt{C} \in \mathbb{R}^{1 \times(K+M+1)}</script><p>记录了$t_L$和所有 K+M+1 token 之间的特征相似性。同时，$S_l$可以由两个组分重新计算为:</p>
-<script type="math/tex; mode=display">
-S_l=\left[S_l^K ; S_l^{M+1}\right]^T</script><p>其中 $S_l^K \in \mathbb{R}^{K \times 1}$ 和 $S_l^(M+1) \in \mathbb{R}^{(M+1) \times 1}$ 分别为 $\mathrm{K}$ 个适应提示和 $\mathrm{M}+1$ 个词 token 的注意得分。前者 $S_l^K$ 表示可学习提示符对 $t_l$ 的贡献, 这可能会在训练早期造成干扰</p>
+<p><span class="math display">\[
+S_l=Q_l K_l^T / \sqrt{C} \in \mathbb{R}^{1 \times(K+M+1)}
+\]</span></p>
+<p>记录了<span class="math inline">\(t_L\)</span>和所有 K+M+1 token 之间的特征相似性。同时，<span class="math inline">\(S_l\)</span>可以由两个组分重新计算为:</p>
+<p><span class="math display">\[
+S_l=\left[S_l^K ; S_l^{M+1}\right]^T
+\]</span></p>
+<p>其中 <span class="math inline">\(S_l^K \in \mathbb{R}^{K \times 1}\)</span> 和 <span class="math inline">\(S_l^(M+1) \in \mathbb{R}^{(M+1) \times 1}\)</span> 分别为 <span class="math inline">\(\mathrm{K}\)</span> 个适应提示和 <span class="math inline">\(\mathrm{M}+1\)</span> 个词 token 的注意得分。前者 <span class="math inline">\(S_l^K\)</span> 表示可学习提示符对 <span class="math inline">\(t_l\)</span> 的贡献, 这可能会在训练早期造成干扰</p>
 <ul>
-<li><p>为此, 采用一种可学习的门控因子 $g_l$, 自适应控制关注中 $S_l^K$ 的重要性</p>
-<script type="math/tex; mode=display">
-S_l^g=\left[\operatorname{Softmax}\left(S_l^K\right) \cdot g_l ; \operatorname{Softmax}\left(S_l^{M+1}\right)\right]^T</script></li>
-<li><p>单独的 softmax 函数确保第二项与添加的适应提示无关，$g_l$训练开始会初始化为 0，然后再逐渐增大。注意力的每个头会采用不同的$g_l$进行独立学习。最后，计算带有线性投影层的注意层的输出为:</p>
-</li>
+<li><p>为此, 采用一种可学习的门控因子 <span class="math inline">\(g_l\)</span>, 自适应控制关注中 <span class="math inline">\(S_l^K\)</span> 的重要性</p>
+<p>$$ S_l<sup>g=</sup>T</p>
+<p>$$</p></li>
+<li><p>单独的 softmax 函数确保第二项与添加的适应提示无关，<span class="math inline">\(g_l\)</span>训练开始会初始化为 0，然后再逐渐增大。注意力的每个头会采用不同的<span class="math inline">\(g_l\)</span>进行独立学习。最后，计算带有线性投影层的注意层的输出为:</p></li>
 </ul>
-<script type="math/tex; mode=display">
-t_l^o=Linear_o(S_l^gV_l) \in \mathbb{R}^{(1 \times C)}</script><h4 id="Multi-modal-Reasoning"><a href="#Multi-modal-Reasoning" class="headerlink" title="Multi-modal Reasoning"></a>Multi-modal Reasoning</h4><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698064819805-ad353cd0-aaaa-4bbe-808b-66bcb4b1b2df.png" alt=""></p>
+<p><span class="math display">\[
+t_l^o=Linear_o(S_l^gV_l) \in \mathbb{R}^{(1 \times C)}
+\]</span></p>
+<h4 id="multi-modal-reasoning">Multi-modal Reasoning</h4>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698064819805-ad353cd0-aaaa-4bbe-808b-66bcb4b1b2df.png" /></p>
 <ul>
-<li><p>LLaMA-Adapter 不局限于文本指令，能够根据其他模态输入来回答问题，为语言模型增加了丰富的跨模态信息  </p>
-</li>
-<li><p>对于图片输入，使用 CLIP 提取多尺度的全局特征，然后将这些多尺度特征 concat 起来，经过一个投影层得到全局的信息表征</p>
-</li>
+<li><p>LLaMA-Adapter 不局限于文本指令，能够根据其他模态输入来回答问题，为语言模型增加了丰富的跨模态信息</p></li>
+<li><p>对于图片输入，使用 CLIP 提取多尺度的全局特征，然后将这些多尺度特征 concat 起来，经过一个投影层得到全局的信息表征</p></li>
 </ul>
-<script type="math/tex; mode=display">
-I_p=Projection(Concat(\{I_m\}_{m=1}^M))</script><p>$I_p \in \mathbb{R}^{1 \times C}$是和 adapter prompt 维度一样的全局图片特征表示，然后将该特征 repeat 后与 adapter prompt 相加得到多模态特征:</p>
-<script type="math/tex; mode=display">
-P_l^v=P_l+Repeat(I_p) \in \mathbb{R}^{K \times C}</script><h1 id="统一视角看P-tuning、Adapter、LoRA"><a href="#统一视角看P-tuning、Adapter、LoRA" class="headerlink" title="统一视角看P-tuning、Adapter、LoRA"></a>统一视角看P-tuning、Adapter、LoRA</h1><p>论文标题：Towards a Unified View of Parameter-Efficient Transfer Learning</p>
+<p><span class="math display">\[
+I_p=Projection(Concat(\{I_m\}_{m=1}^M))
+\]</span></p>
+<p><span class="math inline">\(I_p \in \mathbb{R}^{1 \times C}\)</span>是和 adapter prompt 维度一样的全局图片特征表示，然后将该特征 repeat 后与 adapter prompt 相加得到多模态特征:</p>
+<p><span class="math display">\[
+P_l^v=P_l+Repeat(I_p) \in \mathbb{R}^{K \times C}
+\]</span></p>
+<h1 id="统一视角看p-tuningadapterlora">统一视角看P-tuning、Adapter、LoRA</h1>
+<p>论文标题：Towards a Unified View of Parameter-Efficient Transfer Learning</p>
 <p>论文链接：<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/2110.04366.pdf">https://arxiv.org/pdf/2110.04366.pdf</a></p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1681724894711-608bdf1d-acf5-42ab-9895-c47786cb430c.png" alt=""></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1681724894711-608bdf1d-acf5-42ab-9895-c47786cb430c.png" /></p>
 <p>论文旨在回答三个问题：</p>
-<ol>
+<ol type="1">
 <li><strong>这些方法如何建立联系</strong></li>
 <li><strong>这些方法起关键作用的部分是什么</strong></li>
 <li><strong>这些关键作用的部分能否互相借鉴，产生更有效的方法</strong></li>
 </ol>
 <p>我们已经详细回顾了这三种方法，接下来，我们将从一个统一的视角来探讨这三种方法。</p>
-<h2 id="统一视角"><a href="#统一视角" class="headerlink" title="统一视角"></a>统一视角</h2><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698072659802-d465e045-3ddc-4849-a681-e8bb7764c826.png" alt=""></p>
-<h3 id="Prefix-Tuning的视角"><a href="#Prefix-Tuning的视角" class="headerlink" title="Prefix-Tuning的视角"></a>Prefix-Tuning的视角</h3><p>在「原始 key 序列」和「原始 value 序列」前面分别拼接了长度为$l$的「prompt key 序列」和「prompt value 序列」。  </p>
-<p>每个 attention layer 的输入为$C$的embedding 序列  ，prefix tunning 的计算方式变为：</p>
-<script type="math/tex; mode=display">
+<h2 id="统一视角">统一视角</h2>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698072659802-d465e045-3ddc-4849-a681-e8bb7764c826.png" /></p>
+<h3 id="prefix-tuning的视角">Prefix-Tuning的视角</h3>
+<p>在「原始 key 序列」和「原始 value 序列」前面分别拼接了长度为<span class="math inline">\(l\)</span>的「prompt key 序列」和「prompt value 序列」。</p>
+<p>每个 attention layer 的输入为<span class="math inline">\(C\)</span>的embedding 序列  ，prefix tunning 的计算方式变为：</p>
+<p><span class="math display">\[
 \begin{aligned}
-& \text { head }=\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \operatorname{concat}\left(\boldsymbol{P}_k, \boldsymbol{C} \boldsymbol{W}_k\right), \operatorname{concat}\left(\boldsymbol{P}_v, \boldsymbol{C} \boldsymbol{W}_v\right)\right) \\
-& =\operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \operatorname{concat}\left(\boldsymbol{P}_k, \boldsymbol{C W}_k\right)^{\top}\right)\left[\begin{array}{c}
+&amp; \text { head }=\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \operatorname{concat}\left(\boldsymbol{P}_k, \boldsymbol{C} \boldsymbol{W}_k\right), \operatorname{concat}\left(\boldsymbol{P}_v, \boldsymbol{C} \boldsymbol{W}_v\right)\right) \\
+&amp; =\operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \operatorname{concat}\left(\boldsymbol{P}_k, \boldsymbol{C W}_k\right)^{\top}\right)\left[\begin{array}{c}
 \boldsymbol{P}_v \\
 \boldsymbol{C} \boldsymbol{W}_v
 \end{array}\right] \\
-& =(1-\lambda(\boldsymbol{x})) \operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right) \boldsymbol{C} \boldsymbol{W}_v+\lambda(\boldsymbol{x}) \operatorname{softmax}\left(x \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right) \boldsymbol{P}_v \\
-& =(1-\lambda(\boldsymbol{x})) \underbrace{\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \boldsymbol{C}_k, \boldsymbol{C W}_v\right)}_{\text {standard attention }}+\lambda(\boldsymbol{x}) \underbrace{\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \boldsymbol{P}_k, \boldsymbol{P}_v\right)}_{\text {independent of } \boldsymbol{C}},
-\end{aligned}</script><p>其中$P_k,P_v$是添加到输入的Prompt向量， $x$为具体的一个 token embedding。</p>
-<script type="math/tex; mode=display">
-\lambda(\boldsymbol{x})=\frac{\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i}{\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i+\sum_j \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right)_j} .</script><p>简单来说:和原来相比，其实就是在计算 attention score 时多和$P_k$计算了 attention score；然后聚合时，使用这部分 attention score 进行 softmax ，attend 到$P_v$。</p>
+&amp; =(1-\lambda(\boldsymbol{x})) \operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right) \boldsymbol{C} \boldsymbol{W}_v+\lambda(\boldsymbol{x}) \operatorname{softmax}\left(x \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right) \boldsymbol{P}_v \\
+&amp; =(1-\lambda(\boldsymbol{x})) \underbrace{\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \boldsymbol{C}_k, \boldsymbol{C W}_v\right)}_{\text {standard attention }}+\lambda(\boldsymbol{x}) \underbrace{\operatorname{Attn}\left(\boldsymbol{x} \boldsymbol{W}_q, \boldsymbol{P}_k, \boldsymbol{P}_v\right)}_{\text {independent of } \boldsymbol{C}},
+\end{aligned}
+\]</span></p>
+<p>其中<span class="math inline">\(P_k,P_v\)</span>是添加到输入的Prompt向量， <span class="math inline">\(x\)</span>为具体的一个 token embedding。</p>
+<p><span class="math display">\[
+\lambda(\boldsymbol{x})=\frac{\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i}{\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i+\sum_j \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right)_j} .
+\]</span></p>
+<p>简单来说:和原来相比，其实就是在计算 attention score 时多和<span class="math inline">\(P_k\)</span>计算了 attention score；然后聚合时，使用这部分 attention score 进行 softmax ，attend 到<span class="math inline">\(P_v\)</span>。</p>
 <p>上述公式中的第二行到第三行表示将整体 prompt+sequence 的 softmax，拆分成单独的 in-prompt softmax 和 in-sequence softmax:</p>
 <ul>
-<li><p>$\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i$为 prompt token 所有 attention score 的和。 </p>
-</li>
-<li><p>$\sum_j \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right)_j$为原始序列所有 attention score 的和。</p>
-</li>
+<li><p><span class="math inline">\(\sum_i \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right)_i\)</span>为 prompt token 所有 attention score 的和。</p></li>
+<li><p><span class="math inline">\(\sum_j \exp \left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{W}_k^{\top} \boldsymbol{C}^{\top}\right)_j\)</span>为原始序列所有 attention score 的和。</p></li>
 </ul>
-<p>所以原始公式中的第二项$Attn(\boldsymbol{x} \boldsymbol{W_q}, \boldsymbol{P}_k, \boldsymbol{P}_v)$就是一个独立于原始序列的 position-wise modification，作用在原始的单头注意力上，于是 token x 的「单头注意力的输出」变为原有计算方式以及Prompt Attention的计算组合：</p>
-<script type="math/tex; mode=display">
-\boldsymbol{h} \leftarrow(1-\lambda(\boldsymbol{x})) \boldsymbol{h}+\lambda(\boldsymbol{x}) \Delta \boldsymbol{h}, \quad \Delta \boldsymbol{h}:=\operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right) \boldsymbol{P}_v</script><p><strong>The Connection with Adapters:</strong> 令$W_1=W_qP_k^T,W_2=P_v,f=softmax(.)$，计算公式如下:</p>
-<script type="math/tex; mode=display">
-\boldsymbol{h} \leftarrow(1-\lambda(\boldsymbol{x})) \boldsymbol{h}+\lambda(\boldsymbol{x}) f\left(\boldsymbol{x} \boldsymbol{W}_1\right) \boldsymbol{W}_2</script><ul>
-<li>和上述 Adapter 的公式类似，只不过这样有一个门控机制$\lambda(x)$。<br>这个视角下，prefix tuning 也是一种类似 Adapter 的 plug-in module。</li>
-<li>同时$\boldsymbol{W}_1=\boldsymbol{W}_q \boldsymbol{P}_k^{\top} \in \mathbb{R}^{d_h \times l}, \boldsymbol{W}_2 \in \mathbb{R}^{l \times d_h}$。当 prompt 序列长度$l$小于 attention head embedding size  $d_h$时，这是一种 low-rank 的计算方式，所以和 Adapter 也一样。</li>
-<li>prompt 序列长度$l$和 Adapter bottleneck dimension  $r$效果一致，都表示「降维维度」。</li>
+<p>所以原始公式中的第二项<span class="math inline">\(Attn(\boldsymbol{x} \boldsymbol{W_q}, \boldsymbol{P}_k, \boldsymbol{P}_v)\)</span>就是一个独立于原始序列的 position-wise modification，作用在原始的单头注意力上，于是 token x 的「单头注意力的输出」变为原有计算方式以及Prompt Attention的计算组合：</p>
+<p><span class="math display">\[
+\boldsymbol{h} \leftarrow(1-\lambda(\boldsymbol{x})) \boldsymbol{h}+\lambda(\boldsymbol{x}) \Delta \boldsymbol{h}, \quad \Delta \boldsymbol{h}:=\operatorname{softmax}\left(\boldsymbol{x} \boldsymbol{W}_q \boldsymbol{P}_k^{\top}\right) \boldsymbol{P}_v
+\]</span></p>
+<p><strong>The Connection with Adapters:</strong> 令<span class="math inline">\(W_1=W_qP_k^T,W_2=P_v,f=softmax(.)\)</span>，计算公式如下:</p>
+<p><span class="math display">\[
+\boldsymbol{h} \leftarrow(1-\lambda(\boldsymbol{x})) \boldsymbol{h}+\lambda(\boldsymbol{x}) f\left(\boldsymbol{x} \boldsymbol{W}_1\right) \boldsymbol{W}_2
+\]</span></p>
+<ul>
+<li>和上述 Adapter 的公式类似，只不过这样有一个门控机制<span class="math inline">\(\lambda(x)\)</span>。<br />
+这个视角下，prefix tuning 也是一种类似 Adapter 的 plug-in module。</li>
+<li>同时<span class="math inline">\(\boldsymbol{W}_1=\boldsymbol{W}_q \boldsymbol{P}_k^{\top} \in \mathbb{R}^{d_h \times l}, \boldsymbol{W}_2 \in \mathbb{R}^{l \times d_h}\)</span>。当 prompt 序列长度<span class="math inline">\(l\)</span>小于 attention head embedding size <span class="math inline">\(d_h\)</span>时，这是一种 low-rank 的计算方式，所以和 Adapter 也一样。</li>
+<li>prompt 序列长度<span class="math inline">\(l\)</span>和 Adapter bottleneck dimension  <span class="math inline">\(r\)</span>效果一致，都表示「降维维度」。</li>
 </ul>
 <p><strong>与Adapter的区别:</strong></p>
-<ol>
-<li><p>Prefix-tuning使用PLM模型的输入计算$\Delta h$，Adapter使用PLM模型的输出计算$\Delta h$，因此Prefix-tuning可以看作PLM模型的并行计算模块，Adapter是PLM模型的串行计算模块</p>
-</li>
-<li><p>Adapter更加灵活，Adapter通常修改注意力和FFN的输出，Prefix-tuning只修改每个head的注意力输出</p>
-</li>
-<li><p>Prefix-tuning可以应用于多头，而Adapter通常是单头的</p>
-</li>
+<ol type="1">
+<li><p>Prefix-tuning使用PLM模型的输入计算<span class="math inline">\(\Delta h\)</span>，Adapter使用PLM模型的输出计算<span class="math inline">\(\Delta h\)</span>，因此Prefix-tuning可以看作PLM模型的并行计算模块，Adapter是PLM模型的串行计算模块</p></li>
+<li><p>Adapter更加灵活，Adapter通常修改注意力和FFN的输出，Prefix-tuning只修改每个head的注意力输出</p></li>
+<li><p>Prefix-tuning可以应用于多头，而Adapter通常是单头的</p></li>
 </ol>
-<h3 id="统一框架"><a href="#统一框架" class="headerlink" title="统一框架"></a>统一框架</h3><p>符号定义如下:</p>
+<h3 id="统一框架">统一框架</h3>
+<p>符号定义如下:</p>
 <ul>
-<li><p>$\Delta h$:可调整的隐层状态</p>
-</li>
-<li><p>$h$:隐藏层表示向量(被调整的向量)</p>
-</li>
-<li><p>$x$:PLM模块的输入</p>
-</li>
+<li><p><span class="math inline">\(\Delta h\)</span>:可调整的隐层状态</p></li>
+<li><p><span class="math inline">\(h\)</span>:隐藏层表示向量(被调整的向量)</p></li>
+<li><p><span class="math inline">\(x\)</span>:PLM模块的输入</p></li>
 </ul>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698109970893-5dd199c0-2075-4fa9-955f-974bf13e3eff.png" alt=""></p>
-<h4 id="Functional-Form"><a href="#Functional-Form" class="headerlink" title="Functional Form"></a>Functional Form</h4><p>Functional Form是$\Delta h$的函数计算方式，三者基本都是下面的过程:</p>
-<script type="math/tex; mode=display">
-proj_{down} \rightarrow nonlinear \rightarrow proj_{up}</script><p>LoRA中的nonlinear方法是自身identify.</p>
-<h4 id="Insertion-Form"><a href="#Insertion-Form" class="headerlink" title="Insertion Form"></a>Insertion Form</h4><p>Insertion Form是模块添加进网络的方式，Adapter的输入是PLM模块的输出，因此是串行的。</p>
-<h4 id="Modified-Representation"><a href="#Modified-Representation" class="headerlink" title="Modified Representation"></a>Modified Representation</h4><p>Modified Representation是哪里的隐藏层表示被调整的。</p>
-<h4 id="Composition-Function"><a href="#Composition-Function" class="headerlink" title="Composition Function"></a>Composition Function</h4><p>Composition Function是将$\Delta h$和$h$组合成新的$h$的组合计算方式。Prefix tuning和Adapter的组合计算方式见上文描述，LoRA组合计算方式中的s其实就是LoRA一节中提到的$\frac{\alpha}{r}$</p>
-<h3 id="迁移设计"><a href="#迁移设计" class="headerlink" title="迁移设计"></a>迁移设计</h3><p>作者在分析了三种方法的联系、核心部件后，提出了三种改进方案:Parallel Adapter、Multi-head Parallel Adapter、Scaled Parallel Adapter.</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698109970893-5dd199c0-2075-4fa9-955f-974bf13e3eff.png" /></p>
+<h4 id="functional-form">Functional Form</h4>
+<p>Functional Form是<span class="math inline">\(\Delta h\)</span>的函数计算方式，三者基本都是下面的过程:</p>
+<p><span class="math display">\[
+proj_{down} \rightarrow nonlinear \rightarrow proj_{up}
+\]</span></p>
+<p>LoRA中的nonlinear方法是自身identify.</p>
+<h4 id="insertion-form">Insertion Form</h4>
+<p>Insertion Form是模块添加进网络的方式，Adapter的输入是PLM模块的输出，因此是串行的。</p>
+<h4 id="modified-representation">Modified Representation</h4>
+<p>Modified Representation是哪里的隐藏层表示被调整的。</p>
+<h4 id="composition-function">Composition Function</h4>
+<p>Composition Function是将<span class="math inline">\(\Delta h\)</span>和<span class="math inline">\(h\)</span>组合成新的<span class="math inline">\(h\)</span>的组合计算方式。Prefix tuning和Adapter的组合计算方式见上文描述，LoRA组合计算方式中的s其实就是LoRA一节中提到的<span class="math inline">\(\frac{\alpha}{r}\)</span></p>
+<h3 id="迁移设计">迁移设计</h3>
+<p>作者在分析了三种方法的联系、核心部件后，提出了三种改进方案:Parallel Adapter、Multi-head Parallel Adapter、Scaled Parallel Adapter.</p>
 <ul>
-<li><p>Parallel Adapter:借鉴Prefix-tuing的方式，将Adapter的输入改为PLM模块的输入</p>
-</li>
-<li><p>Multi-head Parallel Adapter:进一步将Parallel Adapter应用于Attention head的输出</p>
-</li>
-<li><p>Scaled Parallel Adapter:借鉴LoRA的组合计算方式，在Parallel Adapter的基础上，添加一个缩放系数</p>
-</li>
+<li><p>Parallel Adapter:借鉴Prefix-tuing的方式，将Adapter的输入改为PLM模块的输入</p></li>
+<li><p>Multi-head Parallel Adapter:进一步将Parallel Adapter应用于Attention head的输出</p></li>
+<li><p>Scaled Parallel Adapter:借鉴LoRA的组合计算方式，在Parallel Adapter的基础上，添加一个缩放系数</p></li>
 </ul>
-<h2 id="实验设置"><a href="#实验设置" class="headerlink" title="实验设置"></a>实验设置</h2><h3 id="现有方法的效果"><a href="#现有方法的效果" class="headerlink" title="现有方法的效果"></a>现有方法的效果</h3><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698111604710-decfd060-c03c-4dab-978c-3ae1794e206b.png" alt=""></p>
+<h2 id="实验设置">实验设置</h2>
+<h3 id="现有方法的效果">现有方法的效果</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698111604710-decfd060-c03c-4dab-978c-3ae1794e206b.png" /></p>
 <p>如图4和表2所示，虽然现有方法通过调优少于1%的参数，就能在MNLI和SST2上取得竞争性的表现，但如果在XSum和en-ro中增加5%的参数，还是存在较大的差距。即使将相对参数大小增加到&gt;10%，<strong>这个差距仍然明显</strong>。Raffel等人（2020）在高资源MT任务上观察到了更大的差距。这表明，许多声称在仅使用编码器的模型的GLUE基准测试上，或在相对简单的生成基准测试（如E2E）上，与全精调结果相当的方法（Guo等人，2021；Ben Zaken等人，2021；Mahabadi等人，2021），或使用编码器-解码器模型的方法（Li &amp; Liang, 2021），<strong>可能无法很好地推广到其他标准基准测试</strong>。影响因素可能包括训练样本的数量、任务复杂性或模型架构等复杂因素。</p>
-<h3 id="哪一种INSERTION-FORM更好"><a href="#哪一种INSERTION-FORM更好" class="headerlink" title="哪一种INSERTION FORM更好"></a>哪一种INSERTION FORM更好</h3><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698112116451-3dff7010-ab40-4283-898a-666dffeb969e.png" alt=""></p>
+<h3 id="哪一种insertion-form更好">哪一种INSERTION FORM更好</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698112116451-3dff7010-ab40-4283-898a-666dffeb969e.png" /></p>
 <p>如表3所示，<strong>使用并行插入的Prefix-tuning在性能上超过了顺序Adapter的注意力</strong>。此外，在所有情况下，并行Adapter都能胜过顺序Adapter，其中PA（ffn）在XSum上的R-2分比SA（ffn）高1.7点，而在en-ro上的BLEU分数则高出0.8点。</p>
-<h3 id="哪一种MODIFIED-REPRESENTATION更好"><a href="#哪一种MODIFIED-REPRESENTATION更好" class="headerlink" title="哪一种MODIFIED REPRESENTATION更好"></a>哪一种MODIFIED REPRESENTATION更好</h3><p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698198035214-89f233f5-4a13-48b9-9201-c16d306115d8.png" alt=""></p>
+<h3 id="哪一种modified-representation更好">哪一种MODIFIED REPRESENTATION更好</h3>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698198035214-89f233f5-4a13-48b9-9201-c16d306115d8.png" /></p>
 <p>如图5所示，<strong>所有带有FFN修改的方法在所有情况下都优于带有注意力修改的方法</strong>（红色标记通常高于所有蓝色标记），并且通常参数更少。</p>
 <p>其次，<strong>同一种方法在FFN上应用总是优于在注意力上的对应方法</strong>。例如，LoRA（ffn）在XSum上比LoRA（attn）提高了1个R-2分数。作者也强调，当进一步增加容量时，Prefix-tuning并没有持续改进，这也在Li &amp; Liang (2021)中观察到。</p>
 <p>这些结果表明，<strong>无论功能形式或组合函数是什么，FFN修改都可以比注意力更有效地利用增加的参数</strong>。作者假设这是因为FFN学习了特定于任务的文本模式（Geva et al., 2021），而注意力学习了成对的位置交互，这并不需要大容量来适应新任务。</p>
 <p><strong><u>当使用0.1%的参数时，情况会有所不同吗？</u></strong></p>
 <p>在上文中，作者提及<strong>Prefix-tuning比Adapter（attn）更具表达性</strong>，然而，这在图5中并没有反映出来。作者推测这是因为<strong>多头注意力只有在参数预算较小的时候才有优势</strong>。为了验证这个假设，作者比较了在添加0.1%的预训练参数时的前缀调优和并行适配器。为了消除组合函数的影响，作者也对比了去除前缀调优中门控作为h + ∆h的结果。同时包括了多头并行Adapter变体（MH PA）的结果。</p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698198513096-bec5e0a3-7aa5-4f42-8cee-2b1f07892767.png" alt=""></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698198513096-bec5e0a3-7aa5-4f42-8cee-2b1f07892767.png" /></p>
 <p>如表4所示，在使用0.1%的参数时，<strong>多头方法 - 前缀调优和MH PA（attn）</strong> - 比所有其他方法至少高出1.6个BLEU分数。令人惊讶的是，将l从200减少到30只会导致前缀调优损失0.4个BLEU分，而PA（attn）会损失1.9分。前缀调优中的门控组合函数稍微帮助了结果提高了0.3分。作者强调，<strong>MH并行适配器比单头版本提高了1.6分，这再次验证了多头公式的有效性</strong>。</p>
 <p>结合图5和表4的结果，得出结论:<strong>当参数预算非常小的时候，修改头注意力显示出最好的结果，而在更大的容量下FFN可以更好地利用隐藏层调整。这表明将更大的参数预算分配给FFN修改，而不是像Houlsby等人（2019）那样平等地对待注意力和FFN是有效的。</strong></p>
-<h3 id="哪一种COMPOSITION-FUNCTION更好"><a href="#哪一种COMPOSITION-FUNCTION更好" class="headerlink" title="哪一种COMPOSITION FUNCTION更好"></a>哪一种COMPOSITION FUNCTION更好</h3><p>在上文中介绍了三种组合函数：简单加法（Adapter），门控加法（Prefix-tuning）和缩放加法（LoRA）。作者通过在LoRA上进行消融，并与所提出的缩放并行适配器（Scaled PA）进行比较，如第4.4节所示。</p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698197086391-6b08ea04-49c9-43c9-b271-2084456d5225.png" alt=""></p>
+<h3 id="哪一种composition-function更好">哪一种COMPOSITION FUNCTION更好</h3>
+<p>在上文中介绍了三种组合函数：简单加法（Adapter），门控加法（Prefix-tuning）和缩放加法（LoRA）。作者通过在LoRA上进行消融，并与所提出的缩放并行适配器（Scaled PA）进行比较，如第4.4节所示。</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698197086391-6b08ea04-49c9-43c9-b271-2084456d5225.png" /></p>
 <p>表5报告了XSum上的结果。Adapter设置r为512，为LoRA设置r为102，以使他们的调优参数大小相同。自拍总金额根据开发集上的R-2分数选择s。LoRA（s = 4）的表现优于并行Adapter。然而，如果将s设置为1来移除缩放，这种优势就消失了。通过将LoRA的组合函数插入到并行Adapter中，得到的Scaled PA将原始并行Adapter提高了0.56个ROUGE-2点。此外还尝试将s设置为一个学习的标量，但并没有得到更好的结果。因此，得出结论:<strong>缩放组合函数优于原始的加法组合函数，同时易于应用。</strong></p>
-<h3 id="有效设计元素整合"><a href="#有效设计元素整合" class="headerlink" title="有效设计元素整合"></a>有效设计元素整合</h3><p>首先强调前几部分的三个发现：</p>
+<h3 id="有效设计元素整合">有效设计元素整合</h3>
+<p>首先强调前几部分的三个发现：</p>
 <p>（1）Scaled Parallel Adapter是修改FFN的最佳变体；</p>
 <p>（2）FFN能够在更大的参数容量下更好地利用隐藏层修改；</p>
 <p>（3）像Prefix-tuning那样修改头注意力只需要0.1%的参数就能实现强大的性能。</p>
 <p>受这些发现的启发，作者混合并匹配这些发现背后的优秀设计：具体来说，在注意力子层使用具有较小瓶颈尺寸（l = 30）的Prefix-tuning，并分配更多的参数预算，使用Scaled Parallel Adapter（r = 512）修改FFN表示。由于Prefix-tuning可以统一框架中被视为一种形式的Adapter，将这种变体命名为MAM Adapter。</p>
-<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698196596717-9cbafbb3-bec2-46db-92b3-5af7bbeccb30.png" alt=""></p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1698196596717-9cbafbb3-bec2-46db-92b3-5af7bbeccb30.png" /></p>
 <p>在表6中，作者将MAM Adapter与各种参数高效调优方法进行比较，并在表6中展示了其他组合版本的结果：在注意力和FFN层使用并行Adapter，并将Prefix-tuning（attn）与LoRA（ffn）结合 - 这两种组合版本都可以改善各自的原型。MAM Adapter在两个任务上都取得了最好的性能，并且能够通过只更新6.7%的预训练参数来达到全精调的结果。</p>
-<h3 id="实验结论"><a href="#实验结论" class="headerlink" title="实验结论"></a>实验结论</h3><p>首先我们总结一下文章的内容:</p>
-<ol>
-<li><p>文章根据Adapter、Prompt-Tuning、LoRA三者，提出一个统一的高效参数微调框架:将Adapter、Prompt-Tuning、LoRA定义为针对隐藏层状态进行调整</p>
-</li>
+<h3 id="实验结论">实验结论</h3>
+<p>首先我们总结一下文章的内容:</p>
+<ol type="1">
+<li><p>文章根据Adapter、Prompt-Tuning、LoRA三者，提出一个统一的高效参数微调框架:将Adapter、Prompt-Tuning、LoRA定义为针对隐藏层状态进行调整</p></li>
 <li><p>文章针对隐藏层状态调整的方法做了实验:</p>
 <ul>
-<li><p><strong>模块并行还是串行</strong>？Parallel效果要优于Sequential</p>
-</li>
-<li><p><strong>插入的位置在哪里较好？（ATT VS FFN）</strong> 插在FFN的效果要优于ATT</p>
-</li>
-<li><p><strong>如何组合状态向量？</strong> 缩放的组合函数效果更好。</p>
-</li>
-</ul>
-</li>
-<li><p>像 prefix tuning 这样修改头部注意力可以在只有0.1%的参数下实现强大的性能。</p>
-</li>
+<li><p><strong>模块并行还是串行</strong>？Parallel效果要优于Sequential</p></li>
+<li><p><strong>插入的位置在哪里较好？（ATT VS FFN）</strong> 插在FFN的效果要优于ATT</p></li>
+<li><p><strong>如何组合状态向量？</strong> 缩放的组合函数效果更好。</p></li>
+</ul></li>
+<li><p>像 prefix tuning 这样修改头部注意力可以在只有0.1%的参数下实现强大的性能。</p></li>
 </ol>
 <p>有了刚刚的内容回顾，现在我们回答该文章开头拟解决的问题。</p>
-<ol>
+<ol type="1">
 <li><p><strong>这些方法如何建立联系</strong></p>
 <ul>
 <li>文章根据Adapter、Prompt-Tuning、LoRA三者，提出一个统一的高效参数微调框架:将Adapter、Prompt-Tuning、LoRA定义为针对隐藏层状态进行调整</li>
-</ul>
-</li>
+</ul></li>
 <li><p><strong>这些方法起关键作用的部分是什么</strong></p>
 <ul>
 <li>针对隐藏层状态进行调整的不同插入形式、插入位置、组合状态向量的方法</li>
-</ul>
-</li>
+</ul></li>
 <li><p><strong>这些关键作用的部分能否互相借鉴，产生更有效的方法</strong></p>
 <ul>
 <li>作者混合并匹配这些发现背后的优秀设计：具体来说，在注意力子层使用具有较小瓶颈尺寸（l = 30）的Prefix-tuning，并分配更多的参数预算，使用Scaled Parallel Adapter（r = 512）修改FFN表示。由于Prefix-tuning可以统一框架中被视为一种形式的Adapter，将这种变体命名为MAM Adapter。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>在本篇文章中，我们详细探讨了高效参数微调的三种主要方法：LoRA、P-tuning和Adapter。我们深入介绍了LoRA的原理，包括自适应调整矩阵秩的改进版本AdaLoRA和进一步节省显存的QLoRA方法，以及LoRA方法和SFT的优劣对比。在P-tuning的部分，我们详细解读了P-tuning V1和V2的原理及对应的代码实现。而在Adapter的部分，我们以LLAMA-Adapter为例，深入讲解了Adapter的工作原理。</p>
+<h1 id="总结">总结</h1>
+<p>在本篇文章中，我们详细探讨了高效参数微调的三种主要方法：LoRA、P-tuning和Adapter。我们深入介绍了LoRA的原理，包括自适应调整矩阵秩的改进版本AdaLoRA和进一步节省显存的QLoRA方法，以及LoRA方法和SFT的优劣对比。在P-tuning的部分，我们详细解读了P-tuning V1和V2的原理及对应的代码实现。而在Adapter的部分，我们以LLAMA-Adapter为例，深入讲解了Adapter的工作原理。</p>
 <p>在仔细比较和研究这三种方法后，我们探究了一个将这三种方法集成的统一框架。在这个框架中，论文作者还进一步提出了一个优化的MAM Adapter方法，以期在参数微调方面得到更好的效果。</p>
 <p>总的来说，通过本文我们希望读者能对高效参数微调有更深入的理解和掌握，并能在实际工作中运用这些方法得到更好的模型性能。</p>
 
@@ -995,7 +1078,7 @@ proj_{down} \rightarrow nonlinear \rightarrow proj_{up}</script><p>LoRA中的non
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LoRA"><span class="nav-number">2.</span> <span class="nav-text">LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LoRA-1"><span class="nav-number">2.1.</span> <span class="nav-text">LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9"><span class="nav-number">2.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.2.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="nav-number">2.1.3.</span> <span class="nav-text">代码解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LoRA-VS-SFT"><span class="nav-number">2.1.4.</span> <span class="nav-text">LoRA VS SFT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AdaLoRA"><span class="nav-number">2.2.</span> <span class="nav-text">AdaLoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.</span> <span class="nav-text">研究方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%97%E7%95%A5%E6%B5%81%E7%A8%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">粗略流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E6%80%A7%E5%88%86%E6%95%B0"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">重要性分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%9F%A9%E9%98%B5%E7%A7%A9%E8%B0%83%E8%8A%82"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">动态矩阵秩调节</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E8%B0%83%E6%95%B4%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.2.2.1.</span> <span class="nav-text">1. 调整函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-top-b%E7%AD%96%E7%95%A5"><span class="nav-number">2.2.2.2.2.</span> <span class="nav-text">2. top-b策略</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">具体流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QLoRA"><span class="nav-number">2.3.</span> <span class="nav-text">QLoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E9%87%8F%E5%8C%96-Block-wise-Quantization"><span class="nav-number">2.3.1.</span> <span class="nav-text">分块量化(Block-wise Quantization)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-bit-NormalFloat-NF4"><span class="nav-number">2.3.2.</span> <span class="nav-text">4-bit NormalFloat(NF4)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Double-Quantization"><span class="nav-number">2.3.3.</span> <span class="nav-text">Double Quantization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QLoRA%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.4.</span> <span class="nav-text">QLoRA实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#P-Tuning"><span class="nav-number">3.</span> <span class="nav-text">P-Tuning</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#P-tuning-V1"><span class="nav-number">3.1.</span> <span class="nav-text">P-tuning V1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95-1"><span class="nav-number">3.1.2.</span> <span class="nav-text">实现方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#P-tuning-V2"><span class="nav-number">3.2.</span> <span class="nav-text">P-tuning V2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-2"><span class="nav-number">3.2.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95-2"><span class="nav-number">3.2.2.</span> <span class="nav-text">实现方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB-1"><span class="nav-number">3.4.</span> <span class="nav-text">代码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#P-tuning-V2%E4%BB%A3%E7%A0%81%E5%A4%84%E7%90%86"><span class="nav-number">3.4.1.</span> <span class="nav-text">P-tuning V2代码处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-number">3.4.1.1.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prompt%E9%83%A8%E5%88%86%E7%BC%96%E7%A0%81"><span class="nav-number">3.4.1.2.</span> <span class="nav-text">prompt部分编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%B8%B8%E4%BB%BB%E5%8A%A1%E9%A2%84%E6%B5%8B"><span class="nav-number">3.4.1.3.</span> <span class="nav-text">下游任务预测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#P-tuning-%E4%BB%A3%E7%A0%81%E5%A4%84%E7%90%86"><span class="nav-number">3.4.2.</span> <span class="nav-text">P-tuning 代码处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86-1"><span class="nav-number">3.4.2.1.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Prompt%E9%83%A8%E5%88%86%E7%BC%96%E7%A0%81"><span class="nav-number">3.4.2.2.</span> <span class="nav-text">Prompt部分编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%B8%B8%E4%BB%BB%E5%8A%A1%E9%A2%84%E6%B5%8B-1"><span class="nav-number">3.4.2.3.</span> <span class="nav-text">下游任务预测</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Adapter"><span class="nav-number">4.</span> <span class="nav-text">Adapter</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LLAMA-Adapter"><span class="nav-number">4.1.</span> <span class="nav-text">LLAMA-Adapter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-3"><span class="nav-number">4.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95-1"><span class="nav-number">4.1.2.</span> <span class="nav-text">研究方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Learnable-Adaption-Prompts"><span class="nav-number">4.1.2.1.</span> <span class="nav-text">Learnable Adaption Prompts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Zero-initialized-Attention"><span class="nav-number">4.1.2.2.</span> <span class="nav-text">Zero-initialized Attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Multi-modal-Reasoning"><span class="nav-number">4.1.2.3.</span> <span class="nav-text">Multi-modal Reasoning</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E8%A7%86%E8%A7%92%E7%9C%8BP-tuning%E3%80%81Adapter%E3%80%81LoRA"><span class="nav-number">5.</span> <span class="nav-text">统一视角看P-tuning、Adapter、LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E8%A7%86%E8%A7%92"><span class="nav-number">5.1.</span> <span class="nav-text">统一视角</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Prefix-Tuning%E7%9A%84%E8%A7%86%E8%A7%92"><span class="nav-number">5.1.1.</span> <span class="nav-text">Prefix-Tuning的视角</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E6%A1%86%E6%9E%B6"><span class="nav-number">5.1.2.</span> <span class="nav-text">统一框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Functional-Form"><span class="nav-number">5.1.2.1.</span> <span class="nav-text">Functional Form</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Insertion-Form"><span class="nav-number">5.1.2.2.</span> <span class="nav-text">Insertion Form</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Modified-Representation"><span class="nav-number">5.1.2.3.</span> <span class="nav-text">Modified Representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Composition-Function"><span class="nav-number">5.1.2.4.</span> <span class="nav-text">Composition Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.1.3.</span> <span class="nav-text">迁移设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.2.</span> <span class="nav-text">实验设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">5.2.1.</span> <span class="nav-text">现有方法的效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8DINSERTION-FORM%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.2.</span> <span class="nav-text">哪一种INSERTION FORM更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8DMODIFIED-REPRESENTATION%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.3.</span> <span class="nav-text">哪一种MODIFIED REPRESENTATION更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8DCOMPOSITION-FUNCTION%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.4.</span> <span class="nav-text">哪一种COMPOSITION FUNCTION更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E8%AE%BE%E8%AE%A1%E5%85%83%E7%B4%A0%E6%95%B4%E5%90%88"><span class="nav-number">5.2.5.</span> <span class="nav-text">有效设计元素整合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="nav-number">5.2.6.</span> <span class="nav-text">实验结论</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lora"><span class="nav-number">2.</span> <span class="nav-text">LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#lora-1"><span class="nav-number">2.1.</span> <span class="nav-text">LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9"><span class="nav-number">2.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.2.</span> <span class="nav-text">实现方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="nav-number">2.1.3.</span> <span class="nav-text">代码解读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lora-vs-sft"><span class="nav-number">2.1.4.</span> <span class="nav-text">LoRA VS SFT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adalora"><span class="nav-number">2.2.</span> <span class="nav-text">AdaLoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95"><span class="nav-number">2.2.1.</span> <span class="nav-text">研究方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B2%97%E7%95%A5%E6%B5%81%E7%A8%8B"><span class="nav-number">2.2.2.</span> <span class="nav-text">粗略流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%E6%80%A7%E5%88%86%E6%95%B0"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">重要性分数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E7%9F%A9%E9%98%B5%E7%A7%A9%E8%B0%83%E8%8A%82"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">动态矩阵秩调节</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.2.2.1.</span> <span class="nav-text">1. 调整函数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#top-b%E7%AD%96%E7%95%A5"><span class="nav-number">2.2.2.2.2.</span> <span class="nav-text">2. top-b策略</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">2.2.3.</span> <span class="nav-text">具体流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#qlora"><span class="nav-number">2.3.</span> <span class="nav-text">QLoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E9%87%8F%E5%8C%96block-wise-quantization"><span class="nav-number">2.3.1.</span> <span class="nav-text">分块量化(Block-wise Quantization)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bit-normalfloatnf4"><span class="nav-number">2.3.2.</span> <span class="nav-text">4-bit NormalFloat(NF4)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#double-quantization"><span class="nav-number">2.3.3.</span> <span class="nav-text">Double Quantization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#qlora%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.4.</span> <span class="nav-text">QLoRA实现</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#p-tuning"><span class="nav-number">3.</span> <span class="nav-text">P-Tuning</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#p-tuning-v1"><span class="nav-number">3.1.</span> <span class="nav-text">P-tuning V1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-1"><span class="nav-number">3.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95-1"><span class="nav-number">3.1.2.</span> <span class="nav-text">实现方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#p-tuning-v2"><span class="nav-number">3.2.</span> <span class="nav-text">P-tuning V2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-2"><span class="nav-number">3.2.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95-2"><span class="nav-number">3.2.2.</span> <span class="nav-text">实现方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.3.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB-1"><span class="nav-number">3.4.</span> <span class="nav-text">代码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#p-tuning-v2%E4%BB%A3%E7%A0%81%E5%A4%84%E7%90%86"><span class="nav-number">3.4.1.</span> <span class="nav-text">P-tuning V2代码处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-number">3.4.1.1.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prompt%E9%83%A8%E5%88%86%E7%BC%96%E7%A0%81"><span class="nav-number">3.4.1.2.</span> <span class="nav-text">prompt部分编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%B8%B8%E4%BB%BB%E5%8A%A1%E9%A2%84%E6%B5%8B"><span class="nav-number">3.4.1.3.</span> <span class="nav-text">下游任务预测</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#p-tuning-%E4%BB%A3%E7%A0%81%E5%A4%84%E7%90%86"><span class="nav-number">3.4.2.</span> <span class="nav-text">P-tuning 代码处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86-1"><span class="nav-number">3.4.2.1.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prompt%E9%83%A8%E5%88%86%E7%BC%96%E7%A0%81-1"><span class="nav-number">3.4.2.2.</span> <span class="nav-text">Prompt部分编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8B%E6%B8%B8%E4%BB%BB%E5%8A%A1%E9%A2%84%E6%B5%8B-1"><span class="nav-number">3.4.2.3.</span> <span class="nav-text">下游任务预测</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#adapter"><span class="nav-number">4.</span> <span class="nav-text">Adapter</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#llama-adapter"><span class="nav-number">4.1.</span> <span class="nav-text">LLAMA-Adapter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BA%E5%8F%91%E7%82%B9-3"><span class="nav-number">4.1.1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A0%94%E7%A9%B6%E6%96%B9%E6%B3%95-1"><span class="nav-number">4.1.2.</span> <span class="nav-text">研究方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#learnable-adaption-prompts"><span class="nav-number">4.1.2.1.</span> <span class="nav-text">Learnable Adaption Prompts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#zero-initialized-attention"><span class="nav-number">4.1.2.2.</span> <span class="nav-text">Zero-initialized Attention</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#multi-modal-reasoning"><span class="nav-number">4.1.2.3.</span> <span class="nav-text">Multi-modal Reasoning</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E8%A7%86%E8%A7%92%E7%9C%8Bp-tuningadapterlora"><span class="nav-number">5.</span> <span class="nav-text">统一视角看P-tuning、Adapter、LoRA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E8%A7%86%E8%A7%92"><span class="nav-number">5.1.</span> <span class="nav-text">统一视角</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#prefix-tuning%E7%9A%84%E8%A7%86%E8%A7%92"><span class="nav-number">5.1.1.</span> <span class="nav-text">Prefix-Tuning的视角</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E6%A1%86%E6%9E%B6"><span class="nav-number">5.1.2.</span> <span class="nav-text">统一框架</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#functional-form"><span class="nav-number">5.1.2.1.</span> <span class="nav-text">Functional Form</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#insertion-form"><span class="nav-number">5.1.2.2.</span> <span class="nav-text">Insertion Form</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#modified-representation"><span class="nav-number">5.1.2.3.</span> <span class="nav-text">Modified Representation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#composition-function"><span class="nav-number">5.1.2.4.</span> <span class="nav-text">Composition Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.1.3.</span> <span class="nav-text">迁移设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.2.</span> <span class="nav-text">实验设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%B0%E6%9C%89%E6%96%B9%E6%B3%95%E7%9A%84%E6%95%88%E6%9E%9C"><span class="nav-number">5.2.1.</span> <span class="nav-text">现有方法的效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8Dinsertion-form%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.2.</span> <span class="nav-text">哪一种INSERTION FORM更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8Dmodified-representation%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.3.</span> <span class="nav-text">哪一种MODIFIED REPRESENTATION更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%AA%E4%B8%80%E7%A7%8Dcomposition-function%E6%9B%B4%E5%A5%BD"><span class="nav-number">5.2.4.</span> <span class="nav-text">哪一种COMPOSITION FUNCTION更好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E6%95%88%E8%AE%BE%E8%AE%A1%E5%85%83%E7%B4%A0%E6%95%B4%E5%90%88"><span class="nav-number">5.2.5.</span> <span class="nav-text">有效设计元素整合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E8%AE%BA"><span class="nav-number">5.2.6.</span> <span class="nav-text">实验结论</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1359,7 +1442,7 @@ if(canvas.getContext){
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">316k</span>
+    <span title="站点总字数">317k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>

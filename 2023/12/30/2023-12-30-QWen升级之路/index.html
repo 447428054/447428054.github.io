@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言在大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析一文中，我们深入讨论了大型模型不断进化的路径，面临的挑战和克服这些挑战的策略，并且详细梳理了ChatGLM、LLAMA和Baichuan等模型如何实现升级，以及这些升级背后的深层原因。随着千问模型在各大排行榜上取得优异表现，本篇文章将延续之前的探讨，深入剖析千问模型的进化之旅，探索它如何在大语言模型的赛道上脱颖">
+<meta property="og:type" content="article">
+<meta property="og:title" content="QWen升级之路">
+<meta property="og:url" content="https://jmxgodlz.xyz/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="前言在大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析一文中，我们深入讨论了大型模型不断进化的路径，面临的挑战和克服这些挑战的策略，并且详细梳理了ChatGLM、LLAMA和Baichuan等模型如何实现升级，以及这些升级背后的深层原因。随着千问模型在各大排行榜上取得优异表现，本篇文章将延续之前的探讨，深入剖析千问模型的进化之旅，探索它如何在大语言模型的赛道上脱颖">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QWen升级之路.png">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-4887c8f01eb797a0349198e29c3fe8c1_1440w.webp">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QWiVPC.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9Jw3x3.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Wvxq0V.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/fG2Zoe.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/dIzBU9.jpg">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yWudYe.jpg">
+<meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png">
+<meta property="article:published_time" content="2023-12-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-12-31T12:21:50.014Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QWen升级之路.png">
+
+<link rel="canonical" href="https://jmxgodlz.xyz/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>QWen升级之路 | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          QWen升级之路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-12-30 00:00:00" itemprop="dateCreated datePublished" datetime="2023-12-30T00:00:00+08:00">2023-12-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-12-31 20:21:50" itemprop="dateModified" datetime="2023-12-31T20:21:50+08:00">2023-12-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/651747035">大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析</a>一文中，我们深入讨论了大型模型不断进化的路径，面临的挑战和克服这些挑战的策略，并且详细梳理了ChatGLM、LLAMA和Baichuan等模型如何实现升级，以及这些升级背后的深层原因。随着千问模型在各大排行榜上取得优异表现，本篇文章将延续之前的探讨，深入剖析千问模型的进化之旅，探索它如何在大语言模型的赛道上脱颖而出。</p>
+<p>文章结构如下：</p>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QWen升级之路.png" alt="QWen升级之路"></p>
+<span id="more"></span>
+<h1 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h1><p>在<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/651747035">大模型升级与设计之道：ChatGLM、LLAMA、Baichuan及LLM结构解析</a>一文中，我们介绍了大模型训练的升级之路，也给出了当前主流的模型结构：</p>
+<p><img src="https://pic2.zhimg.com/80/v2-4887c8f01eb797a0349198e29c3fe8c1_1440w.webp" alt=""></p>
+<p>那么让我们对照着这个顺序看下通义千问所采用的结构：</p>
+<h2 id="Tokenizer"><a href="#Tokenizer" class="headerlink" title="Tokenizer"></a>Tokenizer</h2><p>千问Tokenizer特点如下:</p>
+<ul>
+<li><p>BPE算法</p>
+</li>
+<li><p>数字作为单独的Token</p>
+</li>
+<li><p>词表大小:152K</p>
+</li>
+</ul>
+<blockquote>
+<p>In this study, we utilize byte pair encoding (BPE) as our tokenization method, following GPT-3.5 and GPT-4. We start with the open-source fast BPE tokenizer, tiktoken (Jain, 2022), and select the vocabulary cl100k base as our starting point. To enhance the performance of our model on multilingual downstream tasks, particularly in Chinese, we augment the vocabulary with commonly used Chinese characters and words, as well as those in other languages. Also, following Touvron et al. (2023a;b), we have split numbers into single digits. The final vocabulary size is approximately 152K.</p>
+</blockquote>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/QWiVPC.jpg" alt="QWiVPC"></p>
+<p>如图所示，千问较其他模型实现了更高的压缩率，这样可以基于较少的Token传递较多的信息。此外，扩大QWEN的词汇量不会对预训练模型的下游性能产生负面影响。</p>
+<p>可以看到，千问在Tokenizer上符合升级之路中支持复杂场景编码的特性的。</p>
+<h2 id="LayerNorm"><a href="#LayerNorm" class="headerlink" title="LayerNorm"></a>LayerNorm</h2><ul>
+<li><p>Pre-LayerNorm</p>
+</li>
+<li><p>RMSNorm</p>
+</li>
+</ul>
+<blockquote>
+<p>In modern Transformer models, pre-normalization is the most<br>widely used approach, which has been shown to improve training stability compared to post-normalization. Recent research has suggested alternative methods for better training stability, which we plan to explore in future versions of our model. Additionally, we have replaced the traditional layer normalization technique described in (Ba et al., 2016) with<br>RMSNorm (Jiang et al., 2023). This change has resulted in equivalent performance while also improving efficiency.</p>
+</blockquote>
+<h2 id="MLP"><a href="#MLP" class="headerlink" title="MLP"></a>MLP</h2><ul>
+<li>SwiGLU</li>
+</ul>
+<blockquote>
+<p>We have selected SwiGLU (Shazeer, 2020) as our activation function,<br>a combination of Swish (Ramachandran et al., 2017) and Gated Linear Unit (Dauphin et al.,2017).</p>
+</blockquote>
+<h2 id="Attention"><a href="#Attention" class="headerlink" title="Attention"></a>Attention</h2><ul>
+<li>FlashAttention</li>
+</ul>
+<h2 id="位置编码"><a href="#位置编码" class="headerlink" title="位置编码"></a>位置编码</h2><ul>
+<li>RoPE</li>
+</ul>
+<blockquote>
+<p>We have chosen RoPE (Rotary Positional Embedding)  as our preferred option for incorporating positional information into our model.</p>
+</blockquote>
+<h2 id="训练数据及参数量"><a href="#训练数据及参数量" class="headerlink" title="训练数据及参数量"></a>训练数据及参数量</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/9Jw3x3.jpg" alt="9Jw3x3"></p>
+<p>在14B的模型参数量上，千问训练了3T的token数，较llama、baichuan等训练了更多的数据。</p>
+<h2 id="额外结构改动"><a href="#额外结构改动" class="headerlink" title="额外结构改动"></a>额外结构改动</h2><ul>
+<li><p>Embedding与输出层:千问模型没有将Embedding层和输出层的参数共享，通过增加显存以期换取更优的性能</p>
+</li>
+<li><p>Bias:只在Attention层添加Bias，其他层去除了Bias，以期有更好的外推性能</p>
+</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>综合以上分析，我们可以看出千问模型确实是集大成者。其模型结构基本延续了我们在前文所讨论的升级路径，成功保留并强化了多项设计中的优势特性。</p>
+<h1 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h1><h2 id="预训练"><a href="#预训练" class="headerlink" title="预训练"></a>预训练</h2><h3 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h3><p>数据处理：重点保证数据的<strong>多样性和高质量</strong></p>
+<p><strong>数据多样化:</strong></p>
+<blockquote>
+<p>public web documents, encyclopedia, books, codes, etc. Additionally, our dataset is multilingual, with a significant portion of the data being in English and Chinese.</p>
+</blockquote>
+<p><strong>数据质量控制:</strong></p>
+<ul>
+<li>对于网页数据，提取HTML内容，利用语言识别工具识别语言类别</li>
+<li>数据去重: 归一化后的精确EM去重；MinHash，LSH算法的模糊去重</li>
+<li>低质量数据清洗: 基于规则的数据过滤；语言模型打分、文本质量打分模型，用于识别潜在攻击性或潜在攻击性不适当的模型</li>
+<li>针对某些数据源进行上采样，以确保模型接受多样化高质量内容的训练</li>
+<li>预训练数据加入指令学习的数据</li>
+<li>评测数据的去重，防止数据泄漏</li>
+</ul>
+<h3 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h3><ul>
+<li><p>训练任务: NSP</p>
+</li>
+<li><p>上下文长度:2048</p>
+</li>
+<li><p>优化器:AdamW</p>
+</li>
+<li><p>学习率:Cosine学习率，衰减到峰值的10%</p>
+</li>
+<li><p>精度：BF16混合精度</p>
+</li>
+</ul>
+<h2 id="SFT"><a href="#SFT" class="headerlink" title="SFT"></a>SFT</h2><h3 id="数据-1"><a href="#数据-1" class="headerlink" title="数据"></a>数据</h3><ul>
+<li>对话形式的数据,用多种风格对对话进行了注释,风格更加偏人类风格</li>
+<li>排除限制能力的提示模版数据</li>
+<li>考虑了语言模型的安全性，通过注释与暴力、偏见和色情等安全问题相关的数据</li>
+<li>训练方法对模型效果影响很大:采用Chat-ML(OpenAI)格式</li>
+</ul>
+<h3 id="训练-1"><a href="#训练-1" class="headerlink" title="训练"></a>训练</h3><ul>
+<li>训练任务：NSP，system和user input进行MASK</li>
+<li>上下文长度：2048</li>
+<li>优化器：AdamW</li>
+<li>学习率:2e-6</li>
+<li>batch 128，4000step，warmup 1430step</li>
+</ul>
+<h2 id="RLHF"><a href="#RLHF" class="headerlink" title="RLHF"></a>RLHF</h2><h3 id="Reward-Model"><a href="#Reward-Model" class="headerlink" title="Reward Model"></a>Reward Model</h3><ul>
+<li>经过Pretrain和Finetuning两个阶段</li>
+<li>数据是对比的数据，Finetuning阶段数据质量更高</li>
+<li>保证Prompt的多样性和复杂性:6600个标签分类，进行采样。</li>
+<li>保证Response多样性：不同的QWen模型大小以及sampling策略。</li>
+<li>用同样大小的QWen预训练模型初始化Reward模型。</li>
+</ul>
+<blockquote>
+<p>This pretraining process, also known as preference model pretraining (PMP) (Bai et al., 2022b), necessitates a vast dataset of comparison data. This dataset consists of sample pairs, each containing two distinct responses for a single query and their corresponding preferences. Similarly, finetuning is also conducted on this type of comparison data, but with a higher quality due to the presence of quality annotations.</p>
+</blockquote>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Wvxq0V.jpg" alt="Wvxq0V"></p>
+<h3 id="强化学习方法"><a href="#强化学习方法" class="headerlink" title="强化学习方法"></a>强化学习方法</h3><p>PPO:策略模型、value模型、偏好模型、反馈模型</p>
+<blockquote>
+<p>Our Proximal Policy Optimization (PPO) process involves four models: the policy model, value model, reference model, and reward model.</p>
+</blockquote>
+<p>PPO过程的特别点:</p>
+<ul>
+<li><p>在开始PPO程序之前，暂停策略模型的更新，只专注于更新价值模型50步，这种方法确保价值模型能<strong>有效适应不同的奖励模型</strong>。</p>
+</li>
+<li><p>实施了一个预训练的梯度以减轻对齐税的影响，经验发现，对于这种特定的奖励模型，KL惩罚足够强大，能够抵消非严格的代码或数学性质的基准测试中的对齐税。</p>
+</li>
+</ul>
+<h1 id="长度外推"><a href="#长度外推" class="headerlink" title="长度外推"></a>长度外推</h1><ul>
+<li>dynamic NTK-aware interpolation</li>
+<li>LogN-Scaling</li>
+<li>Window Attention</li>
+<li>低层对长度外推更加敏感，因此采用更小的窗口</li>
+</ul>
+<p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/fG2Zoe.jpg" alt="fG2Zoe"></p>
+<p>代码介绍:</p>
+<p><strong>动态NTK</strong>:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def get_ntk_alpha(self, true_seq_len):</span><br><span class="line">    context_value = math.log(true_seq_len / self.seq_length, 2) + 1</span><br><span class="line">    ntk_alpha = 2 ** math.ceil(context_value) - 1</span><br><span class="line">    ntk_alpha = max(ntk_alpha, 1)</span><br><span class="line">    return ntk_alpha</span><br></pre></td></tr></table></figure>
+<p><strong>LogN Attention</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">logn_list = [</span><br><span class="line">    math.log(i, self.seq_length) if i &gt; self.seq_length else 1</span><br><span class="line">    for i in range(1, 32768)</span><br><span class="line">]</span><br><span class="line">logn_tensor = torch.tensor(logn_list)[None, :, None, None]</span><br><span class="line">self.register_buffer(&quot;logn_tensor&quot;, logn_tensor, persistent=False)</span><br></pre></td></tr></table></figure>
+<h1 id="模型效果"><a href="#模型效果" class="headerlink" title="模型效果"></a>模型效果</h1><h2 id="榜单效果"><a href="#榜单效果" class="headerlink" title="榜单效果"></a>榜单效果</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/dIzBU9.jpg" alt="dIzBU9"></p>
+<p>总的来说，千问模型在相似模型大小的前沿状态（SOTA）上表现显著优于之前的模型，但仍然落后于GPT-3.5和GPT-4。</p>
+<h2 id="SFT-VS-RLHF"><a href="#SFT-VS-RLHF" class="headerlink" title="SFT VS RLHF"></a>SFT VS RLHF</h2><p><img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/yWudYe.jpg" alt="yWudYe"></p>
+<p>每个柱状图段代表从下到上的赢、平和输的百分比。平均来看，RLHF模型比SFT模型表现更好。数据集包括300条中文指令。</p>
+<h2 id="TOOL-USE-CODE-INTERPRETER-AND-AGENT"><a href="#TOOL-USE-CODE-INTERPRETER-AND-AGENT" class="headerlink" title="TOOL USE, CODE INTERPRETER, AND AGENT"></a>TOOL USE, CODE INTERPRETER, AND AGENT</h2><p><strong>内容小结如下:</strong></p>
+<ul>
+<li><p>千问通过多次Self-Instruct，收集了2000个高质量样本</p>
+</li>
+<li><p>高质量样本与其他数据一起SFT，而不是分阶段训练</p>
+</li>
+<li><p>QWEN在识别查询与可用工具的相关性方面，随着模型大小的增加，其准确性同步增加。</p>
+</li>
+<li><p>Python代码解释器被广泛认为是增强LLM代理能力的强大工具，QWEN充分利用此解释器来提高其在多种领域，如数学推理和数据分析中的性能。</p>
+</li>
+<li><p>作为Hugging Face Agent，QWEN的表现相当好，与其他开源选择相比，仅略逊于专有的GPT-4</p>
+</li>
+</ul>
+<h1 id="垂直领域模型"><a href="#垂直领域模型" class="headerlink" title="垂直领域模型"></a>垂直领域模型</h1><h2 id="Code-QWen"><a href="#Code-QWen" class="headerlink" title="Code QWen"></a>Code QWen</h2><p>核心思路:<strong>只在代码上训练，会失去通用的能力</strong></p>
+<blockquote>
+<p>We believe that relying solely on code data for pretraining can result in a significant loss of the ability to function as a versatile assistant. Unlike previous approaches that focused solely on pretraining on code data (Li et al., 2022; 2023d), we take a different approach (Roziere et al., 2023) by starting ` with our base models QWEN trained on a combination of text and code data, and then continuing to pretrain on the code data.</p>
+</blockquote>
+<p><strong>预训练</strong>：</p>
+<ul>
+<li><p>第一阶段在代码和通用数据的混合数据集上训练，通过QWen Base模型初始化</p>
+</li>
+<li><p>第二阶段继续训练90B的代码数据</p>
+</li>
+<li><p>8K的上下文长度</p>
+</li>
+</ul>
+<p><strong>SFT</strong>：</p>
+<ul>
+<li>multi-stage SFT策略返回了最好的效果</li>
+</ul>
+<blockquote>
+<p>After conducting a series of empirical experiments, we have determined that the multi-stage SFT strategy yields the best performance compared to other methods.</p>
+</blockquote>
+<h2 id="Math-QWen"><a href="#Math-QWen" class="headerlink" title="Math QWen"></a>Math QWen</h2><p><strong>内容小结如下</strong>：</p>
+<ul>
+<li><p>数学SFT数据长度较短，序列长度为1024</p>
+</li>
+<li><p>屏蔽用户和系统输入，加快训练收敛</p>
+</li>
+</ul>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>本文深入剖析了千问模型在LLM优化道路上如何稳步前行，发现其模型结构升级的足迹与我们先前所探讨的大模型升级策略不谋而合。千问模型汇集了众多结构的精华，其训练所涉及的Token数量超越了同级别的其他模型，这一点很可能是其卓越性能的关键因素。除此之外，模型在长度外推、智能Agent、工具应用等诸多维度均进行了精心优化，全方位地加强了其竞争力。文章的最后，我们还特别介绍了千问模型在两个专业领域的延伸应用——CodeQWen和MathQWen，这两个子模型的出现也推动了垂直领域上LLM模型的应用。</p>
+<p>感兴趣的可以关注微信公众号联系哈～</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png" alt=""></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/" rel="bookmark">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/22/2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推/" rel="bookmark">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://jmxgodlz.xyz/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/" title="QWen升级之路">https://jmxgodlz.xyz/2023/12/30/2023-12-30-QWen升级之路/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/11/27/2023-11-27-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%89%EF%BC%89%E6%8C%87%E4%BB%A4%E5%AD%A6%E4%B9%A0%E5%BE%AE%E8%B0%83/" rel="prev" title="复刻ChatGPT语言模型系列-（三）指令学习微调">
+      <i class="fa fa-chevron-left"></i> 复刻ChatGPT语言模型系列-（三）指令学习微调
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">模型结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tokenizer"><span class="nav-number">2.1.</span> <span class="nav-text">Tokenizer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LayerNorm"><span class="nav-number">2.2.</span> <span class="nav-text">LayerNorm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MLP"><span class="nav-number">2.3.</span> <span class="nav-text">MLP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Attention"><span class="nav-number">2.4.</span> <span class="nav-text">Attention</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81"><span class="nav-number">2.5.</span> <span class="nav-text">位置编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE%E5%8F%8A%E5%8F%82%E6%95%B0%E9%87%8F"><span class="nav-number">2.6.</span> <span class="nav-text">训练数据及参数量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%BB%93%E6%9E%84%E6%94%B9%E5%8A%A8"><span class="nav-number">2.7.</span> <span class="nav-text">额外结构改动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.8.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">训练方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-number">3.1.</span> <span class="nav-text">预训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE"><span class="nav-number">3.1.1.</span> <span class="nav-text">数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-number">3.1.2.</span> <span class="nav-text">训练</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SFT"><span class="nav-number">3.2.</span> <span class="nav-text">SFT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">训练</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RLHF"><span class="nav-number">3.3.</span> <span class="nav-text">RLHF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reward-Model"><span class="nav-number">3.3.1.</span> <span class="nav-text">Reward Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.2.</span> <span class="nav-text">强化学习方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8"><span class="nav-number">4.</span> <span class="nav-text">长度外推</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C"><span class="nav-number">5.</span> <span class="nav-text">模型效果</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%9C%E5%8D%95%E6%95%88%E6%9E%9C"><span class="nav-number">5.1.</span> <span class="nav-text">榜单效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SFT-VS-RLHF"><span class="nav-number">5.2.</span> <span class="nav-text">SFT VS RLHF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TOOL-USE-CODE-INTERPRETER-AND-AGENT"><span class="nav-number">5.3.</span> <span class="nav-text">TOOL USE, CODE INTERPRETER, AND AGENT</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%82%E7%9B%B4%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">垂直领域模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-QWen"><span class="nav-number">6.1.</span> <span class="nav-text">Code QWen</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Math-QWen"><span class="nav-number">6.2.</span> <span class="nav-text">Math QWen</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/" title="2023&#x2F;12&#x2F;30&#x2F;2023-12-30-QWen升级之路&#x2F;">QWen升级之路</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/11/27/2023-11-27-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%89%EF%BC%89%E6%8C%87%E4%BB%A4%E5%AD%A6%E4%B9%A0%E5%BE%AE%E8%B0%83/" title="2023&#x2F;11&#x2F;27&#x2F;2023-11-27-复刻ChatGPT语言模型系列-（三）指令学习微调&#x2F;">复刻ChatGPT语言模型系列-（三）指令学习微调</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/10/26/2023-10-26-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%BA%8C%EF%BC%89%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83/" title="2023&#x2F;10&#x2F;26&#x2F;2023-10-26-复刻ChatGPT语言模型系列-（二）参数高效微调&#x2F;">复刻ChatGPT语言模型系列-（二）参数高效微调</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="2023&#x2F;09&#x2F;19&#x2F;2023-09-19-ALiBi位置编码深度解析：代码实现、长度外推&#x2F;">ALiBi位置编码深度解析：代码实现、长度外推</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/09/19/2023-09-19-%E4%B8%8A%E4%B8%8B%E6%96%87%E6%89%A9%E5%B1%95%E6%8E%A2%E7%B4%A2%EF%BC%9AFOT%E4%B8%8EMT%E7%9A%84%E5%A4%96%E9%83%A8%E5%AD%98%E5%82%A8%E7%AD%96%E7%95%A5/" title="2023&#x2F;09&#x2F;19&#x2F;2023-09-19-上下文扩展探索：FOT与MT的外部存储策略&#x2F;">上下文扩展探索：FOT与MT的外部存储策略</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">316k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:48</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>

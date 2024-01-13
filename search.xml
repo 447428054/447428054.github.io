@@ -7916,4 +7916,157 @@ r_{\theta}(Q,A)=\frac{s_{\theta}(A|Q)}{s_{\theta}(A)}</script><p>为了获取更
         <tag>ChatGPT</tag>
       </tags>
   </entry>
+  <entry>
+    <title>通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)</title>
+    <url>/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/</url>
+    <content><![CDATA[<h1 id="引言">引言</h1>
+<p>比赛链接：<a href="https://tianchi.aliyun.com/competition/entrance/532169/information">通义千问AI挑战赛 - Code Qwen能力算法赛道_算法大赛_赛题与数据_天池大赛-阿里云天池的赛题与数据</a></p>
+<p>代码是人类创造的高质量语言之一，通过高度的抽象来代替形式多样的自然语言，最终转换为具体程序来代替人类完成任务，其具有精确性、逻辑性和可执行性等优点。所以代码能力也成为大语言模型（LLMs）的核心能力，我们期待 LLMs 可以帮助人类进行辅助编程、漏洞修复、甚至是全自动代码生成等工作。</p>
+<p>如何通过高质量的数据微调提升基础语言模型的代码能力仍然是一个开放且具有挑战的问题，Qwen AI挑战赛由阿里云和NVIDIA主办，天池平台和魔搭联合承办，是聚焦于通义千问大模型微调训练的竞赛，其主要目标是通过高质量的数据探索和拓展开源模型 Qwen 1.8B 及 Qwen 72B 的代码能力上限。</p>
+<p>文章结构如下：</p>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Code%20Qwen能力算法赛道(JMXGODLZZ方案).png" alt="CodeQwen能力算法赛道(JMXGODLZZ方案)" /><figcaption aria-hidden="true">CodeQwen能力算法赛道(JMXGODLZZ方案)</figcaption>
+</figure>
+<p>初赛模型开源地址：https://modelscope.cn/models/JMXGODLZ/CodeQWen_1.8B/summary</p>
+<span id="more"></span>
+<h1 id="初赛方案">初赛方案</h1>
+<h2 id="赛题分析">赛题分析</h2>
+<p>初赛评测数据分为两个类型:</p>
+<ul>
+<li><p>代码补全(humanevalsynthesize/MBPP)</p></li>
+<li><p>代码修正(humanevalfixtests)</p></li>
+</ul>
+<p>数据格式如下：</p>
+<p>humanevalsynthesize：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;Write a Python function `has_close_elements(numbers: List[float], threshold: float) -&gt; bool` to solve the following problem:</span><br><span class="line">Check if in given list of numbers, are any two numbers closer to each other than</span><br><span class="line">given threshold.</span><br><span class="line">&gt;&gt;&gt; has_close_elements([1.0, 2.0, 3.0], 0.5)</span><br><span class="line">False</span><br><span class="line">&gt;&gt;&gt; has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">    &quot;&quot;&quot; Check if in given list of numbers, are any two numbers closer to each other than</span><br><span class="line">    given threshold.</span><br><span class="line">    &gt;&gt;&gt; has_close_elements([1.0, 2.0, 3.0], 0.5)</span><br><span class="line">    False</span><br><span class="line">    &gt;&gt;&gt; has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)</span><br><span class="line">    True</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = abs(elem - elem2)</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line">&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MBPP：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;&quot;&quot;&quot;</span><br><span class="line">Write a python function to remove first and last occurrence of a given character from the string.</span><br><span class="line">assert remove_Occ(&quot;hello&quot;,&quot;l&quot;) == &quot;heo&quot;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;def remove_Occ(s,ch): </span><br><span class="line">    for i in range(len(s)): </span><br><span class="line">        if (s[i] == ch): </span><br><span class="line">            s = s[0 : i] + s[i + 1:] </span><br><span class="line">            break</span><br><span class="line">    for i in range(len(s) - 1,-1,-1):  </span><br><span class="line">        if (s[i] == ch): </span><br><span class="line">            s = s[0 : i] + s[i + 1:] </span><br><span class="line">            break</span><br><span class="line">    return s &quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>humanevalfixtests：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = elem - elem2</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def check(has_close_elements):</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True</span><br><span class="line">    assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True</span><br><span class="line">    assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False</span><br><span class="line"></span><br><span class="line">check(has_close_elements)</span><br><span class="line">Fix bugs in has_close_elements.</span><br><span class="line"></span><br><span class="line">from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = abs(elem - elem2)</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line">&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>赛题关键点：</strong></p>
+<ol type="1">
+<li><p>初赛代码语言是多语言的：Python/JAVA/JS/CPP/GO/RUST</p></li>
+<li><p>训练数据防泄漏检测：避免训练数据集包含评测数据或相近的数据</p></li>
+</ol>
+<h2 id="参考方案">参考方案</h2>
+<p>相关开源数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">https://huggingface.co/datasets/nampdn-ai/tiny-codes</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/jinaai/code_exercises?row=20</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/nickrosh/Evol-Instruct-Code-80k-v1</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/codefuse-ai/Evol-instruction-66k</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k/tree/main</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/sahil2801/CodeAlpaca-20k/viewer/default/train?p=200</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/BAAI/COIG/tree/main</span><br></pre></td></tr></table></figure>
+<p><strong>参考论文1:</strong></p>
+<p>https://arxiv.org/pdf/2306.11644v2.pdf</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/11b8ded1-8d63-484b-8d4a-c36eb58dd28f.jpg" /></p>
+<p>PHI-1在HumanEval上能够达到51%的准确率，其核心方法介绍如下:</p>
+<p>数据集：</p>
+<ol type="1">
+<li><p><strong>Filtered Code-Language Dataset</strong>（过滤后的代码-语言数据集）：<br />
+- 数据类型：这个数据集是从The Stack和StackOverflow中提取的，包含了Python代码和相关的自然语言注释。<br />
+- 规模：这个数据集包含了大约6亿（6B）（tokens）。</p></li>
+<li><p><strong>Synthetic Textbook Dataset</strong>（合成教材数据集）：<br />
+- 数据类型：这个数据集由GPT-3.5合成生成，包含了Python教材的自然语言文本和相关的代码片段。<br />
+- 规模：这个数据集包含了少于10亿（1B）个token。</p></li>
+<li><p><strong>CodeExercises Dataset</strong>（编程练习数据集）：</p></li>
+</ol>
+<p>- 数据类型：这个数据集包含了Python编程练习和相应的解决方案的docstring。</p>
+<p>- 规模：这个数据集包含了大约1.8亿（180M）个token。</p>
+<p>训练方法：</p>
+<ol type="1">
+<li><p>预训练：phi-1-base在CodeTextbook数据集(包含Filtered Code-Language Dataset和Synthetic Textbook Dataset)上训练了8轮约50B Token</p></li>
+<li><p>微调：在phi-1-base 通过CodeExercises数据集进行微调。</p></li>
+</ol>
+<p>作者在训练过程中使用了这三个主要数据集的组合，以便为phi-1模型提供不同类型的训练信号和任务。首先，他们使用了过滤后的代码-语言数据集（Filtered Code-Language Dataset）来进行模型的预训练，然后使用合成教材数据集（Synthetic Textbook Dataset）来进一步提高模型的性能。最后，通过使用编程练习数据集（CodeExercises Dataset）进行微调，他们使模型能够更好地生成与编程任务相关的代码。</p>
+<p>这些不同类型的数据集在训练过程中的使用，有助于模型学习不同层次和类型的知识，从而提高了模型的性能和通用性。此外，这种训练方法还强调了数据质量的重要性，特别是高质量教材数据在提高模型性能方面的作用。</p>
+<p>高质量的教材数据与传统的代码数据有一些显著的区别：</p>
+<p>1. 清晰和自包含性（Clarity and Self-Containment）：高质量的教材数据具有清晰的表达和自包含性，使得其中的内容可以独立理解，而不需要额外的上下文。相比之下，传统的代码数据可能包含对其他模块或文件的依赖，这会使得理解起来变得困难。</p>
+<p>2. 教学性（Instructiveness）：高质量的教材数据应当具有教学性质，能够有效地教授基本编码概念。然而，传统的代码数据中可能包含了大量的非教学性内容，例如一些极为简单或者样板式的代码，这些代码不涉及任何有意义的计算。</p>
+<p>3. 算法逻辑（Algorithmic Logic）：高质量的教材数据应当涵盖算法逻辑，而不仅仅是提供一些常量定义、参数设置等简单的代码片段。相比之下，传统的代码数据中可能会存在算法逻辑被隐藏在复杂或者缺乏文档的函数内部的情况。</p>
+<p>4. 平衡性（Balance）：高质量的教材数据应当涵盖广泛的编码概念和技能，而不应该偏向特定主题或用例。传统的代码数据可能会存在某些主题或用例的偏向，导致数据集中编码概念和技能的分布不均衡。</p>
+<p>作者认为高质量的教材数据对模型训练至关重要的原因在于：</p>
+<p>1. 提升信号质量：高质量的教材数据可以提供更为清晰和有效的信号，帮助模型将自然语言映射到代码，从而提高模型的性能。</p>
+<p>2. 减少噪声和不完整性：传统的代码数据可能存在大量的噪声、模糊和不完整的信息，这会干扰模型的学习过程。高质量的教材数据能够减少这些问题，使模型得到更为准确和完整的训练。</p>
+<p>3. 提升模型通用性：通过使用高质量的教材数据，模型可以学习到更广泛、更多样化的编码概念和技能，从而提升模型在不同任务上的通用性和鲁棒性。</p>
+<p>综上所述，高质量的教材数据能够为模型提供更为有效、清晰、有教学性的训练信号，使其在编码生成任务中取得更好的性能。</p>
+<p><strong>参考论文2:</strong></p>
+<p>https://arxiv.org/pdf/2312.02120.pdf</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/3d337232-536d-4909-bba1-a5f9a9c3ac4a.jpg" /></p>
+<p>MagicoderS-CL-7B 通过在高质量数据集OSS-Instruct数据集上SFT，显著提高了模型在代码生成任务上的表现。</p>
+<p><strong>OSS-Instruct数据集生成的Prompt如下：</strong></p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/dee01d6a-a4a9-453b-a1ea-7adf46fb2419.jpg" /></p>
+<p><strong>OSS-Instruct核心思想</strong>：将开源代码数据作为种子代码片段，生成高质量的代码生成任务及解决方案。</p>
+<p>从80K个代码文档中收集了80K个初始种子片段，其中包括40K的Python，以及C++，Java，TypeScript，Shell，C#，Rust，PHP，和Swift各5K。然后，每个收集到的种子代码片段被应用到图2所示的提示模板，一个教师模型将其作为输入，并输出一个代码问题及其解决方案。</p>
+<p><strong>数据生成示例</strong>：</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/7c10604f-f01f-4b8c-b18a-d7bbde9785e1.jpg" /></p>
+<p><strong>模型训练</strong>：</p>
+<ol type="1">
+<li><p>第一阶段75K OSS-Instruct数据集训练2轮，学习率5e-5</p></li>
+<li><p>第二阶段110K evol-codealpaca-v1数据集，相同参数配置</p></li>
+</ol>
+<p>总的来说，OSS-INSTRUCT是一种使用大型语言模型生成来自开源代码片段的低偏差和高质量编码挑战的新型数据生成方法。这种方法使得Magicoder显著提升了基础的大型语言模型（LLM）。尽管参数少于70亿，它能够胜过所有参数小于或等于160亿的评估LLM，包括150亿参数的WizardCoder。将OSS-INSTRUCT与Evol-Instruct相结合构建增强的MagicoderS模型。它们通过与领先模型如ChatGPT在HumanEval基准测试中的比较，取得了显著成果。</p>
+<h2 id="解决方案">解决方案</h2>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">整体思路来源于&quot;Textbook is All you need&quot;. 分两阶段训练:</span><br><span class="line"></span><br><span class="line">1. stage1: 使用开源的160W textbook数据训练一轮,学习率1e-6</span><br><span class="line"></span><br><span class="line">2. stage2: 使用开源的其他代码数据与CodeEexrcise 数据及改写语言数据进行第二阶段微调，学习率5e-7</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>OSS-Instruct数据集表现由于比赛时间，暂未混合训练进行对比～</p></li>
+<li><p>训练方式采用全量参数微调，计算资源充足情况下直接SFT效果会优于LoRA训练。</p></li>
+</ul>
+<p>        原因可见论文：https://arxiv.org/pdf/2304.08109.pdf</p>
+<ul>
+<li><p>训练数据泄漏检测：离线针对训练数据做了泄漏检测：<strong>输入输出的相似去重；同名函数的去重</strong></p></li>
+<li><p>初赛模型已开源：https://modelscope.cn/models/JMXGODLZ/CodeQWen_1.8B/summary</p></li>
+</ul>
+<h1 id="复赛方案">复赛方案</h1>
+<h2 id="赛题分析-1">赛题分析</h2>
+<p>复赛数据格式:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;task_id&quot;:&quot;Python/88&quot;,</span><br><span class="line">    &quot;title&quot;:&quot;maximum-product-subarray&quot;,</span><br><span class="line">    &quot;question_id&quot;:&quot;152&quot;,</span><br><span class="line">    &quot;type&quot;:&quot;medium&quot;,</span><br><span class="line">    &quot;prompt&quot;:&quot;用python3实现：</span><br><span class="line">给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。</span><br><span class="line"></span><br><span class="line">测试用例的答案是一个 32-位 整数。</span><br><span class="line"></span><br><span class="line">子数组 是数组的连续子序列。</span><br><span class="line"></span><br><span class="line">示例 1:</span><br><span class="line"></span><br><span class="line">输入: nums = [2,3,-2,4]</span><br><span class="line">输出: 6</span><br><span class="line">解释: 子数组 [2,3] 有最大乘积 6。</span><br><span class="line">示例 2:</span><br><span class="line"></span><br><span class="line">输入: nums = [-2,0,-1]</span><br><span class="line">输出: 0</span><br><span class="line">解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。</span><br><span class="line">提示:</span><br><span class="line"></span><br><span class="line">1 &lt;= nums.length &lt;= 2 * 104</span><br><span class="line">-10 &lt;= nums[i] &lt;= 10</span><br><span class="line">nums 的任何前缀或后缀的乘积都 保证 是一个 32-位 整数</span><br><span class="line">class Solution:</span><br><span class="line">    def maxProduct(self, nums: List[int]) -&gt; int:&quot;,</span><br><span class="line">    &quot;Solution&quot;:&quot;class Solution:</span><br><span class="line">    def maxProduct(self, nums: List[int]) -&gt; int:</span><br><span class="line">        prefix, suffix, res = 0, 0, -float(&#x27;inf&#x27;)</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            prefix = nums[i] if not prefix else nums[i] * prefix</span><br><span class="line">            suffix = nums[-i - 1] if not suffix else nums[-i - 1] * suffix</span><br><span class="line">            res = max(res, prefix, suffix)</span><br><span class="line">        return res&quot;,</span><br><span class="line">    &quot;test&quot;:&quot;class TestSolution(unittest.TestCase):</span><br><span class="line">    def test_example(self):</span><br><span class="line">        a = Solution()</span><br><span class="line">        nums = [2, 3, -2, 4]</span><br><span class="line">        self.assertEqual(a.maxProduct(nums), 6)&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据赛题和主办方群里答疑，可以得出赛题的关键点如下：</p>
+<ol type="1">
+<li><p>复赛代码语言只包含Python语言</p></li>
+<li><p>复赛题目为LeetCode数据</p></li>
+<li><p>复赛程序需要直接运行无报错，包的引用、空格对齐、运行结果、时间复杂度均需要符合题目要求</p></li>
+<li><p>通过测算，72B的QWen模型在进行Lora训练时，针对比赛所提供资源，使用1万条样本约需4.5小时。因此，我们优先考虑数据的相关性与高质量，而非单纯追求庞大的数据量，以确保整体训练的高效性与有效性。</p></li>
+</ol>
+<h2 id="解决方案-1">解决方案</h2>
+<ol type="1">
+<li><p>收集LeetCode相关的Python语言开源数据</p></li>
+<li><p>收集LeetCode相关解题思路，用于代码解释</p></li>
+</ol>
+<p>LeetCode相关开源数据链接：</p>
+<p>https://github.com/itcharge/LeetCode-Py/tree/main/Solutions</p>
+<p>https://huggingface.co/datasets/RayBernard/leetcode1000</p>
+<p><a href="https://huggingface.co/datasets/TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k">TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k · Datasets at Hugging Face</a></p>
+<p>https://modelscope.cn/datasets/AI-ModelScope/leetcode-solutions-python/summary</p>
+<p>训练数据格式:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;messages&quot;:[</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;system&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;user&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;用Python3实现以下需求：给定一个整数数组`nums`和一个目标值`target`，返回两个相加等于`target`的数字的索引。</span><br><span class="line">每次只能选择两个元素，且只有一种解决方案。不能使用同一个元素两次，答案可以以任意顺序返回</span><br><span class="line"></span><br><span class="line">例如，对于数组nums = [2,7,11,15]，目标值 target = 9，答案为[0,1]。解释：因为nums[0] + nums[1] == 9，所以我们返回 [0, 1]。</span><br><span class="line">对于数组nums = [3,2,4]，目标值 target = 6，答案为[1,2]。</span><br><span class="line">对于数组nums = [3,3]，目标值 target = 6，答案为[0,1]。</span><br><span class="line"></span><br><span class="line">约束：</span><br><span class="line">*   2 &lt;= nums.length &lt;= 104</span><br><span class="line">*   -109 &lt;= nums[i] &lt;= 109</span><br><span class="line">*   -109 &lt;= target &lt;= 109</span><br><span class="line">*   只存在一个有效的答案。</span><br><span class="line"></span><br><span class="line">进阶：你可以设计一个时间复杂度小于O（n^2）的算法吗？要求提交的解决方案代码中包含对算法的详细注释说明。&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;assistant&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        map = &#123;&#125;  # 使用字典作为哈希表存储访问过的元素</span><br><span class="line">        for i, num in enumerate(nums):  # 遍历数组，同时获取元素值和索引</span><br><span class="line">            complement = target - num  # 计算目标值与当前元素的差值</span><br><span class="line">            if complement in map:  # 如果差值在哈希表中，说明找到了解决方案</span><br><span class="line">                return [map[complement], i]  # 返回差值元素的索引和当前元素的索引</span><br><span class="line">            map[num] = i  # 如果差值不在哈希表中，将当前元素加入哈希表</span><br><span class="line">        return []  # 如果没有找到解决方案，返回空列表</span><br><span class="line">    # 此算法的时间复杂度为O(n)，空间复杂度也为O(n)，因为最差情况下需要存储n个元素的哈希表。&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>超参数设置:</p>
+<ul>
+<li><p>batch_size: 4</p></li>
+<li><p>sequence_length: 4096</p></li>
+<li><p>learning_rate: 3e-5</p></li>
+<li><p>epochs: 3</p></li>
+</ul>
+<p><strong>难点：</strong></p>
+<p>本地执行复赛验证集推理代码时，出现以下问题：</p>
+<ul>
+<li><p>执行代码缺失引用包，比如math、heapq这些外部库</p></li>
+<li><p>生成内容涵盖错误的注释以及测试用例，导致无法正常运行通过测试</p></li>
+<li><p>同名函数导致模型生成解决方案未遵循题目要求、时间复杂度要求</p></li>
+</ul>
+<p>为了解决前两个问题，我通过清理训练数据、整理常用的外部库、删除未被引用的库以及生成测试数据。</p>
+<p>至于最后一个也是最具挑战性的问题，由于时间原因，尚未进行尝试。预计的解决方案是对函数名称进行重构。</p>
+<h1 id="参考文献">参考文献</h1>
+<p>https://arxiv.org/pdf/2306.11644v2.pdf</p>
+<p>https://arxiv.org/pdf/2312.02120.pdf</p>
+<p>https://arxiv.org/pdf/2304.08109.pdf</p>
+<h1 id="致谢">致谢</h1>
+<p>衷心感谢主办方在群内的热情解答，为我们举办了一场如此贴近实际应用的代码生成比赛。这场比赛让我对代码生成领域有了更深入的理解。祝愿千问模型未来的发展越来越好，也希望未来能有更多类似的机会，让我们一同学习，一同进步。再次感谢主办方的辛勤付出和全力支持～</p>
+<p>感兴趣的可以关注微信公众号联系哈～</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png" /></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+        <category>NLP</category>
+        <category>ChatGPT</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>ChatGPT</tag>
+      </tags>
+  </entry>
 </search>

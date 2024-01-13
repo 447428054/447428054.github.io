@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/jmx.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/jmx.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"jmxgodlz.xyz","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"mac"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引言 比赛链接：通义千问AI挑战赛 - Code Qwen能力算法赛道_算法大赛_赛题与数据_天池大赛-阿里云天池的赛题与数据 代码是人类创造的高质量语言之一，通过高度的抽象来代替形式多样的自然语言，最终转换为具体程序来代替人类完成任务，其具有精确性、逻辑性和可执行性等优点。所以代码能力也成为大语言模型（LLMs）的核心能力，我们期待 LLMs 可以帮助人类进行辅助编程、漏洞修复、甚至是全自动代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)">
+<meta property="og:url" content="https://jmxgodlz.xyz/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/index.html">
+<meta property="og:site_name" content="JMX Blog">
+<meta property="og:description" content="引言 比赛链接：通义千问AI挑战赛 - Code Qwen能力算法赛道_算法大赛_赛题与数据_天池大赛-阿里云天池的赛题与数据 代码是人类创造的高质量语言之一，通过高度的抽象来代替形式多样的自然语言，最终转换为具体程序来代替人类完成任务，其具有精确性、逻辑性和可执行性等优点。所以代码能力也成为大语言模型（LLMs）的核心能力，我们期待 LLMs 可以帮助人类进行辅助编程、漏洞修复、甚至是全自动代码">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Code%20Qwen能力算法赛道(JMXGODLZZ方案).png">
+<meta property="og:image" content="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/11b8ded1-8d63-484b-8d4a-c36eb58dd28f.jpg">
+<meta property="og:image" content="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/3d337232-536d-4909-bba1-a5f9a9c3ac4a.jpg">
+<meta property="og:image" content="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/dee01d6a-a4a9-453b-a1ea-7adf46fb2419.jpg">
+<meta property="og:image" content="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/7c10604f-f01f-4b8c-b18a-d7bbde9785e1.jpg">
+<meta property="og:image" content="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png">
+<meta property="article:published_time" content="2024-01-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-01-13T13:13:20.778Z">
+<meta property="article:author" content="JMXGODLZZ">
+<meta property="article:tag" content="NLP">
+<meta property="article:tag" content="ChatGPT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Code%20Qwen能力算法赛道(JMXGODLZZ方案).png">
+
+<link rel="canonical" href="https://jmxgodlz.xyz/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案) | JMX Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JMX Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-guestbook">
+
+    <a href="/guestbook/" rel="section"><i class="fa fa-book fa-fw"></i>guestbook</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://jmxgodlz.xyz/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jmx.png">
+      <meta itemprop="name" content="JMXGODLZZ">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JMX Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-01-06 00:00:00" itemprop="dateCreated datePublished" datetime="2024-01-06T00:00:00+08:00">2024-01-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-01-13 21:13:20" itemprop="dateModified" datetime="2024-01-13T21:13:20+08:00">2024-01-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">学习</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/" itemprop="url" rel="index"><span itemprop="name">NLP</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0/NLP/ChatGPT/" itemprop="url" rel="index"><span itemprop="name">ChatGPT</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引言">引言</h1>
+<p>比赛链接：<a target="_blank" rel="noopener" href="https://tianchi.aliyun.com/competition/entrance/532169/information">通义千问AI挑战赛 - Code Qwen能力算法赛道_算法大赛_赛题与数据_天池大赛-阿里云天池的赛题与数据</a></p>
+<p>代码是人类创造的高质量语言之一，通过高度的抽象来代替形式多样的自然语言，最终转换为具体程序来代替人类完成任务，其具有精确性、逻辑性和可执行性等优点。所以代码能力也成为大语言模型（LLMs）的核心能力，我们期待 LLMs 可以帮助人类进行辅助编程、漏洞修复、甚至是全自动代码生成等工作。</p>
+<p>如何通过高质量的数据微调提升基础语言模型的代码能力仍然是一个开放且具有挑战的问题，Qwen AI挑战赛由阿里云和NVIDIA主办，天池平台和魔搭联合承办，是聚焦于通义千问大模型微调训练的竞赛，其主要目标是通过高质量的数据探索和拓展开源模型 Qwen 1.8B 及 Qwen 72B 的代码能力上限。</p>
+<p>文章结构如下：</p>
+<figure>
+<img src="https://jmxblog.oss-cn-hangzhou.aliyuncs.com/uPic/Code%20Qwen能力算法赛道(JMXGODLZZ方案).png" alt="CodeQwen能力算法赛道(JMXGODLZZ方案)" /><figcaption aria-hidden="true">CodeQwen能力算法赛道(JMXGODLZZ方案)</figcaption>
+</figure>
+<p>初赛模型开源地址：https://modelscope.cn/models/JMXGODLZ/CodeQWen_1.8B/summary</p>
+<span id="more"></span>
+<h1 id="初赛方案">初赛方案</h1>
+<h2 id="赛题分析">赛题分析</h2>
+<p>初赛评测数据分为两个类型:</p>
+<ul>
+<li><p>代码补全(humanevalsynthesize/MBPP)</p></li>
+<li><p>代码修正(humanevalfixtests)</p></li>
+</ul>
+<p>数据格式如下：</p>
+<p>humanevalsynthesize：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;Write a Python function `has_close_elements(numbers: List[float], threshold: float) -&gt; bool` to solve the following problem:</span><br><span class="line">Check if in given list of numbers, are any two numbers closer to each other than</span><br><span class="line">given threshold.</span><br><span class="line">&gt;&gt;&gt; has_close_elements([1.0, 2.0, 3.0], 0.5)</span><br><span class="line">False</span><br><span class="line">&gt;&gt;&gt; has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">    &quot;&quot;&quot; Check if in given list of numbers, are any two numbers closer to each other than</span><br><span class="line">    given threshold.</span><br><span class="line">    &gt;&gt;&gt; has_close_elements([1.0, 2.0, 3.0], 0.5)</span><br><span class="line">    False</span><br><span class="line">    &gt;&gt;&gt; has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)</span><br><span class="line">    True</span><br><span class="line">    &quot;&quot;&quot;</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = abs(elem - elem2)</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line">&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MBPP：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;&quot;&quot;&quot;</span><br><span class="line">Write a python function to remove first and last occurrence of a given character from the string.</span><br><span class="line">assert remove_Occ(&quot;hello&quot;,&quot;l&quot;) == &quot;heo&quot;</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;def remove_Occ(s,ch): </span><br><span class="line">    for i in range(len(s)): </span><br><span class="line">        if (s[i] == ch): </span><br><span class="line">            s = s[0 : i] + s[i + 1:] </span><br><span class="line">            break</span><br><span class="line">    for i in range(len(s) - 1,-1,-1):  </span><br><span class="line">        if (s[i] == ch): </span><br><span class="line">            s = s[0 : i] + s[i + 1:] </span><br><span class="line">            break</span><br><span class="line">    return s &quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>humanevalfixtests：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;input&quot;:&quot;from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = elem - elem2</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def check(has_close_elements):</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.3) == True</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.9, 4.0, 5.0, 2.2], 0.05) == False</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.95) == True</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 5.9, 4.0, 5.0], 0.8) == False</span><br><span class="line">    assert has_close_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0], 0.1) == True</span><br><span class="line">    assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 1.0) == True</span><br><span class="line">    assert has_close_elements([1.1, 2.2, 3.1, 4.1, 5.1], 0.5) == False</span><br><span class="line"></span><br><span class="line">check(has_close_elements)</span><br><span class="line">Fix bugs in has_close_elements.</span><br><span class="line"></span><br><span class="line">from typing import List</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def has_close_elements(numbers: List[float], threshold: float) -&gt; bool:</span><br><span class="line">&quot;,</span><br><span class="line">    &quot;output&quot;:&quot;    for idx, elem in enumerate(numbers):</span><br><span class="line">        for idx2, elem2 in enumerate(numbers):</span><br><span class="line">            if idx != idx2:</span><br><span class="line">                distance = abs(elem - elem2)</span><br><span class="line">                if distance &lt; threshold:</span><br><span class="line">                    return True</span><br><span class="line"></span><br><span class="line">    return False</span><br><span class="line">&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>赛题关键点：</strong></p>
+<ol type="1">
+<li><p>初赛代码语言是多语言的：Python/JAVA/JS/CPP/GO/RUST</p></li>
+<li><p>训练数据防泄漏检测：避免训练数据集包含评测数据或相近的数据</p></li>
+</ol>
+<h2 id="参考方案">参考方案</h2>
+<p>相关开源数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">https://huggingface.co/datasets/nampdn-ai/tiny-codes</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/jinaai/code_exercises?row=20</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/nickrosh/Evol-Instruct-Code-80k-v1</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/codefuse-ai/Evol-instruction-66k</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k/tree/main</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/sahil2801/CodeAlpaca-20k/viewer/default/train?p=200</span><br><span class="line"></span><br><span class="line">https://huggingface.co/datasets/BAAI/COIG/tree/main</span><br></pre></td></tr></table></figure>
+<p><strong>参考论文1:</strong></p>
+<p>https://arxiv.org/pdf/2306.11644v2.pdf</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/11b8ded1-8d63-484b-8d4a-c36eb58dd28f.jpg" /></p>
+<p>PHI-1在HumanEval上能够达到51%的准确率，其核心方法介绍如下:</p>
+<p>数据集：</p>
+<ol type="1">
+<li><p><strong>Filtered Code-Language Dataset</strong>（过滤后的代码-语言数据集）：<br />
+- 数据类型：这个数据集是从The Stack和StackOverflow中提取的，包含了Python代码和相关的自然语言注释。<br />
+- 规模：这个数据集包含了大约6亿（6B）（tokens）。</p></li>
+<li><p><strong>Synthetic Textbook Dataset</strong>（合成教材数据集）：<br />
+- 数据类型：这个数据集由GPT-3.5合成生成，包含了Python教材的自然语言文本和相关的代码片段。<br />
+- 规模：这个数据集包含了少于10亿（1B）个token。</p></li>
+<li><p><strong>CodeExercises Dataset</strong>（编程练习数据集）：</p></li>
+</ol>
+<p>- 数据类型：这个数据集包含了Python编程练习和相应的解决方案的docstring。</p>
+<p>- 规模：这个数据集包含了大约1.8亿（180M）个token。</p>
+<p>训练方法：</p>
+<ol type="1">
+<li><p>预训练：phi-1-base在CodeTextbook数据集(包含Filtered Code-Language Dataset和Synthetic Textbook Dataset)上训练了8轮约50B Token</p></li>
+<li><p>微调：在phi-1-base 通过CodeExercises数据集进行微调。</p></li>
+</ol>
+<p>作者在训练过程中使用了这三个主要数据集的组合，以便为phi-1模型提供不同类型的训练信号和任务。首先，他们使用了过滤后的代码-语言数据集（Filtered Code-Language Dataset）来进行模型的预训练，然后使用合成教材数据集（Synthetic Textbook Dataset）来进一步提高模型的性能。最后，通过使用编程练习数据集（CodeExercises Dataset）进行微调，他们使模型能够更好地生成与编程任务相关的代码。</p>
+<p>这些不同类型的数据集在训练过程中的使用，有助于模型学习不同层次和类型的知识，从而提高了模型的性能和通用性。此外，这种训练方法还强调了数据质量的重要性，特别是高质量教材数据在提高模型性能方面的作用。</p>
+<p>高质量的教材数据与传统的代码数据有一些显著的区别：</p>
+<p>1. 清晰和自包含性（Clarity and Self-Containment）：高质量的教材数据具有清晰的表达和自包含性，使得其中的内容可以独立理解，而不需要额外的上下文。相比之下，传统的代码数据可能包含对其他模块或文件的依赖，这会使得理解起来变得困难。</p>
+<p>2. 教学性（Instructiveness）：高质量的教材数据应当具有教学性质，能够有效地教授基本编码概念。然而，传统的代码数据中可能包含了大量的非教学性内容，例如一些极为简单或者样板式的代码，这些代码不涉及任何有意义的计算。</p>
+<p>3. 算法逻辑（Algorithmic Logic）：高质量的教材数据应当涵盖算法逻辑，而不仅仅是提供一些常量定义、参数设置等简单的代码片段。相比之下，传统的代码数据中可能会存在算法逻辑被隐藏在复杂或者缺乏文档的函数内部的情况。</p>
+<p>4. 平衡性（Balance）：高质量的教材数据应当涵盖广泛的编码概念和技能，而不应该偏向特定主题或用例。传统的代码数据可能会存在某些主题或用例的偏向，导致数据集中编码概念和技能的分布不均衡。</p>
+<p>作者认为高质量的教材数据对模型训练至关重要的原因在于：</p>
+<p>1. 提升信号质量：高质量的教材数据可以提供更为清晰和有效的信号，帮助模型将自然语言映射到代码，从而提高模型的性能。</p>
+<p>2. 减少噪声和不完整性：传统的代码数据可能存在大量的噪声、模糊和不完整的信息，这会干扰模型的学习过程。高质量的教材数据能够减少这些问题，使模型得到更为准确和完整的训练。</p>
+<p>3. 提升模型通用性：通过使用高质量的教材数据，模型可以学习到更广泛、更多样化的编码概念和技能，从而提升模型在不同任务上的通用性和鲁棒性。</p>
+<p>综上所述，高质量的教材数据能够为模型提供更为有效、清晰、有教学性的训练信号，使其在编码生成任务中取得更好的性能。</p>
+<p><strong>参考论文2:</strong></p>
+<p>https://arxiv.org/pdf/2312.02120.pdf</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/3d337232-536d-4909-bba1-a5f9a9c3ac4a.jpg" /></p>
+<p>MagicoderS-CL-7B 通过在高质量数据集OSS-Instruct数据集上SFT，显著提高了模型在代码生成任务上的表现。</p>
+<p><strong>OSS-Instruct数据集生成的Prompt如下：</strong></p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/dee01d6a-a4a9-453b-a1ea-7adf46fb2419.jpg" /></p>
+<p><strong>OSS-Instruct核心思想</strong>：将开源代码数据作为种子代码片段，生成高质量的代码生成任务及解决方案。</p>
+<p>从80K个代码文档中收集了80K个初始种子片段，其中包括40K的Python，以及C++，Java，TypeScript，Shell，C#，Rust，PHP，和Swift各5K。然后，每个收集到的种子代码片段被应用到图2所示的提示模板，一个教师模型将其作为输入，并输出一个代码问题及其解决方案。</p>
+<p><strong>数据生成示例</strong>：</p>
+<p><img src="https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/a2QnVJEbdW37n4XB/img/7c10604f-f01f-4b8c-b18a-d7bbde9785e1.jpg" /></p>
+<p><strong>模型训练</strong>：</p>
+<ol type="1">
+<li><p>第一阶段75K OSS-Instruct数据集训练2轮，学习率5e-5</p></li>
+<li><p>第二阶段110K evol-codealpaca-v1数据集，相同参数配置</p></li>
+</ol>
+<p>总的来说，OSS-INSTRUCT是一种使用大型语言模型生成来自开源代码片段的低偏差和高质量编码挑战的新型数据生成方法。这种方法使得Magicoder显著提升了基础的大型语言模型（LLM）。尽管参数少于70亿，它能够胜过所有参数小于或等于160亿的评估LLM，包括150亿参数的WizardCoder。将OSS-INSTRUCT与Evol-Instruct相结合构建增强的MagicoderS模型。它们通过与领先模型如ChatGPT在HumanEval基准测试中的比较，取得了显著成果。</p>
+<h2 id="解决方案">解决方案</h2>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">整体思路来源于&quot;Textbook is All you need&quot;. 分两阶段训练:</span><br><span class="line"></span><br><span class="line">1. stage1: 使用开源的160W textbook数据训练一轮,学习率1e-6</span><br><span class="line"></span><br><span class="line">2. stage2: 使用开源的其他代码数据与CodeEexrcise 数据及改写语言数据进行第二阶段微调，学习率5e-7</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>OSS-Instruct数据集表现由于比赛时间，暂未混合训练进行对比～</p></li>
+<li><p>训练方式采用全量参数微调，计算资源充足情况下直接SFT效果会优于LoRA训练。</p></li>
+</ul>
+<p>        原因可见论文：https://arxiv.org/pdf/2304.08109.pdf</p>
+<ul>
+<li><p>训练数据泄漏检测：离线针对训练数据做了泄漏检测：<strong>输入输出的相似去重；同名函数的去重</strong></p></li>
+<li><p>初赛模型已开源：https://modelscope.cn/models/JMXGODLZ/CodeQWen_1.8B/summary</p></li>
+</ul>
+<h1 id="复赛方案">复赛方案</h1>
+<h2 id="赛题分析-1">赛题分析</h2>
+<p>复赛数据格式:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;task_id&quot;:&quot;Python/88&quot;,</span><br><span class="line">    &quot;title&quot;:&quot;maximum-product-subarray&quot;,</span><br><span class="line">    &quot;question_id&quot;:&quot;152&quot;,</span><br><span class="line">    &quot;type&quot;:&quot;medium&quot;,</span><br><span class="line">    &quot;prompt&quot;:&quot;用python3实现：</span><br><span class="line">给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。</span><br><span class="line"></span><br><span class="line">测试用例的答案是一个 32-位 整数。</span><br><span class="line"></span><br><span class="line">子数组 是数组的连续子序列。</span><br><span class="line"></span><br><span class="line">示例 1:</span><br><span class="line"></span><br><span class="line">输入: nums = [2,3,-2,4]</span><br><span class="line">输出: 6</span><br><span class="line">解释: 子数组 [2,3] 有最大乘积 6。</span><br><span class="line">示例 2:</span><br><span class="line"></span><br><span class="line">输入: nums = [-2,0,-1]</span><br><span class="line">输出: 0</span><br><span class="line">解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。</span><br><span class="line">提示:</span><br><span class="line"></span><br><span class="line">1 &lt;= nums.length &lt;= 2 * 104</span><br><span class="line">-10 &lt;= nums[i] &lt;= 10</span><br><span class="line">nums 的任何前缀或后缀的乘积都 保证 是一个 32-位 整数</span><br><span class="line">class Solution:</span><br><span class="line">    def maxProduct(self, nums: List[int]) -&gt; int:&quot;,</span><br><span class="line">    &quot;Solution&quot;:&quot;class Solution:</span><br><span class="line">    def maxProduct(self, nums: List[int]) -&gt; int:</span><br><span class="line">        prefix, suffix, res = 0, 0, -float(&#x27;inf&#x27;)</span><br><span class="line">        for i in range(len(nums)):</span><br><span class="line">            prefix = nums[i] if not prefix else nums[i] * prefix</span><br><span class="line">            suffix = nums[-i - 1] if not suffix else nums[-i - 1] * suffix</span><br><span class="line">            res = max(res, prefix, suffix)</span><br><span class="line">        return res&quot;,</span><br><span class="line">    &quot;test&quot;:&quot;class TestSolution(unittest.TestCase):</span><br><span class="line">    def test_example(self):</span><br><span class="line">        a = Solution()</span><br><span class="line">        nums = [2, 3, -2, 4]</span><br><span class="line">        self.assertEqual(a.maxProduct(nums), 6)&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据赛题和主办方群里答疑，可以得出赛题的关键点如下：</p>
+<ol type="1">
+<li><p>复赛代码语言只包含Python语言</p></li>
+<li><p>复赛题目为LeetCode数据</p></li>
+<li><p>复赛程序需要直接运行无报错，包的引用、空格对齐、运行结果、时间复杂度均需要符合题目要求</p></li>
+<li><p>通过测算，72B的QWen模型在进行Lora训练时，针对比赛所提供资源，使用1万条样本约需4.5小时。因此，我们优先考虑数据的相关性与高质量，而非单纯追求庞大的数据量，以确保整体训练的高效性与有效性。</p></li>
+</ol>
+<h2 id="解决方案-1">解决方案</h2>
+<ol type="1">
+<li><p>收集LeetCode相关的Python语言开源数据</p></li>
+<li><p>收集LeetCode相关解题思路，用于代码解释</p></li>
+</ol>
+<p>LeetCode相关开源数据链接：</p>
+<p>https://github.com/itcharge/LeetCode-Py/tree/main/Solutions</p>
+<p>https://huggingface.co/datasets/RayBernard/leetcode1000</p>
+<p><a target="_blank" rel="noopener" href="https://huggingface.co/datasets/TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k">TigerResearch/tigerbot-kaggle-leetcodesolutions-en-2k · Datasets at Hugging Face</a></p>
+<p>https://modelscope.cn/datasets/AI-ModelScope/leetcode-solutions-python/summary</p>
+<p>训练数据格式:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;messages&quot;:[</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;system&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;user&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;用Python3实现以下需求：给定一个整数数组`nums`和一个目标值`target`，返回两个相加等于`target`的数字的索引。</span><br><span class="line">每次只能选择两个元素，且只有一种解决方案。不能使用同一个元素两次，答案可以以任意顺序返回</span><br><span class="line"></span><br><span class="line">例如，对于数组nums = [2,7,11,15]，目标值 target = 9，答案为[0,1]。解释：因为nums[0] + nums[1] == 9，所以我们返回 [0, 1]。</span><br><span class="line">对于数组nums = [3,2,4]，目标值 target = 6，答案为[1,2]。</span><br><span class="line">对于数组nums = [3,3]，目标值 target = 6，答案为[0,1]。</span><br><span class="line"></span><br><span class="line">约束：</span><br><span class="line">*   2 &lt;= nums.length &lt;= 104</span><br><span class="line">*   -109 &lt;= nums[i] &lt;= 109</span><br><span class="line">*   -109 &lt;= target &lt;= 109</span><br><span class="line">*   只存在一个有效的答案。</span><br><span class="line"></span><br><span class="line">进阶：你可以设计一个时间复杂度小于O（n^2）的算法吗？要求提交的解决方案代码中包含对算法的详细注释说明。&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;role&quot;:&quot;assistant&quot;,</span><br><span class="line">            &quot;content&quot;:&quot;class Solution:</span><br><span class="line">    def twoSum(self, nums: List[int], target: int) -&gt; List[int]:</span><br><span class="line">        map = &#123;&#125;  # 使用字典作为哈希表存储访问过的元素</span><br><span class="line">        for i, num in enumerate(nums):  # 遍历数组，同时获取元素值和索引</span><br><span class="line">            complement = target - num  # 计算目标值与当前元素的差值</span><br><span class="line">            if complement in map:  # 如果差值在哈希表中，说明找到了解决方案</span><br><span class="line">                return [map[complement], i]  # 返回差值元素的索引和当前元素的索引</span><br><span class="line">            map[num] = i  # 如果差值不在哈希表中，将当前元素加入哈希表</span><br><span class="line">        return []  # 如果没有找到解决方案，返回空列表</span><br><span class="line">    # 此算法的时间复杂度为O(n)，空间复杂度也为O(n)，因为最差情况下需要存储n个元素的哈希表。&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>超参数设置:</p>
+<ul>
+<li><p>batch_size: 4</p></li>
+<li><p>sequence_length: 4096</p></li>
+<li><p>learning_rate: 3e-5</p></li>
+<li><p>epochs: 3</p></li>
+</ul>
+<p><strong>难点：</strong></p>
+<p>本地执行复赛验证集推理代码时，出现以下问题：</p>
+<ul>
+<li><p>执行代码缺失引用包，比如math、heapq这些外部库</p></li>
+<li><p>生成内容涵盖错误的注释以及测试用例，导致无法正常运行通过测试</p></li>
+<li><p>同名函数导致模型生成解决方案未遵循题目要求、时间复杂度要求</p></li>
+</ul>
+<p>为了解决前两个问题，我通过清理训练数据、整理常用的外部库、删除未被引用的库以及生成测试数据。</p>
+<p>至于最后一个也是最具挑战性的问题，由于时间原因，尚未进行尝试。预计的解决方案是对函数名称进行重构。</p>
+<h1 id="参考文献">参考文献</h1>
+<p>https://arxiv.org/pdf/2306.11644v2.pdf</p>
+<p>https://arxiv.org/pdf/2312.02120.pdf</p>
+<p>https://arxiv.org/pdf/2304.08109.pdf</p>
+<h1 id="致谢">致谢</h1>
+<p>衷心感谢主办方在群内的热情解答，为我们举办了一场如此贴近实际应用的代码生成比赛。这场比赛让我对代码生成领域有了更深入的理解。祝愿千问模型未来的发展越来越好，也希望未来能有更多类似的机会，让我们一同学习，一同进步。再次感谢主办方的辛勤付出和全力支持～</p>
+<p>感兴趣的可以关注微信公众号联系哈～</p>
+<p><img src="https://intranetproxy.alipay.com/skylark/lark/0/2023/png/67256578/1692751562367-607c2567-a00c-46cb-8f99-d6e758f8cd3b.png" /></p>
+
+    </div>
+
+    
+    
+    
+    <div>
+    
+      <div>
+  
+    <div style="text-align:center;color:#bfbfbf;font-size:16px;">
+      <span>-------- 本文结束 </span>
+      <i class="fa fa-paw"></i>
+      <span> 感谢阅读 --------</span>
+    </div>
+  
+</div>
+
+    
+    </div>
+      
+  <div class="popular-posts-header">猜你喜欢# Custom header, leave empty to use the default one</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/08/2023-05-08-复刻ChatGPT语言模型系列-（一）基座模型选取/" rel="bookmark">复刻ChatGPT语言模型系列-（一）基座模型选取</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/05/16/2023-05-08-复刻ChatGPT语言模型系列-（四）文本生成解码/" rel="bookmark">复刻ChatGPT语言模型系列-（四）文本生成解码</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/06/13/2023-06-13-LLM训练指南-Token及模型参数准备/" rel="bookmark">LLM训练指南-Token及模型参数准备</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/01/2023-07-01-LLM训练指南(二):模型参数、计算量、显存、计算时间计算/" rel="bookmark">LLM训练指南(二):模型参数、计算量、显存、计算时间计算</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2023/07/22/2023-07-22-RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推/" rel="bookmark">RoPE旋转位置编码深度解析：理论推导、代码实现、长度外推</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>JMX
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://jmxgodlz.xyz/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/" title="通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)">https://jmxgodlz.xyz/2024/01/06/2024-01-06-通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NLP/" rel="tag"><i class="fa fa-tag"></i> NLP</a>
+              <a href="/tags/ChatGPT/" rel="tag"><i class="fa fa-tag"></i> ChatGPT</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/" rel="prev" title="QWen升级之路">
+      <i class="fa fa-chevron-left"></i> QWen升级之路
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9D%E8%B5%9B%E6%96%B9%E6%A1%88"><span class="nav-number">2.</span> <span class="nav-text">初赛方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%9B%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">2.1.</span> <span class="nav-text">赛题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%B9%E6%A1%88"><span class="nav-number">2.2.</span> <span class="nav-text">参考方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">2.3.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%8D%E8%B5%9B%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">复赛方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B5%9B%E9%A2%98%E5%88%86%E6%9E%90-1"><span class="nav-number">3.1.</span> <span class="nav-text">赛题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88-1"><span class="nav-number">3.2.</span> <span class="nav-text">解决方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-number">5.</span> <span class="nav-text">致谢</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JMXGODLZZ"
+      src="/images/jmx.png">
+  <p class="site-author-name" itemprop="name">JMXGODLZZ</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/447428054" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;447428054" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jmxgodlzz@gmail.com" title="E-Mail → mailto:jmxgodlzz@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+  <div class="links-of-recent-posts motion-element">
+    <div class="links-of-recent-posts-title">
+      <i class="fa fa-history fa-fw"></i>
+      最近文章
+    </div>
+    <ul class="links-of-recent-posts-list">
+        <li class="links-of-recent-posts-item">
+          <a href="/2024/01/06/2024-01-06-%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AEAI%E6%8C%91%E6%88%98%E8%B5%9B%20-%20Code%20Qwen%E8%83%BD%E5%8A%9B%E7%AE%97%E6%B3%95%E8%B5%9B%E9%81%93(%E4%BA%9A%E5%86%9B%E6%96%B9%E6%A1%88)/" title="2024&#x2F;01&#x2F;06&#x2F;2024-01-06-通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)&#x2F;">通义千问AI挑战赛 - Code Qwen能力算法赛道(亚军方案)</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/12/30/2023-12-30-QWen%E5%8D%87%E7%BA%A7%E4%B9%8B%E8%B7%AF/" title="2023&#x2F;12&#x2F;30&#x2F;2023-12-30-QWen升级之路&#x2F;">QWen升级之路</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/11/27/2023-11-27-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%B8%89%EF%BC%89%E6%8C%87%E4%BB%A4%E5%AD%A6%E4%B9%A0%E5%BE%AE%E8%B0%83/" title="2023&#x2F;11&#x2F;27&#x2F;2023-11-27-复刻ChatGPT语言模型系列-（三）指令学习微调&#x2F;">复刻ChatGPT语言模型系列-（三）指令学习微调</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/10/26/2023-10-26-%E5%A4%8D%E5%88%BBChatGPT%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B3%BB%E5%88%97-%EF%BC%88%E4%BA%8C%EF%BC%89%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83/" title="2023&#x2F;10&#x2F;26&#x2F;2023-10-26-复刻ChatGPT语言模型系列-（二）参数高效微调&#x2F;">复刻ChatGPT语言模型系列-（二）参数高效微调</a>
+        </li>
+        <li class="links-of-recent-posts-item">
+          <a href="/2023/09/19/2023-09-19-ALiBi%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E3%80%81%E9%95%BF%E5%BA%A6%E5%A4%96%E6%8E%A8/" title="2023&#x2F;09&#x2F;19&#x2F;2023-09-19-ALiBi位置编码深度解析：代码实现、长度外推&#x2F;">ALiBi位置编码深度解析：代码实现、长度外推</a>
+        </li>
+    </ul>
+  </div>
+
+
+<div style="">
+  <canvas id="canvas" style="width:60%;">当前浏览器不支持canvas，请更换浏览器后再试</canvas>
+</div>
+<script>
+(function(){
+
+   var digit=
+    [
+        [
+            [0,0,1,1,1,0,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,0,1,1,0],
+            [0,0,1,1,1,0,0]
+        ],//0
+        [
+            [0,0,0,1,1,0,0],
+            [0,1,1,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [1,1,1,1,1,1,1]
+        ],//1
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,1,1],
+            [1,1,1,1,1,1,1]
+        ],//2
+        [
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//3
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,0],
+            [0,0,1,1,1,1,0],
+            [0,1,1,0,1,1,0],
+            [1,1,0,0,1,1,0],
+            [1,1,1,1,1,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,1,1]
+        ],//4
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,1,1,1,1,0],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//5
+        [
+            [0,0,0,0,1,1,0],
+            [0,0,1,1,0,0,0],
+            [0,1,1,0,0,0,0],
+            [1,1,0,0,0,0,0],
+            [1,1,0,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//6
+        [
+            [1,1,1,1,1,1,1],
+            [1,1,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,0,0,1,1,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0],
+            [0,0,1,1,0,0,0]
+        ],//7
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,1,1,0]
+        ],//8
+        [
+            [0,1,1,1,1,1,0],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [1,1,0,0,0,1,1],
+            [0,1,1,1,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,0,1,1],
+            [0,0,0,0,1,1,0],
+            [0,0,0,1,1,0,0],
+            [0,1,1,0,0,0,0]
+        ],//9
+        [
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,1,1,1,0,0],
+            [0,0,0,0,0,0,0]
+        ]//:
+    ];
+
+var canvas = document.getElementById('canvas');
+
+if(canvas.getContext){
+    var cxt = canvas.getContext('2d');
+    //声明canvas的宽高
+    var H = 100,W = 700;
+    canvas.height = H;
+    canvas.width = W;
+    cxt.fillStyle = '#f00';
+    cxt.fillRect(10,10,50,50);
+
+    //存储时间数据
+    var data = [];
+    //存储运动的小球
+    var balls = [];
+    //设置粒子半径
+    var R = canvas.height/20-1;
+    (function(){
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        //存储时间数字，由十位小时、个位小时、冒号、十位分钟、个位分钟、冒号、十位秒钟、个位秒钟这7个数字组成
+        data.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+    })();
+
+    /*生成点阵数字*/
+    function renderDigit(index,num){
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    cxt.beginPath();
+                    cxt.arc(14*(R+2)*index + j*2*(R+1)+(R+1),i*2*(R+1)+(R+1),R,0,2*Math.PI);
+                    cxt.closePath();
+                    cxt.fill();
+                }
+            }
+        }
+    }
+
+    /*更新时钟*/
+    function updateDigitTime(){
+        var changeNumArray = [];
+        var temp = /(\d)(\d):(\d)(\d):(\d)(\d)/.exec(new Date());
+        var NewData = [];
+        NewData.push(temp[1],temp[2],10,temp[3],temp[4],10,temp[5],temp[6]);
+        for(var i = data.length-1; i >=0 ; i--){
+            //时间发生变化
+            if(NewData[i] !== data[i]){
+                //将变化的数字值和在data数组中的索引存储在changeNumArray数组中
+                changeNumArray.push(i+'_'+(Number(data[i])+1)%10);
+            }
+        }
+        //增加小球
+        for(var i = 0; i< changeNumArray.length; i++){
+            addBalls.apply(this,changeNumArray[i].split('_'));
+        }
+        data = NewData.concat();
+    }
+
+    /*更新小球状态*/
+    function updateBalls(){
+        for(var i = 0; i < balls.length; i++){
+            balls[i].stepY += balls[i].disY;
+            balls[i].x += balls[i].stepX;
+            balls[i].y += balls[i].stepY;
+            if(balls[i].x > W + R || balls[i].y > H + R){
+                balls.splice(i,1);
+                i--;
+            }
+        }
+    }
+
+    /*增加要运动的小球*/
+    function addBalls(index,num){
+        var numArray = [1,2,3];
+        var colorArray =  ["#3BE","#09C","#A6C","#93C","#9C0","#690","#FB3","#F80","#F44","#C00"];
+        for(var i = 0; i < digit[num].length; i++){
+            for(var j = 0; j < digit[num][i].length; j++){
+                if(digit[num][i][j] == 1){
+                    var ball = {
+                        x:14*(R+2)*index + j*2*(R+1)+(R+1),
+                        y:i*2*(R+1)+(R+1),
+                        stepX:Math.floor(Math.random() * 4 -2),
+                        stepY:-2*numArray[Math.floor(Math.random()*numArray.length)],
+                        color:colorArray[Math.floor(Math.random()*colorArray.length)],
+                        disY:1
+                    };
+                    balls.push(ball);
+                }
+            }
+        }
+    }
+
+    /*渲染*/
+    function render(){
+        //重置画布宽度，达到清空画布的效果
+        canvas.height = 100;
+        //渲染时钟
+        for(var i = 0; i < data.length; i++){
+            renderDigit(i,data[i]);
+        }
+        //渲染小球
+        for(var i = 0; i < balls.length; i++){
+            cxt.beginPath();
+            cxt.arc(balls[i].x,balls[i].y,R,0,2*Math.PI);
+            cxt.fillStyle = balls[i].color;
+            cxt.closePath();
+            cxt.fill();
+        }
+    }
+
+    clearInterval(oTimer);
+    var oTimer = setInterval(function(){
+        //更新时钟
+        updateDigitTime();
+        //更新小球状态
+        updateBalls();
+        //渲染
+        render();
+    },50);
+}
+
+})();
+</script>
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JMXGODLZZ</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">326k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">4:57</span>
+</div>
+  <div class="powered-by">
+
+  </div><script color="0,0,255" opacity="0.5" zIndex="-1" count="99" src="https://cdn.jsdelivr.net/npm/canvas-nest.js@1/dist/canvas-nest.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="/js/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('https://cdn.jsdelivr.net/npm/valine@1.4.16/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'EqIhOtvzwzCzQNJS178We0en-gzGzoHsz',
+      appKey     : 'uGXYV87r0A6miFKVHul24dnC',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+
+  <script src="/js/activate-power-mode.min.js"></script>
+  <script>
+    POWERMODE.colorful = true;
+    POWERMODE.shake = false;
+    document.body.addEventListener('input', POWERMODE);
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"right","width":150,"height":300,"hOffset":-15,"vOffset":-15},"mobile":{"show":true},"react":{"opacity":0.9},"log":false});</script></body>
+</html>
